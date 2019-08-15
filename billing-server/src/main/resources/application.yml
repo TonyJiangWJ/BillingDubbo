@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: dubbo-billing-server-provider
+dubbo:
+  scan:
+    base-packages: com.tony.billing.service
+
+  protocol:
+    name: dubbo
+    port: -1
+
+  registry:
+    address: zookeeper://127.0.0.1:${embedded.zookeeper.port}
+    file: ${user.home}/dubbo-cache/${spring.application.name}/dubbo.cache
+embedded:
+  zookeeper:
+    port: 21811
+    enable: true

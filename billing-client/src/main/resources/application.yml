@@ -1,0 +1,14 @@
+spring:
+  application:
+    name: dubbo-billing-web-consumer
+
+embedded:
+  zookeeper:
+    port: 21811
+
+dubbo:
+  registry:
+    address: zookeeper://127.0.0.1:${embedded.zookeeper.port}
+    file: ${user.home}/dubbo-cache/${spring.application.name}/dubbo.cache
+server:
+  port: 8082
