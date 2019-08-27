@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.tony.billing.dao.mapper.AdminMapper">
+    <sql id="all">
+        id id,
+        tokenId tokenId,
+        tokenVerify tokenVerify,
+        code code,
+        userName userName,
+        email email,
+        password password,
+        lastLogin lastLogin,
+        createTime createTime,
+        modifyTime modifyTime,
+        version version,
+        isDeleted isDeleted
+    </sql>
+    <update id="doLogin" parameterType="com.tony.billing.entity.Admin">
+        UPDATE t_admin
+        SET lastLogin   = #{lastLogin,jdbcType=TIMESTAMP},
+            tokenId     = #{tokenId,jdbcType=VARCHAR},
+            tokenVerify = #{tokenVerify,jdbcType=BIGINT}
+        WHERE
+            userName = #{userName,jdbcType=VARCHAR}
+            AND password = #{password,jdbcType=VARCHAR}
+            AND isDeleted = 0
+    </update>
+    <select id="preLogin" parameterType="com.tony.billing.entity.Admin" resultType="com.tony.billing.entity.Admin">
+        SELECT
+        <include refid="all"/>
+        FROM t_admin
+        WHERE userName = #{userName,jdbcType=VARCHAR}
+        AND password = #{password,jdbcType=VARCHAR}
+        AND isDeleted = 0
+    </select>
+    <select id="loginCheck" resultType="com.tony.billing.entity.Admin" parameterType="String">
+        SELECT
+        <include refid="all"/>
+        FROM t_admin
+        WHERE tokenId = #{tokenId} AND isDeleted = 0
+    </select>
+    <select id="queryByUserName" parameterType="String" resultType="com.tony.billing.entity.Admin">
+        SELECT
+        <include refid="all"/>
+        FROM t_admin
+        WHERE isDeleted='0' AND userName=#{userName,jdbcType=VARCHAR}
+    </select>
+
+    <insert id="register" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.Admin">
+        INSERT INTO t_admin
+        (
+            id,
+            userName,
+            code,
+            password,
+            createTime,
+            modifyTime,
+            version,
+            isDeleted
+        )VALUES(
+            #{id,jdbcType=BIGINT},
+            #{userName,jdbcType=VARCHAR},
+            #{code,jdbcType=VARCHAR},
+            #{password,jdbcType=VARCHAR},
+            #{createTime,jdbcType=TIMESTAMP},
+            #{modifyTime,jdbcType=TIMESTAMP},
+            #{version,jdbcType=INTEGER},
+            #{isDeleted,jdbcType=INTEGER}
+        )
+    </insert>
+
+    <update id="logout" parameterType="Long">
+        UPDATE t_admin SET tokenId='',tokenVerify='0' WHERE id=#{userId,jdbcType=BIGINT} AND isDeleted = '0'
+    </update>
+
+    <update id="modifyPwd" parameterType="com.tony.billing.entity.Admin">
+        UPDATE t_admin SET password = #{password,jdbcType=VARCHAR} WHERE id=#{id, jdbcType=BIGINT} AND isDeleted='0'
+    </update>
+
+    <select id="getAdminById" parameterType="Long" resultType="com.tony.billing.entity.Admin">
+        SELECT
+        <include refid="all"/>
+        FROM t_admin where id=#{id,jdbcType=BIGINT} and isDeleted='0'
+    </select>
+</mapper>

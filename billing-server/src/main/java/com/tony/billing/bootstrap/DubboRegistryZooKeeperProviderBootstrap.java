@@ -17,11 +17,12 @@
 
 package com.tony.billing.bootstrap;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
@@ -32,6 +33,8 @@ import org.springframework.util.StringUtils;
  * @since 2.7.0
  */
 @EnableAutoConfiguration
+@MapperScan("com.tony.billing.dao.mapper")
+@ComponentScan("com.tony.billing")
 public class DubboRegistryZooKeeperProviderBootstrap {
 
     public static void main(String[] args) {

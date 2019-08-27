@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tony.billing.dao.mapper.TagInfoMapper">
+    <sql id="all">
+        id id,
+        tagName tagName,
+        createTime createTime,
+        modifyTime modifyTime,
+        isDeleted isDeleted,
+        userId userId
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.TagInfo">
+        INSERT INTO t_tag_info (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                id,
+            </if>
+            <if test=" tagName!=null and tagName!='' ">
+                tagName,
+            </if>
+            <if test=" createTime!=null ">
+                createTime,
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime,
+            </if>
+            <if test=" isDeleted!=null ">
+                isDeleted,
+            </if>
+            <if test=" userId!=null ">
+                userId,
+            </if>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test=" tagName!=null and tagName!='' ">
+                #{tagName,jdbcType=VARCHAR},
+            </if>
+            <if test=" createTime!=null ">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" isDeleted!=null ">
+                #{isDeleted,jdbcType=INTEGER},
+            </if>
+            <if test=" userId!=null ">
+                #{userId,jdbcType=BIGINT},
+            </if>
+        </trim>
+        )
+    </insert>
+    <update id="update" parameterType="com.tony.billing.entity.TagInfo">
+        UPDATE t_tag_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test=" tagName!=null and tagName!='' ">
+                tagName=#{tagName,jdbcType=VARCHAR},
+            </if>
+            <if test=" createTime!=null ">
+                createTime=#{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime=#{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" isDeleted!=null ">
+                isDeleted=#{isDeleted,jdbcType=INTEGER},
+            </if>
+        </trim>
+        WHERE id=#{id,jdbcType=BIGINT}
+    </update>
+    <select id="list" parameterType="com.tony.billing.entity.TagInfo" resultType="com.tony.billing.entity.TagInfo">
+        SELECT
+        <include refid="all"/>
+        FROM t_tag_info
+        <trim prefix="WHERE" prefixOverrides="and">
+            <if test=" id!=null ">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" tagName!=null and tagName!='' ">
+                and tagName=#{tagName,jdbcType=VARCHAR}
+            </if>
+            <if test=" createTime!=null ">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null ">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+            and isDeleted=0 and userId=#{userId,jdbcType=BIGINT}
+        </trim>
+    </select>
+
+    <select id="getTagInfoById" parameterType="Long" resultType="com.tony.billing.entity.TagInfo">
+        SELECT
+        <include refid="all"/>
+        FROM t_tag_info
+        WHERE id=#{id,jdbcType=BIGINT} AND isDeleted='0'
+    </select>
+
+    <select id="listTagInfoByTradeNo" resultType="com.tony.billing.entity.TagInfo" parameterType="java.util.Map">
+        SELECT
+        <include refid="all"/>
+        FROM t_tag_info
+        WHERE id IN (
+        SELECT tagId FROM t_cost_tag t_ct JOIN t_cost_info t_c ON t_ct.costId = t_c.id
+        WHERE t_c.tradeNo = #{tradeNo,jdbcType=VARCHAR} AND t_ct.isDeleted = '0' AND t_c.userId=#{userId,jdbcType=BIGINT}
+        )
+    </select>
+
+    <insert id="insertTagCostRef" useGeneratedKeys="true" keyProperty="id"
+            parameterType="com.tony.billing.entity.TagCostRef">
+        INSERT INTO t_cost_tag (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                id,
+            </if>
+            <if test=" tagId!=null ">
+                tagId,
+            </if>
+            <if test=" costId!=null ">
+                costId,
+            </if>
+            <if test=" createTime!=null ">
+                createTime,
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime,
+            </if>
+            <if test=" isDeleted!=null ">
+                isDeleted,
+            </if>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test=" tagId!=null ">
+                #{tagId,jdbcType=BIGINT},
+            </if>
+            <if test=" costId!=null ">
+                #{costId,jdbcType=BIGINT},
+            </if>
+            <if test=" createTime!=null ">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" isDeleted!=null ">
+                #{isDeleted,jdbcType=INTEGER},
+            </if>
+        </trim>
+        )
+    </insert>
+
+    <update id="deleteCostTag">
+        UPDATE t_cost_tag
+        SET isDeleted   = 1,
+            modifyTime = #{modifyTime,jdbcType=TIMESTAMP}
+        WHERE isDeleted = 0 AND costId = #{costId,jdbcType=BIGINT} AND tagId = #{tagId,jdbcType=BIGINT}
+    </update>
+
+    <update id="deleteTagById" parameterType="java.util.Map">
+        UPDATE t_tag_info
+        SET isDeleted   = 1,
+            modifyTime = #{modifyTime,jdbcType=TIMESTAMP}
+        WHERE id = #{tagId,jdbcType=BIGINT}
+    </update>
+
+    <update id="deleteCostTagByTagId" parameterType="java.util.Map">
+        UPDATE t_cost_tag
+        SET isDeleted   = 1,
+            modifyTime = #{modifyTime,jdbcType=TIMESTAMP}
+        WHERE isDeleted = 0 AND tagId = #{tagId,jdbcType=BIGINT}
+    </update>
+
+    <select id="queryTagByName" resultType="com.tony.billing.entity.TagInfo">
+        SELECT
+        <include refid="all"/>
+        FROM t_tag_info
+        WHERE isDeleted = 0 AND userId=#{userId,jdbcType=BIGINT}
+        AND tagName LIKE CONCAT('%',#{tagName,jdbcType=VARCHAR},'%')
+    </select>
+
+    <select id="countTagUsage" resultType="java.lang.Long">
+        SELECT COUNT(1) FROM t_cost_tag WHERE isDeleted = 0 AND tagId = #{tagId,jdbcType=BIGINT}
+    </select>
+
+    <insert id="insertTagBudgetRef" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.TagBudgetRef">
+        INSERT INTO t_budget_tag (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                id,
+            </if>
+            <if test=" tagId!=null ">
+                tagId,
+            </if>
+            <if test=" budgetId!=null ">
+                budgetId,
+            </if>
+            <if test=" createTime!=null ">
+                createTime,
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime,
+            </if>
+            <if test=" isDeleted!=null ">
+                isDeleted,
+            </if>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test=" tagId!=null ">
+                #{tagId,jdbcType=BIGINT},
+            </if>
+            <if test=" budgetId!=null ">
+                #{budgetId,jdbcType=BIGINT},
+            </if>
+            <if test=" createTime!=null ">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" isDeleted!=null ">
+                #{isDeleted,jdbcType=INTEGER},
+            </if>
+        </trim>
+        )
+    </insert>
+
+    <insert id="batchInsertTagBudgetRef">
+        INSERT INTO t_cost_tag (tagId,costId,createTime,modifyTime,isDeleted)
+        VALUES
+        <foreach collection="recordIds" item="id" open="(" close=")" separator="),(">
+            #{tagId, jdbcType=BIGINT},
+            #{id, jdbcType=BIGINT},
+            #{createTime, jdbcType=TIMESTAMP},
+            #{modifyTime, jdbcType=TIMESTAMP},
+            0
+        </foreach>
+    </insert>
+
+
+    <update id="deleteBudgetTag">
+      UPDATE t_budget_tag SET isDeleted='1', modifyTime = #{modifyTime, jdbcType=TIMESTAMP}
+       WHERE budgetId=#{budgetId, jdbcType=BIGINT} AND tagId=#{tagId, jdbcType=BIGINT}
+    </update>
+
+
+    <select id="listTagInfoByBudgetId" resultType="com.tony.billing.entity.TagInfo">
+        SELECT tag.* FROM t_tag_info tag JOIN t_budget_tag bt ON tag.id=bt.tagId
+        AND tag.isDeleted=0 AND bt.isDeleted=0
+        AND bt.budgetId=#{budgetId, jdbcType=BIGINT} AND tag.userId=#{userId, jdbcType=BIGINT}
+
+    </select>
+    <select id="listTagIdsByBudgetMonth" resultType="java.lang.Long">
+        SELECT tag.id FROM t_tag_info tag JOIN t_budget_tag bt on tag.id=bt.tagId and bt.isDeleted=0
+        join t_budget bi on bt.budgetId=bi.id and bi.isDeleted=0 and bi.belongYear=#{budgetYear, jdbcType=VARCHAR}
+        and bi.belongMonth=#{budgetMonth, jdbcType=INTEGER} and bi.userId=#{userId, jdbcType=BIGINT}
+        <if test="exceptBudgetId != null">
+            and bi.id &lt;&gt; #{exceptBudgetId, jdbcType=BIGINT}
+        </if>
+    </select>
+    <select id="listAssignableTagsByBudgetId" resultType="com.tony.billing.entity.TagInfo">
+        SELECT * FROM t_tag_info t WHERE userId=#{userId,jdbcType=BIGINT} AND isDeleted=0 AND NOT EXISTS(
+            SELECT 1 FROM t_budget_tag s WHERE s.tagId=t.id AND isDeleted=0 AND EXISTS (
+                SELECT 1 FROM t_budget r WHERE s.budgetId=r.id AND isDeleted=0 AND EXISTS (
+                    SELECT 1 FROM t_budget WHERE id=#{budgetId,jdbcType=BIGINT} AND isDeleted=0 AND r.belongMonth=belongMonth AND r.belongYear=belongYear
+                )
+            )
+        )
+    </select>
+    <select id="countByCostAndTag" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM t_cost_tag WHERE isDeleted=0 AND tagId=#{tagId, jdbcType=BIGINT} AND costId=#{costId, jdbcType=BIGINT}
+    </select>
+    <select id="listCommonTagInfos" resultType="com.tony.billing.entity.TagInfo">
+        SELECT * FROM t_tag_info WHERE isDeleted=0 AND id IN (
+            SELECT tagId FROM t_cost_tag where isDeleted=0 AND costId IN(
+            <foreach collection="costIds" item="costId" separator=",">
+                #{costId,jdbcType=BIGINT}
+            </foreach>
+            ) GROUP BY tagId HAVING count(1)>=#{size,jdbcType=INTEGER}
+        )
+    </select>
+
+    <update id="batchDeleteCostTag">
+        UPDATE t_cost_tag SET isDeleted=1 WHERE isDeleted=0 AND tagId=#{tagId, jdbcType=BIGINT} AND costId IN (
+            <foreach collection="costIds" item="costId" separator=",">
+                #{costId,jdbcType=BIGINT}
+            </foreach>
+        )
+    </update>
+</mapper>

@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tony.billing.dao.mapper.AssetMapper">
+    <sql id="all">
+        id id,
+        userId userId,
+        name name,
+        extName extName,
+        `type` type,
+        available available,
+        amount amount,
+        createTime createTime,
+        modifyTime modifyTime,
+        isDeleted isDeleted,
+        `version` version
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.Asset">
+        INSERT INTO t_asset (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                id,
+            </if>
+            <if test=" userId!=null ">
+                userId,
+            </if>
+            <if test=" name!=null and name!='' ">
+                name,
+            </if>
+            <if test=" extName!=null and extName!='' ">
+                extName,
+            </if>
+            <if test=" type!=null ">
+                `type`,
+            </if>
+            <if test=" available!=null and available!='' ">
+                available,
+            </if>
+            <if test=" amount!=null ">
+                amount,
+            </if>
+            <if test=" createTime!=null ">
+                createTime,
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime,
+            </if>
+            <if test="isDeleted != null">
+                isDeleted,
+            </if>
+            <if test="version != null">
+                `version`,
+            </if>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test=" userId!=null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test=" name!=null and name!='' ">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test=" extName!=null and extName!='' ">
+                #{extName,jdbcType=VARCHAR},
+            </if>
+            <if test=" type!=null ">
+                #{type,jdbcType=BIGINT},
+            </if>
+            <if test=" available!=null and available!='' ">
+                #{available,jdbcType=VARCHAR},
+            </if>
+            <if test=" amount!=null ">
+                #{amount,jdbcType=BIGINT},
+            </if>
+            <if test=" createTime!=null ">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=TINYINT},
+            </if>
+            <if test="version != null">
+                #{version,jdbcType=INTEGER},
+            </if>
+        </trim>
+        )
+    </insert>
+    <update id="update" parameterType="com.tony.billing.entity.Asset">
+        UPDATE t_asset
+        <trim prefix="SET" suffixOverrides=",">
+            <if test=" name!=null and name!='' ">
+                name=#{name,jdbcType=VARCHAR},
+            </if>
+            <if test=" extName!=null and extName!='' ">
+                extName=#{extName,jdbcType=VARCHAR},
+            </if>
+            <if test=" type!=null ">
+                `type`=#{type,jdbcType=BIGINT},
+            </if>
+            <if test=" available!=null and available!='' ">
+                available=#{available,jdbcType=VARCHAR},
+            </if>
+            <if test=" amount!=null ">
+                amount=#{amount,jdbcType=BIGINT},
+            </if>
+            <if test=" createTime!=null ">
+                createTime=#{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime=#{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="version != null">
+                `version`=#{version,jdbcType=INTEGER} + 1
+            </if>
+        </trim>
+        WHERE id=#{id, jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT} AND `version`=#{version,jdbcType=INTEGER} AND isDeleted='0'
+    </update>
+    <select id="page" parameterType="java.util.Map" resultType="com.tony.billing.entity.Asset">
+        SELECT
+        <include refid="all"/>
+        FROM t_asset WHERE isDeleted='0'
+        <trim>
+            <if test=" id!=null ">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" userId!=null ">
+                and userId=#{userId,jdbcType=BIGINT}
+            </if>
+            <if test=" name!=null and name!='' ">
+                and name=#{name,jdbcType=VARCHAR}
+            </if>
+            <if test=" extName!=null and extName!='' ">
+                and extName=#{extName,jdbcType=VARCHAR}
+            </if>
+            <if test=" type!=null ">
+                and `type`=#{type,jdbcType=BIGINT}
+            </if>
+            <if test=" available!=null and available!='' ">
+                and available=#{available,jdbcType=VARCHAR}
+            </if>
+            <if test=" amount!=null ">
+                and amount=#{amount,jdbcType=BIGINT}
+            </if>
+            <if test=" createTime!=null ">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null ">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+        </trim>
+        ORDER BY
+        <if test="orderBy != null">
+            ${orderBy} ${sort}
+        </if>
+        <if test="orderBy == null or orderBy == '' ">
+            id ${sort}
+        </if>
+        LIMIT #{index} , #{offset}
+    </select>
+
+    <select id="list" parameterType="com.tony.billing.entity.Asset" resultType="com.tony.billing.entity.Asset">
+        SELECT
+        <include refid="all"/>
+        FROM t_asset where isDeleted ='0'
+        <trim>
+            <if test=" id!=null ">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" userId!=null ">
+                and userId=#{userId,jdbcType=BIGINT}
+            </if>
+            <if test=" name!=null and name!='' ">
+                and name=#{name,jdbcType=VARCHAR}
+            </if>
+            <if test=" extName!=null and extName!='' ">
+                and extAme=#{extName,jdbcType=VARCHAR}
+            </if>
+            <if test=" type!=null ">
+                and `type`=#{type,jdbcType=BIGINT}
+            </if>
+            <if test=" available!=null and available!='' ">
+                and available=#{available,jdbcType=VARCHAR}
+            </if>
+            <if test=" amount!=null ">
+                and amount=#{amount,jdbcType=BIGINT}
+            </if>
+            <if test=" createTime!=null ">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null ">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+        </trim>
+    </select>
+
+    <select id="getById" parameterType="Long" resultType="com.tony.billing.entity.Asset">
+        SELECT
+        <include refid="all"/>
+        FROM t_asset WHERE id=#{id,jdbcType=BIGINT} and isDeleted='0'
+    </select>
+
+    <update id="deleteById">
+        update t_asset set isDeleted = '1'
+        WHERE id=#{id,jdbcType=BIGINT} AND userId=#{userId, jdbcType=BIGINT}
+    </update>
+</mapper>

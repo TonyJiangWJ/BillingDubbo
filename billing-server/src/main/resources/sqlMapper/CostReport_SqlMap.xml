@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tony.billing.dao.mapper.CostReportMapper">
+
+    <select id="getReportTypeAmountByCondition" parameterType="com.tony.billing.entity.query.ReportEntityQuery"
+        resultType="com.tony.billing.entity.RawReportEntity">
+        SELECT
+            *
+        FROM
+            ( SELECT
+                ifnull( SUM(money), 0 ) AS totalCost
+            FROM
+                t_cost_info
+            WHERE
+                userId = #{userId,jdbcType=BIGINT}
+                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND inOutType = '支出' ) cost
+        JOIN ( SELECT
+                ifnull( SUM(money), 0 ) AS totalIncome
+            FROM
+                t_cost_info
+            WHERE
+                userId = #{userId,jdbcType=BIGINT}
+                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND inOutType = '收入' ) income
+        JOIN ( SELECT
+                ifnull( SUM(money), 0 ) AS totalIncomeDeleted
+            FROM
+                t_cost_info
+            WHERE
+                userId = #{userId,jdbcType=BIGINT}
+                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND isDeleted = '1'
+                AND inOutType = '收入' ) incomeDeleted
+        JOIN ( SELECT
+                ifnull( SUM(money), 0 ) AS totalIncomeHidden
+            FROM
+                t_cost_info
+            WHERE
+                userId = #{userId,jdbcType=BIGINT}
+                AND isHidden = '1'
+                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND inOutType = '收入' ) incomeHidden
+        JOIN ( SELECT
+                ifnull( SUM(money), 0 ) AS totalIncomeExceptDeletedAndHidden
+            FROM
+                t_cost_info
+            WHERE
+                userId = #{userId,jdbcType=BIGINT}
+                AND isHidden = '0'
+                AND isDeleted = '0'
+                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND inOutType = '收入' ) incomeExceptDeletedAndHidden
+        JOIN ( SELECT
+                ifnull( SUM(money), 0 ) AS totalCostDeleted
+            FROM
+                t_cost_info
+            WHERE
+                userId = #{userId,jdbcType=BIGINT}
+                AND isDeleted = '1'
+                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND inOutType = '支出' ) costDeleted
+        JOIN ( SELECT
+                ifnull( SUM(money), 0 ) AS totalCostHidden
+            FROM
+                t_cost_info
+            WHERE
+                userId = #{userId,jdbcType=BIGINT}
+                AND isHidden = '1'
+                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND inOutType = '支出' ) costHidden
+        JOIN ( SELECT
+                ifnull( SUM(money), 0 ) AS totalCostExceptDeletedAndHidden
+            FROM
+                t_cost_info
+            WHERE
+                userId = #{userId,jdbcType=BIGINT}
+                AND isHidden = '0'
+                AND isDeleted = '0'
+                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND inOutType = '支出' ) costExceptDeletedAndHidden
+    </select>
+</mapper>

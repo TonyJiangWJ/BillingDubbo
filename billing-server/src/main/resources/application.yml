@@ -1,6 +1,54 @@
 spring:
   application:
     name: dubbo-billing-server-provider
+  mail:
+    host: smtp.yeah.net
+    username: tony_sama@yeah.net
+    password:
+
+  datasource:
+    druid:
+      initial-size: 10
+      max-active: 100
+      min-idle: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 30000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: false
+      connection-properties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+      use-global-data-source-stat: true
+      filter:
+        stat:
+          enabled: false
+        slf4j:
+          enabled: true
+      filters: slf4j
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://127.0.0.1:3306/my_daily_cost?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+      username: root
+      password:
+
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password:
+    timeout: 3000
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 0
+        max-idle: 8
+        max-wait:
+# MyBatis
+mybatis:
+  typeAliasesPackage: com.tony.billing.entity
+  mapperLocations: classpath:/sqlMapper/*SqlMap.xml
+  configLocation: classpath:/mybatis-config.xml
 dubbo:
   scan:
     base-packages: com.tony.billing.service
@@ -16,3 +64,14 @@ embedded:
   zookeeper:
     port: 21811
     enable: true
+# server properties
+rsa:
+  key:
+    path: /Users/jiangwenjie/
+
+logback:
+  path: /Users/jiangwenjie/logs/logForBillingDubbo/
+system:
+  host:
+    reset:
+      password: http://localhost:8080/#/reset/pwd

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tony.billing.dao.mapper.LiabilityMapper">
+    <sql id="all">
+        id id,
+        userId userId,
+        createTime createTime,
+        modifyTime modifyTime,
+        repaymentDay repaymentDay,
+        name name,
+        `type` type,
+        amount amount,
+        installment installment,
+        `index` 'index',
+        status status,
+        paid paid,
+        isDeleted isDeleted,
+        `version` version
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.Liability">
+        INSERT INTO t_liability (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                id,
+            </if>
+            <if test=" userId!=null ">
+                userId,
+            </if>
+            <if test=" createTime!=null ">
+                createTime,
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime,
+            </if>
+            <if test=" repaymentDay!=null ">
+                repaymentDay,
+            </if>
+            <if test=" name!=null and name!='' ">
+                name,
+            </if>
+            <if test=" type!=null ">
+                `type`,
+            </if>
+            <if test=" amount!=null ">
+                amount,
+            </if>
+            <if test=" installment!=null ">
+                installment,
+            </if>
+            <if test=" index!=null ">
+                `index`,
+            </if>
+            <if test=" status!=null ">
+                status,
+            </if>
+            <if test=" paid!=null ">
+                paid,
+            </if>
+            <if test="isDeleted != null">
+                isDeleted,
+            </if>
+            <if test="version != null">
+                `version`,
+            </if>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test=" userId!=null ">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test=" createTime!=null ">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" repaymentDay!=null ">
+                #{repaymentDay,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" name!=null and name!='' ">
+                #{name,jdbcType=VARCHAR},
+            </if>
+            <if test=" type!=null ">
+                #{type,jdbcType=INTEGER},
+            </if>
+            <if test=" amount!=null ">
+                #{amount,jdbcType=BIGINT},
+            </if>
+            <if test=" installment!=null ">
+                #{installment,jdbcType=INTEGER},
+            </if>
+            <if test=" index!=null ">
+                #{index,jdbcType=INTEGER},
+            </if>
+            <if test=" status!=null ">
+                #{status,jdbcType=INTEGER},
+            </if>
+            <if test=" paid!=null ">
+                #{paid,jdbcType=BIGINT},
+            </if>
+            <if test="isDeleted != null">
+                #{isDeleted,jdbcType=TINYINT},
+            </if>
+            <if test="version != null">
+                #{version,jdbcType=INTEGER},
+            </if>
+        </trim>
+        )
+    </insert>
+    <update id="update" parameterType="com.tony.billing.entity.Liability">
+        UPDATE t_liability
+        <trim prefix="SET" suffixOverrides=",">
+            <if test=" createTime!=null ">
+                createTime=#{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime=#{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" repaymentDay!=null ">
+                repaymentDay=#{repaymentDay,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" name!=null and name!='' ">
+                name=#{name,jdbcType=VARCHAR},
+            </if>
+            <if test=" type!=null ">
+                `type`=#{type,jdbcType=INTEGER},
+            </if>
+            <if test=" amount!=null ">
+                amount=#{amount,jdbcType=BIGINT},
+            </if>
+            <if test=" installment!=null ">
+                installment=#{installment,jdbcType=INTEGER},
+            </if>
+            <if test=" index!=null ">
+                `index`=#{index,jdbcType=INTEGER},
+            </if>
+            <if test=" status!=null ">
+                status=#{status,jdbcType=INTEGER},
+            </if>
+            <if test=" paid!=null ">
+                paid=#{paid,jdbcType=BIGINT},
+            </if>
+            <if test="version != null">
+                `version`=#{version,jdbcType=INTEGER},
+            </if>
+        </trim>
+        WHERE id=#{id, jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT} AND isDeleted='0' AND version=#{version,jdbcType=INTEGER}
+    </update>
+    <select id="page" parameterType="java.util.Map" resultType="com.tony.billing.entity.Liability">
+        SELECT
+        <include refid="all"/>
+        FROM t_liability WHERE isDeleted='0'
+        <trim>
+            <if test=" id!=null ">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" userId!=null ">
+                and userId=#{userId,jdbcType=BIGINT}
+            </if>
+            <if test=" createTime!=null ">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null ">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" repaymentDay!=null ">
+                and repaymentDay=#{repaymentDay,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" name!=null and name!='' ">
+                and name=#{name,jdbcType=VARCHAR}
+            </if>
+            <if test=" type!=null and ">
+                and `type`=#{type,jdbcType=INTEGER}
+            </if>
+            <if test=" amount!=null ">
+                and amount=#{amount,jdbcType=BIGINT}
+            </if>
+            <if test=" installment!=null ">
+                and installment=#{installment,jdbcType=INTEGER}
+            </if>
+            <if test=" index!=null ">
+                and `index`=#{index,jdbcType=INTEGER}
+            </if>
+            <if test=" status!=null ">
+                and status=#{status,jdbcType=INTEGER}
+            </if>
+            <if test=" paid!=null ">
+                and paid=#{paid,jdbcType=BIGINT}
+            </if>
+        </trim>
+        ORDER BY
+        <if test="orderBy != null">
+            ${orderBy} ${sort}
+        </if>
+        <if test="orderBy == null or orderBy == '' ">
+            id ${sort}
+        </if>
+        LIMIT #{index} , #{offset}
+    </select>
+
+    <select id="list" resultType="com.tony.billing.entity.Liability" parameterType="com.tony.billing.entity.Liability">
+        SELECT
+        <include refid="all"/>
+        FROM t_liability where isDeleted='0'
+        <trim>
+            <if test=" id!=null ">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" userId!=null ">
+                and userId=#{userId,jdbcType=BIGINT}
+            </if>
+            <if test=" createTime!=null ">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null ">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" repaymentDay!=null ">
+                and repaymentDay=#{repaymentDay,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" name!=null and name!='' ">
+                and name=#{name,jdbcType=VARCHAR}
+            </if>
+            <if test=" type!=null ">
+                and `type`=#{type,jdbcType=INTEGER}
+            </if>
+            <if test=" amount!=null ">
+                and amount=#{amount,jdbcType=BIGINT}
+            </if>
+            <if test=" installment!=null ">
+                and installment=#{installment,jdbcType=INTEGER}
+            </if>
+            <if test=" index!=null ">
+                and `index`=#{index,jdbcType=INTEGER}
+            </if>
+            <if test=" status!=null ">
+                and status=#{status,jdbcType=INTEGER}
+            </if>
+            <if test=" paid!=null ">
+                and paid=#{paid,jdbcType=BIGINT}
+            </if>
+        </trim>
+    </select>
+
+    <select id="getById" resultType="com.tony.billing.entity.Liability" parameterType="Long">
+        SELECT
+        <include refid="all"/>
+        FROM t_liability
+        WHERE id=#{id, jdbcType=BIGINT} AND isDeleted = '0'
+    </select>
+    <select id="listLiabilityGroupByType" resultType="com.tony.billing.entity.Liability">
+        SELECT name,sum(amount) as amount,sum(paid) as paid, type
+        FROM t_liability WHERE userId=#{userId,jdbcType=BIGINT} AND isDeleted='0' AND status='0'
+        GROUP by type,name
+    </select>
+</mapper>

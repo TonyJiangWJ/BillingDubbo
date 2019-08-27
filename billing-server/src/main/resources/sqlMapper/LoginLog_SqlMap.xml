@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tony.billing.dao.mapper.LoginLogMapper">
+    <sql id="all">
+        id id,
+        userName userName,
+        loginResult loginResult,
+        loginIp loginIp,
+        code code,
+        msg msg,
+        createTime createTime,
+        modifyTime modifyTime
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.LoginLog">
+        INSERT INTO t_login_log (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                id,
+            </if>
+            <if test=" userName!=null and userName!='' ">
+                userName,
+            </if>
+            <if test=" loginResult!=null and loginResult!='' ">
+                loginResult,
+            </if>
+            <if test=" loginIp!=null and loginIp!='' ">
+                loginIp,
+            </if>
+            <if test=" code!=null and code!='' ">
+                code,
+            </if>
+            <if test=" msg!=null and msg!='' ">
+                msg,
+            </if>
+            <if test=" createTime!=null ">
+                createTime,
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime,
+            </if>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test=" userName!=null and userName!='' ">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test=" loginResult!=null and loginResult!='' ">
+                #{loginResult,jdbcType=VARCHAR},
+            </if>
+            <if test=" loginIp!=null and loginIp!='' ">
+                #{loginIp,jdbcType=VARCHAR},
+            </if>
+            <if test=" code!=null and code!='' ">
+                #{code,jdbcType=VARCHAR},
+            </if>
+            <if test=" msg!=null and msg!='' ">
+                #{msg,jdbcType=VARCHAR},
+            </if>
+            <if test=" createTime!=null ">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        )
+    </insert>
+    <update id="update" parameterType="com.tony.billing.entity.LoginLog">
+        UPDATE t_login_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test=" userName!=null and userName!='' ">
+                userName=#{userName,jdbcType=VARCHAR},
+            </if>
+            <if test=" loginResult!=null and loginResult!='' ">
+                loginResult=#{loginResult,jdbcType=VARCHAR},
+            </if>
+            <if test=" loginIp!=null and loginIp!='' ">
+                loginIp=#{loginIp,jdbcType=VARCHAR},
+            </if>
+            <if test=" code!=null and code!='' ">
+                code=#{code,jdbcType=VARCHAR},
+            </if>
+            <if test=" msg!=null and msg!='' ">
+                msg=#{msg,jdbcType=VARCHAR},
+            </if>
+            <if test=" createTime!=null ">
+                createTime=#{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime=#{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        WHERE id=#{id, jdbcType=BIGINT}
+    </update>
+    <select id="page" parameterType="java.util.Map" resultType="com.tony.billing.entity.LoginLog">
+        SELECT
+        <include refid="all"/>
+        FROM t_login_log WHERE isDeleted='0'
+        <trim>
+            <if test=" id!=null ">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" userName!=null and userName!='' ">
+                and userName=#{userName,jdbcType=VARCHAR}
+            </if>
+            <if test=" loginResult!=null and loginResult!='' ">
+                and loginResult=#{loginResult,jdbcType=VARCHAR}
+            </if>
+            <if test=" loginIp!=null and loginIp!='' ">
+                and loginIp=#{loginIp,jdbcType=VARCHAR}
+            </if>
+            <if test=" code!=null and code!='' ">
+                and code=#{code,jdbcType=VARCHAR}
+            </if>
+            <if test=" msg!=null and msg!='' ">
+                and msg=#{msg,jdbcType=VARCHAR}
+            </if>
+            <if test=" createTime!=null ">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null ">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+        </trim>
+        ORDER BY
+        <if test="orderBy != null">
+            ${orderBy} ${sort}
+        </if>
+        <if test="orderBy == null or orderBy == '' ">
+            id ${sort}
+        </if>
+        LIMIT #{index} , #{offset}
+    </select>
+
+    <select id="list" resultType="com.tony.billing.entity.LoginLog">
+        SELECT
+        <include refid="all"/>
+        FROM t_login_log
+    </select>
+</mapper>

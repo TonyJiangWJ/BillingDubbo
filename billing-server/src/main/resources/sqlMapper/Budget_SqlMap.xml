@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tony.billing.dao.mapper.BudgetMapper">
+    <sql id="all">
+        id id,
+        budgetName budgetName,
+        userId userId,
+        budgetMoney budgetMoney,
+        createTime createTime,
+        modifyTime modifyTime,
+        belongYear belongYear,
+        belongMonth belongMonth,
+        isDeleted isDeleted,
+        version version
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.Budget">
+        INSERT INTO t_budget (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                id,
+            </if>
+            <if test=" budgetName != null and budgetName != '' ">
+                budgetName,
+            </if>
+            <if test=" userId!=null ">
+                userId,
+            </if>
+            <if test=" budgetMoney!=null ">
+                budgetMoney,
+            </if>
+            <if test=" createTime!=null ">
+                createTime,
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime,
+            </if>
+            <if test=" belongYear!=null and belongYear!='' ">
+                belongYear,
+            </if>
+            <if test=" belongMonth!=null ">
+                belongMonth,
+            </if>
+            <if test=" isDeleted!=null ">
+                isDeleted,
+            </if>
+            <if test=" version!=null ">
+                version,
+            </if>
+        </trim>
+        ) VALUES (
+        <trim suffixOverrides=",">
+            <if test=" id!=null ">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test=" budgetName != null and budgetName != '' ">
+                #{budgetName,jdbcType=VARCHAR},
+            </if>
+            <if test=" userId!=null ">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test=" budgetMoney!=null ">
+                #{budgetMoney,jdbcType=BIGINT},
+            </if>
+            <if test=" createTime!=null ">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" belongYear!=null and belongYear!='' ">
+                #{belongYear,jdbcType=VARCHAR},
+            </if>
+            <if test=" belongMonth!=null ">
+                #{belongMonth,jdbcType=INTEGER},
+            </if>
+            <if test=" isDeleted!=null ">
+                #{isDeleted,jdbcType=INTEGER},
+            </if>
+            <if test=" version!=null ">
+                #{version,jdbcType=INTEGER},
+            </if>
+        </trim>
+        )
+    </insert>
+    <update id="update" parameterType="com.tony.billing.entity.Budget">
+        UPDATE t_budget
+        <trim prefix="SET" suffixOverrides=",">
+            <if test=" budgetMoney!=null ">
+                budgetMoney=#{budgetMoney,jdbcType=BIGINT},
+            </if>
+            <if test="budgetName != null and budgetName != ''">
+                budgetName = #{budgetName,jdbcType=VARCHAR},
+            </if>
+            <if test=" createTime!=null ">
+                createTime=#{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null ">
+                modifyTime=#{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" belongYear!=null and belongYear!='' ">
+                belongYear=#{belongYear,jdbcType=VARCHAR},
+            </if>
+            <if test=" belongMonth!=null ">
+                belongMonth=#{belongMonth,jdbcType=INTEGER},
+            </if>
+            <if test=" isDeleted!=null ">
+                isDeleted=#{isDeleted,jdbcType=INTEGER},
+            </if>
+            version=#{version,jdbcType=INTEGER}+1
+        </trim>
+        WHERE id=#{id,jdbcType=BIGINT} and userId=#{userId, jdbcType=BIGINT}
+        and version=#{version,jdbcType=INTEGER} and isDeleted='0'
+    </update>
+
+
+
+    <select id="findByYearMonth" parameterType="com.tony.billing.entity.Budget"
+            resultType="com.tony.billing.entity.Budget">
+        SELECT
+        <include refid="all"/>
+        FROM t_budget where userId=#{userId, jdbcType=BIGINT} and isDeleted='0'
+        <trim prefix="and" prefixOverrides="and">
+            <if test=" belongYear!=null and belongYear!='' ">
+               and belongYear=#{belongYear,jdbcType=VARCHAR}
+            </if>
+            <if test=" belongMonth!=null ">
+               and belongMonth=#{belongMonth,jdbcType=INTEGER}
+            </if>
+        </trim>
+
+    </select>
+    <select id="getById" resultType="com.tony.billing.entity.Budget">
+        SELECT <include refid="all"/> FROM t_budget
+       where id=#{id,jdbcType=BIGINT}
+       and isDeleted='0' and userId=#{userId, jdbcType=BIGINT}
+    </select>
+
+    <update id="deleteById">
+        update t_budget set isDeleted = '1', modifyTime =sysdate()
+         where userId=#{userId, jdbcType=BIGINT} AND id=#{id, jdbcType=BIGINT} AND isDeleted = '0'
+    </update>
+
+    <select id="list" parameterType="com.tony.billing.entity.Budget" resultType="com.tony.billing.entity.Budget">
+        SELECT <include refid="all"/> FROM t_budget WHERE isDeleted='0'
+        <trim>
+            <if test=" userId!=null ">
+                and userId=#{userId,jdbcType=BIGINT}
+            </if>
+            <if test=" budgetName!=null and budgetName!='' ">
+                and budgetName=#{budgetName,jdbcType=VARCHAR}
+            </if>
+            <if test=" budgetMoney!=null ">
+                and budgetMoney=#{budgetMoney,jdbcType=BIGINT}
+            </if>
+            <if test=" belongYear!=null and belongYear!='' ">
+                and belongYear=#{belongYear,jdbcType=VARCHAR}
+            </if>
+            <if test=" belongMonth!=null ">
+                and belongMonth=#{belongMonth,jdbcType=INTEGER}
+            </if>
+        </trim>
+    </select>
+</mapper>

@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<style type="text/css">
+    .qmbox style, .qmbox script, .qmbox head, .qmbox link, .qmbox meta {
+        display: none !important;
+    }
+</style>
+<body>
+<h1><span th:text="${title}">标题</span></h1>
+<div>你好</div>
+<div id="mailContentContainer" class="qmbox qm_con_body_content qqmail_webmail_only" style="">
+    <br/>欢迎使用账单系统!<br/><br/>
+    <span th:text="${typeDesc}">注册验证码</span>：<span th:text="${verifyCode}"></span>，请在30分钟内使用。（请确保是本人操作，否则请忽略）<br/>
+    <br/>(这是一封自动产生的email，请勿回复。)
+</div>
+</body>
+</html>
