@@ -18,7 +18,7 @@ import java.util.List;
  * @author by TonyJiang on 2017/6/3.
  */
 @Configuration
-public class CustomMVCConfiguration implements WebMvcConfigurer {
+public class CustomMvcConfiguration implements WebMvcConfigurer {
 
     @Autowired
     private AuthorityInterceptor authorityInterceptor;

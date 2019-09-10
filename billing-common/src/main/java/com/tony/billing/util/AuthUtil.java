@@ -20,6 +20,10 @@ public class AuthUtil {
 
     private JavaWebToken javaWebToken;
 
+    public AuthUtil(String secretKey) {
+        this(new JavaWebToken(secretKey));
+    }
+
     public AuthUtil(JavaWebToken javaWebToken) {
         this.javaWebToken = javaWebToken;
     }

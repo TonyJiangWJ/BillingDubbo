@@ -2,13 +2,14 @@ package com.tony.billing.model;
 
 import com.tony.billing.dto.AssetDTO;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author TonyJiang on 2018/2/12
  */
-public class AssetModel {
+public class AssetModel implements Serializable {
     private String type;
     private Long total;
     private Long totalAvailable;

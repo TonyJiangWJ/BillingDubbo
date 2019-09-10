@@ -2,10 +2,12 @@ package com.tony.billing.model;
 
 import com.tony.billing.entity.AssetTypes;
 
+import java.io.Serializable;
+
 /**
  * @author TonyJiang 2018/6/21
  */
-public class AssetTypeModel {
+public class AssetTypeModel implements Serializable {
     private String typeCode;
     private String typeDesc;
     private Long id;

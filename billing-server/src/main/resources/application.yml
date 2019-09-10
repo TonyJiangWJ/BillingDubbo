@@ -28,7 +28,7 @@ spring:
           enabled: true
       filters: slf4j
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://127.0.0.1:3306/my_daily_cost?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+      url: jdbc:mysql://127.0.0.1:3306/my_daily_cost_online?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&zeroDateTimeBehavior=convertToNull
       username: root
       password:
 
@@ -60,10 +60,12 @@ dubbo:
   registry:
     address: zookeeper://127.0.0.1:${embedded.zookeeper.port}
     file: ${user.home}/dubbo-cache/${spring.application.name}/dubbo.cache
+  provider:
+    filter: dubboContextFilter
 embedded:
   zookeeper:
-    port: 21811
-    enable: true
+    port: 2181
+    enable: false
 # server properties
 rsa:
   key:

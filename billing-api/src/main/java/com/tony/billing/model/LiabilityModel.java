@@ -2,13 +2,14 @@ package com.tony.billing.model;
 
 import com.tony.billing.dto.LiabilityDTO;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author TonyJiang on 2018/2/12
  */
-public class LiabilityModel {
+public class LiabilityModel implements Serializable {
     private String type;
     private Long total;
     private Long remain;

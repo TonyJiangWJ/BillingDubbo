@@ -3,13 +3,14 @@ package com.tony.billing.model;
 import com.tony.billing.dto.BudgetReportItemDTO;
 import org.apache.commons.collections.CollectionUtils;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * @author jiangwenjie 2019-03-22
  */
-public class BudgetReportModel {
+public class BudgetReportModel implements Serializable {
     private String yearMonthInfo;
     private Long totalAmount;
     private Long budgetUsed;

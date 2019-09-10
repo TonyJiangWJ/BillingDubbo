@@ -1,6 +1,7 @@
 package com.tony.billing.interceptors;
 
 import com.alibaba.fastjson.JSON;
+import com.tony.billing.constants.CommonConstants;
 import com.tony.billing.entity.Admin;
 import com.tony.billing.filters.wapper.TokenServletRequestWrapper;
 import com.tony.billing.util.AuthUtil;
@@ -59,7 +60,7 @@ public class AuthorityInterceptor implements HandlerInterceptor {
     }
 
     private boolean isUserLogin(HttpServletRequest request) throws Exception {
-        Cookie tokenCok = CookieUtil.getCookie("token", request);
+        Cookie tokenCok = CookieUtil.getCookie(CommonConstants.COOKIE_TOKEN, request);
         if (tokenCok != null) {
             String tokenId = authUtil.getUserTokenId(tokenCok.getValue());
             Optional<Admin> store = redisUtils.get(tokenId, Admin.class);
@@ -68,8 +69,8 @@ public class AuthorityInterceptor implements HandlerInterceptor {
                 Admin admin = store.get();
                 UserIdContainer.setUserId(admin.getId());
                 if (request instanceof TokenServletRequestWrapper) {
-                    ((TokenServletRequestWrapper) request).addParameter("tokenId", tokenId);
-                    ((TokenServletRequestWrapper) request).addParameter("userId", String.valueOf(admin.getId()));
+                    ((TokenServletRequestWrapper) request).addParameter(CommonConstants.PARAM_TOKEN_ID, tokenId);
+                    ((TokenServletRequestWrapper) request).addParameter(CommonConstants.PARAM_USER_ID, String.valueOf(admin.getId()));
                 } else if (request instanceof StandardMultipartHttpServletRequest) {
                     ((TokenServletRequestWrapper) ((StandardMultipartHttpServletRequest) request).getRequest()).addParameter("tokenId", tokenId);
                     ((TokenServletRequestWrapper) ((StandardMultipartHttpServletRequest) request).getRequest()).addParameter("userId", String.valueOf(admin.getId()));

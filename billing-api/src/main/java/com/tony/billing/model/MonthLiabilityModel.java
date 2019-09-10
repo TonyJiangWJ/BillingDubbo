@@ -1,5 +1,6 @@
 package com.tony.billing.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  *
  * @author jiangwj20966 2018/2/16
  */
-public class MonthLiabilityModel {
+public class MonthLiabilityModel implements Serializable {
 
     private String month;
     private Long total;
