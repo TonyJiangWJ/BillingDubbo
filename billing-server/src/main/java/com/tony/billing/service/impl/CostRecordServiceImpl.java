@@ -30,7 +30,7 @@ public class CostRecordServiceImpl extends AbstractService<CostRecord, CostRecor
     public PagerGrid<CostRecord> page(PagerGrid<CostRecord> pagerGrid) {
         Map<String, Object> params;
         if (pagerGrid.getT() == null) {
-            params = new HashMap<String, Object>();
+            params = new HashMap<>();
         } else {
             params = JSON.parseObject(JSON.toJSONString(pagerGrid.getT()));
         }

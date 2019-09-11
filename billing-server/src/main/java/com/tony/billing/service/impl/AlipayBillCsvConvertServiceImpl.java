@@ -6,23 +6,20 @@ import com.tony.billing.dao.mapper.CostRecordMapper;
 import com.tony.billing.entity.CostRecord;
 import com.tony.billing.service.api.AlipayBillCsvConvertService;
 import com.tony.billing.service.base.AbstractService;
-import com.tony.billing.util.CsvParser;
 import com.tony.billing.util.MoneyUtil;
+import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.dubbo.config.annotation.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author by TonyJiang on 2017/6/3.
@@ -32,69 +29,29 @@ public class AlipayBillCsvConvertServiceImpl extends AbstractService<CostRecord,
 
     private Logger logger = LoggerFactory.getLogger(AlipayBillCsvConvertService.class);
 
-    private final String ALIPAY_RECORD_FLAG = "支付宝交易记录明细查询";
-
     private final String BACKUP_FLAG = "交易号,订单号,创建时间,支付时间,修改时间,地点,订单类型,交易对方,商品名称,金额,支出/收入,订单状态,服务费,退款,备注,交易状态,是否删除,id,是否隐藏";
 
-    private final int ALIPAY_RECORD_LINES = 7;
-
-    private final String ZIP_NAME_SUFFIX = ".zip";
-    private final String CSV_NAME_SUFFIX = ".csv";
-
     @Override
-    public boolean convertToPOJO(MultipartFile multipartFile, Long userId) {
-        if (multipartFile != null) {
-            try {
-                InputStream inputStream = null;
-                // 未解压的支付宝账单
-                if (multipartFile.getOriginalFilename().endsWith(ZIP_NAME_SUFFIX)) {
-                    ZipInputStream zipInputStream = new ZipInputStream(multipartFile.getInputStream());
-                    ZipEntry zipEntry = zipInputStream.getNextEntry();
-                    if (!zipEntry.isDirectory() && zipEntry.getName().endsWith(CSV_NAME_SUFFIX)) {
-                        inputStream = zipInputStream;
-                    }
-                    // 已解压成csv文件的支付宝账单
-                } else if (multipartFile.getOriginalFilename().endsWith(CSV_NAME_SUFFIX)) {
-                    inputStream = multipartFile.getInputStream();
-                }
-                if (inputStream != null) {
-                    CsvParser csvParser = new CsvParser(inputStream);
-                    if (!ALIPAY_RECORD_FLAG.equals(csvParser.getRow(0))) {
-                        throw new RuntimeException("Illegal file");
-                    }
-                    if (!CollectionUtils.isEmpty(csvParser.getList())) {
-                        if (csvParser.getRowNum() <= ALIPAY_RECORD_LINES) {
-                            throw new RuntimeException("Illegal file");
-                        }
-                        // alipay format
-                        List<String> fixedList = csvParser.getListCustom(5, csvParser.getRowNum() - 7);
+    public void convertToPOJO(List<String> fixedList) {
+        RecordRefUtil<Record> recordRefUtil = new RecordRefUtil<>();
+        if (!CollectionUtils.isEmpty(fixedList)) {
+            List<CostRecord> insertList = fixedList.stream()
+                    .map(csvLine -> {
                         try {
-                            RecordRefUtil<Record> recordRefUtil = new RecordRefUtil<>();
-                            List<Record> records = new ArrayList<>();
-                            for (String csvLine : fixedList) {
-                                records.add(recordRefUtil.convertCsv2POJO(csvLine, Record.class));
-                            }
-                            if (!CollectionUtils.isEmpty(records)) {
-                                List<CostRecord> insertList = new ArrayList<>();
-                                for (Record entity : records) {
-                                    convertToDBJOAndInsert(entity, userId, insertList);
-                                }
-                                if (!CollectionUtils.isEmpty(insertList)) {
-                                    mapper.batchInsert(insertList);
-                                }
-                            }
-                            return true;
+                            return recordRefUtil.convertCsv2POJO(csvLine, Record.class);
                         } catch (IllegalAccessException | InstantiationException e) {
-                            logger.error("转换支付宝账单csv文件出错", e);
+                            logger.error("转换CSV文件内容失败", e);
                         }
-                    }
-                }
-            } catch (IOException e) {
-                logger.error("读取支付宝账单文件出错", e);
+                        return null;
+                    })
+                    .map(this::convertToDoForInsert)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(insertList)) {
+                mapper.batchInsert(insertList);
             }
         }
 
-        return false;
     }
 
     @Override
@@ -113,64 +70,53 @@ public class AlipayBillCsvConvertServiceImpl extends AbstractService<CostRecord,
     }
 
     @Override
-    public boolean getFromBackUp(MultipartFile multipartFile, Long userId) {
+    public void getFromBackUp(List<String> fixedList) {
 
-        if (multipartFile != null) {
-            try {
-                InputStream inputStream = multipartFile.getInputStream();
-                CsvParser csvParser = new CsvParser(inputStream);
-                if (!BACKUP_FLAG.equals(csvParser.getRow(0))) {
-                    throw new RuntimeException("Illegal file");
-                }
-                if (!CollectionUtils.isEmpty(csvParser.getList())) {
-                    if (csvParser.getRowNum() <= 1) {
-                        throw new RuntimeException("Illegal file");
-                    }
-                    List<String> fixedList = csvParser.getListCustom(1, csvParser.getRowNum());
-                    try {
-                        RecordRefUtil recordRefUtil = new RecordRefUtil();
-                        List<CostRecord> records = new ArrayList<>();
-                        for (String csvLine : fixedList) {
-                            records.add((CostRecord) recordRefUtil.convertCsv2POJO(csvLine, CostRecord.class));
+        RecordRefUtil<CostRecord> recordRefUtil = new RecordRefUtil<>();
+        if (!CollectionUtils.isEmpty(fixedList)) {
+            List<CostRecord> insertList = fixedList.stream()
+                    .map(csvLine -> {
+                        try {
+                            return recordRefUtil.convertCsv2POJO(csvLine, CostRecord.class);
+                        } catch (IllegalAccessException | InstantiationException e) {
+                            logger.error("转换备份文件内容失败", e);
                         }
-                        if (!CollectionUtils.isEmpty(records)) {
-                            List<CostRecord> insertList = new ArrayList<>();
-                            for (CostRecord entity : records) {
-                                convertToDBJOAndInsertCostRecord(entity, userId, insertList);
-                            }
-                            if (!CollectionUtils.isEmpty(insertList)) {
-                                mapper.batchInsert(insertList);
-                            }
-                        }
-                        return true;
-                    } catch (Exception e) {
-                        logger.error("从备份文件中恢复出错", e);
-                    }
-                }
-            } catch (IOException e) {
-                logger.error("读取备份文件出错", e);
+                        return null;
+                    })
+                    .map(this::convertToDBJOAndInsertCostRecord)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(insertList)) {
+                mapper.batchInsert(insertList);
             }
         }
 
-        return false;
     }
 
-    private void convertToDBJOAndInsertCostRecord(CostRecord entity, Long userId, List<CostRecord> insertList) {
+    private CostRecord convertToDBJOAndInsertCostRecord(CostRecord entity) {
+        if (entity == null) {
+            return null;
+        }
+        Long userId = UserIdContainer.getUserId();
         Integer recordCount = mapper.checkTradeExistence(entity.getTradeNo(), userId);
         if (recordCount == 0) {
             entity.setId(null);
             entity.setUserId(userId);
-
             entity.setCreateTime(new Date());
             entity.setModifyTime(new Date());
-            insertList.add(entity);
+            return entity;
         } else {
             logger.error("record already exist");
         }
+        return null;
     }
 
 
-    private void convertToDBJOAndInsert(Record entity, Long userId, List<CostRecord> insertList) {
+    private CostRecord convertToDoForInsert(Record entity) {
+        if (entity == null) {
+            return null;
+        }
+        Long userId = UserIdContainer.getUserId();
         Integer recordCount = mapper.checkTradeExistence(entity.getTradeNo(), userId);
         if (recordCount == 0) {
             CostRecord record = new CostRecord();
@@ -200,12 +146,11 @@ public class AlipayBillCsvConvertServiceImpl extends AbstractService<CostRecord,
             record.setIsDeleted(EnumDeleted.NOT_DELETED.val());
             record.setCreateTime(new Date());
             record.setModifyTime(new Date());
-            insertList.add(record);
+            return record;
         } else {
             logger.warn("record already exist");
         }
-
-
+        return null;
     }
 
     private static class RecordRefUtil<T> {
@@ -238,9 +183,9 @@ public class AlipayBillCsvConvertServiceImpl extends AbstractService<CostRecord,
                 if (result == null) {
                     sb.append(' ');
                 } else if (result instanceof String) {
-                    sb.append(result.toString());
+                    sb.append(result);
                 } else {
-                    sb.append(String.valueOf(result));
+                    sb.append(result);
                 }
                 sb.append("\t,");
             }

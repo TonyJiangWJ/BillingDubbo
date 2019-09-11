@@ -1,0 +1,34 @@
+server:
+  port: 1310
+  address: 0.0.0.0
+  tomcat:
+    uri-encoding: utf-8
+spring:
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    password:
+    timeout: 3000
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 0
+        max-idle: 8
+        max-wait:
+
+
+embedded:
+  zookeeper:
+    port: 2181
+
+dubbo:
+  registry:
+    address: zookeeper://127.0.0.1:${embedded.zookeeper.port}
+    file: ${user.home}/dubbo-cache/${spring.application.name}/dubbo.cache
+    id: my_registry
+  consumer:
+    filter: dubboContextFilter
+
+logback:
+  path: /Users/jiangwenjie/logs/log-dubbo-client/

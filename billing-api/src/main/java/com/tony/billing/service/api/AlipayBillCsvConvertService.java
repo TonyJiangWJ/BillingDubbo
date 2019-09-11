@@ -9,9 +9,10 @@ import java.util.List;
  * @author by TonyJiang on 2017/6/3.
  */
 public interface AlipayBillCsvConvertService {
-    boolean convertToPOJO(MultipartFile multipartFile, Long userId);
+
+    void convertToPOJO(List<String> fixedList);
 
     List<String> convertPOJO2String(List<CostRecord> recordList);
 
-    boolean getFromBackUp(MultipartFile file, Long userId);
+    void getFromBackUp(List<String> fixedList);
 }

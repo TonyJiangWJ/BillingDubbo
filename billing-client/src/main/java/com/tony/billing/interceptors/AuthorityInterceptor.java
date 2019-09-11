@@ -77,6 +77,8 @@ public class AuthorityInterceptor implements HandlerInterceptor {
                 }
                 redisUtils.set(tokenId, admin, 3600 * 24);
                 return true;
+            } else {
+                logger.error("用户未登录：tokenId[{}]", tokenId);
             }
         }
         return false;

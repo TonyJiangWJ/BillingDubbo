@@ -1,11 +1,8 @@
 spring:
   application:
     name: dubbo-billing-server-provider
-  mail:
-    host: smtp.yeah.net
-    username: tony_sama@yeah.net
-    password:
-
+  profiles:
+    active: '@activatedProperties@'
   datasource:
     druid:
       initial-size: 10
@@ -23,27 +20,10 @@ spring:
       use-global-data-source-stat: true
       filter:
         stat:
-          enabled: false
+          enabled: true
         slf4j:
           enabled: true
       filters: slf4j
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://127.0.0.1:3306/my_daily_cost_online?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&zeroDateTimeBehavior=convertToNull
-      username: root
-      password:
-
-  redis:
-    database: 0
-    host: 127.0.0.1
-    port: 6379
-    password:
-    timeout: 3000
-    jedis:
-      pool:
-        max-active: 8
-        min-idle: 0
-        max-idle: 8
-        max-wait:
 # MyBatis
 mybatis:
   typeAliasesPackage: com.tony.billing.entity
@@ -56,23 +36,9 @@ dubbo:
   protocol:
     name: dubbo
     port: -1
-
-  registry:
-    address: zookeeper://127.0.0.1:${embedded.zookeeper.port}
-    file: ${user.home}/dubbo-cache/${spring.application.name}/dubbo.cache
   provider:
     filter: dubboContextFilter
-embedded:
-  zookeeper:
-    port: 2181
-    enable: false
 # server properties
-rsa:
-  key:
-    path: /Users/jiangwenjie/
-
-logback:
-  path: /Users/jiangwenjie/logs/logForBillingDubbo/
 system:
   host:
     reset:

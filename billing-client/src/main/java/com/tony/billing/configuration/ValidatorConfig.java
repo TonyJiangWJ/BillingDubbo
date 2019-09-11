@@ -21,7 +21,7 @@ public class ValidatorConfig {
     public Validator validator() {
         return Validation.byProvider(HibernateValidator.class)
                 .configure()
-                .failFast(Boolean.valueOf(failFast))
+                .failFast(Boolean.parseBoolean(failFast))
                 .buildValidatorFactory()
                 .getValidator();
     }

@@ -1,16 +1,18 @@
 spring:
   application:
     name: dubbo-billing-web-consumer
+  profiles:
+    active: '@activatedProperties@'
+  # HTTP ENCODING
+  http:
+    encoding.charset: UTF-8
+    encoding.force: true
+    encoding.enabled: true
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 40MB
 
-embedded:
-  zookeeper:
-    port: 2181
-
-dubbo:
-  registry:
-    address: zookeeper://127.0.0.1:${embedded.zookeeper.port}
-    file: ${user.home}/dubbo-cache/${spring.application.name}/dubbo.cache
-  consumer:
-    filter: dubboContextFilter
-server:
-  port: 1310
+validation:
+  fail:
+    fast: false

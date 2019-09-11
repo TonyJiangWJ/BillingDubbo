@@ -1,0 +1,50 @@
+# SPRING PROFILES
+spring:
+  datasource:
+    druid:
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      url: jdbc:mysql://mysql:3306/my_daily_cost?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+      username: root
+      password:
+  mail:
+    host: smtp.yeah.net
+    username: tony_sama@yeah.net
+    password:
+  redis:
+    database: 0
+    host: redis
+    port: 6379
+    password:
+    timeout: 3000
+    jedis:
+      pool:
+        max-active: 8
+        min-idle: 0
+        max-idle: 8
+        max-wait:
+dubbo:
+  registry:
+    address: zookeeper://zookeeper:${embedded.zookeeper.port}
+    file: ${user.home}/dubbo-cache/${spring.application.name}/dubbo.cache
+    id: my_registry
+  provider:
+    filter: dubboContextFilter
+# server properties
+embedded:
+  zookeeper:
+    port: 2181
+    enable: false
+rsa:
+  key:
+    path: /data/deploy/server/license/
+
+
+logback:
+  path: /var/log/log-dubbo-server/
+
+jwt:
+  secret:
+    key:
+
+pwd:
+  salt:

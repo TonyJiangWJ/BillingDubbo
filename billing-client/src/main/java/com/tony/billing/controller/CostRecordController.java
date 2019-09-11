@@ -19,11 +19,11 @@ import com.tony.billing.response.BaseResponse;
 import com.tony.billing.response.costrecord.CostRecordDeleteResponse;
 import com.tony.billing.response.costrecord.CostRecordDetailResponse;
 import com.tony.billing.response.costrecord.CostRecordPageResponse;
-import com.tony.billing.service.api.AlipayBillCsvConvertService;
 import com.tony.billing.service.api.CostRecordService;
 import com.tony.billing.service.api.TagInfoService;
 import com.tony.billing.util.MoneyUtil;
 import com.tony.billing.util.ResponseUtil;
+import com.tony.billing.utils.AlipayBillCsvUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
 import org.slf4j.Logger;
@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -59,9 +60,10 @@ public class CostRecordController {
     @Reference
     private CostRecordService costRecordService;
     @Reference
-    private AlipayBillCsvConvertService alipayBillCsvConvertService;
-    @Reference
     private TagInfoService tagInfoService;
+
+    @Resource
+    private AlipayBillCsvUtil alipayBillCsvUtil;
 
     /**
      * 获取分页数据
@@ -271,7 +273,7 @@ public class CostRecordController {
     public BaseResponse doConvert(@ModelAttribute("file") MultipartFile file, @ModelAttribute("request") BaseRequest request) {
 
         try {
-            if (alipayBillCsvConvertService.convertToPOJO(file, request.getUserId())) {
+            if (alipayBillCsvUtil.convertToPOJO(file)) {
                 return ResponseUtil.success();
             } else {
                 return ResponseUtil.error();
@@ -290,7 +292,7 @@ public class CostRecordController {
         requestParam.setUserId(request.getUserId());
         List<CostRecord> records = costRecordService.find(requestParam);
 
-        List<String> result = alipayBillCsvConvertService.convertPOJO2String(records);
+        List<String> result = alipayBillCsvUtil.convertPOJO2String(records);
 
         OutputStreamWriter outputStreamWriter = null;
         BufferedWriter bufferedWriter = null;
@@ -318,7 +320,7 @@ public class CostRecordController {
     public BaseResponse getFromBackUp(@ModelAttribute("file") MultipartFile file, @ModelAttribute("request") BaseRequest request) {
 
         try {
-            if (alipayBillCsvConvertService.getFromBackUp(file, request.getUserId())) {
+            if (alipayBillCsvUtil.getFromBackup(file)) {
                 return ResponseUtil.success();
             } else {
                 return ResponseUtil.error();

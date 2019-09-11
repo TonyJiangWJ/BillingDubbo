@@ -1,8 +1,5 @@
 package com.tony.billing.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
@@ -12,9 +9,6 @@ import java.util.Map;
 /**
  * @author jiangwj20966 on 2017/6/2.
  */
-@Data
-@ToString
-@EqualsAndHashCode
 public class PagerGrid<T> implements Serializable {
 
     private List<T> result;
@@ -91,12 +85,72 @@ public class PagerGrid<T> implements Serializable {
         this.sort = sort;
     }
 
+    public List<T> getResult() {
+        return result;
+    }
+
+    public void setResult(List<T> result) {
+        this.result = result;
+    }
+
+    public T getT() {
+        return t;
+    }
+
+    public void setT(T t) {
+        this.t = t;
+    }
+
+    public int getCount() {
+        return count;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getOffset() {
+        return offset;
+    }
+
+    public void setOffset(int offset) {
+        this.offset = offset;
+    }
+
+    public String getOrderBy() {
+        return orderBy;
+    }
+
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
+    }
+
+    public String getSort() {
+        return sort;
+    }
 
     public void setSort(String sort) {
         this.sort = StringUtils.equalsIgnoreCase("desc", sort) ? "desc" : "asc";
     }
 
-    public void pagenation() {
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+        pagination();
+    }
+
+    public void pagination() {
         if (page != 0) {
             this.index = (page - 1) * offset;
         }
@@ -109,6 +163,13 @@ public class PagerGrid<T> implements Serializable {
         return count % offset == 0 ? (count / offset) : (count / offset + 1);
     }
 
+    public Map<String, Object> getExtension() {
+        return extension;
+    }
+
+    public void setExtension(Map<String, Object> extension) {
+        this.extension = extension;
+    }
 
 
 }
