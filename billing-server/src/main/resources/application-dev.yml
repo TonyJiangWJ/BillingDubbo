@@ -36,7 +36,7 @@ embedded:
     enable: false
 rsa:
   key:
-    path: /Users/jiangwenjie/
+    path: doc/
 
 logback:
   path: /Users/jiangwenjie/logs/log-dubbo-server/
