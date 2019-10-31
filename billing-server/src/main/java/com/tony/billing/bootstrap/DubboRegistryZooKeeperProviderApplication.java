@@ -35,10 +35,10 @@ import org.springframework.util.StringUtils;
 @EnableAutoConfiguration
 @MapperScan("com.tony.billing.dao.mapper")
 @ComponentScan("com.tony.billing")
-public class DubboRegistryZooKeeperProviderBootstrap {
+public class DubboRegistryZooKeeperProviderApplication {
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder(DubboRegistryZooKeeperProviderBootstrap.class)
+        new SpringApplicationBuilder(DubboRegistryZooKeeperProviderApplication.class)
                 .listeners(
                         (ApplicationListener<ApplicationEnvironmentPreparedEvent>) event -> {
                             Environment environment = event.getEnvironment();
