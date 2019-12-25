@@ -109,4 +109,12 @@ public class AssetTypesServiceImpl extends AbstractService<AssetTypes, AssetType
         return assetTypes;
     }
 
+    @Override
+    public Long insert(AssetTypes entity) {
+        AssetTypes existingType = mapper.getByTypeCode(entity.getTypeCode(), entity.getUserId());
+        if (existingType != null) {
+            return -2L;
+        }
+        return super.insert(entity);
+    }
 }

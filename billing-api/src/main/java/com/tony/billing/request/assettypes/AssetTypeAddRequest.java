@@ -8,7 +8,7 @@ import javax.validation.constraints.NotEmpty;
  */
 public class AssetTypeAddRequest extends BaseRequest {
     private String type;
-    @NotEmpty
+
     private String parentCode;
     @NotEmpty
     private String typeIdentify;

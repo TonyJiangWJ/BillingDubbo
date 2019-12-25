@@ -80,6 +80,16 @@ public class AssetTypesController extends BaseController {
         return response;
     }
 
+    @RequestMapping("/asset/type/check_{typeCode}")
+    public BaseResponse checkCodeExisting(@PathVariable("typeCode") String typeCode, @ModelAttribute("request") BaseRequest request) {
+        AssetTypes existType = assetTypesService.getAssetTypeByCodeWithCache(typeCode);
+        if (existType == null) {
+            return ResponseUtil.success();
+        } else {
+            return ResponseUtil.error();
+        }
+    }
+
     @RequestMapping("/asset/types/put")
     public BaseResponse putAssetParentType(@ModelAttribute("request") @Validated AssetTypeAddRequest request) {
 
