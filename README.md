@@ -65,7 +65,7 @@
 - 然后运行 `billing-client` 的 `com.tony.billing.DubboConsumerApplication` 启动客户端
 
 ### 打包
-- 默认profile是开发环境的，生产打包需要添加参数`-Drelease`
+- 默认profile是开发环境的，生产打包需要添加参数`-P release`
   ```shell script
-  mvn clean install -Dmaven.test.skip -Drelease
+  mvn clean install -Dmaven.test.skip -P release
   ```
