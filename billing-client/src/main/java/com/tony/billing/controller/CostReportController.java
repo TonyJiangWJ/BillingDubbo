@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -30,7 +29,7 @@ import java.util.List;
 @RequestMapping("/bootDemo")
 public class CostReportController extends BaseController {
 
-    @Reference
+    @Reference(timeout = 5000)
     private CostReportService costReportService;
 
     @RequestMapping(value = "/report/get")
@@ -68,19 +67,16 @@ public class CostReportController extends BaseController {
     @RequestMapping("/daily/report/get")
     public ReportResponse getDailyCostReport(@ModelAttribute("request") @Validated DailyCostReportRequest reportRequest) {
         ReportResponse response = new ReportResponse();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
         try {
-            LocalDate startDate = LocalDate.parse(reportRequest.getStartDate(), dateTimeFormatter);
-            LocalDate endDate = LocalDate.parse(reportRequest.getEndDate(), dateTimeFormatter);
-
-            List<String> datePrefixes = new ArrayList<>();
-            datePrefixes.add(startDate.format(dateTimeFormatter));
-            while (startDate.isBefore(endDate)) {
-                startDate = startDate.plusDays(1);
-                datePrefixes.add(startDate.format(dateTimeFormatter));
+            List<ReportEntity> result = costReportService.getReportInfoBetween(reportRequest.getStartDate(), reportRequest.getEndDate(), reportRequest.getUserId());
+            if (CollectionUtils.isEmpty(result)) {
+                ResponseUtil.dataNotExisting(response);
+            } else {
+                response.setReportList(BeanCopyUtil.copy(result, ReportDTO.class));
+                ResponseUtil.success(response);
             }
-
-            return getReportResponse(datePrefixes, reportRequest.getUserId(), response);
+            return response;
         } catch (Exception e) {
             logger.error("/daily/report/get error", e);
             return ResponseUtil.sysError(response);

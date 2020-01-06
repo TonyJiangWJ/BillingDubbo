@@ -15,4 +15,6 @@ public interface CostReportService {
      * @return 每月的收支统计信息
      */
     List<ReportEntity> getReportByDatePrefix(List<String> datePrefix, Long userId);
+
+    List<ReportEntity> getReportInfoBetween(String startDate, String endDate, Long userId);
 }

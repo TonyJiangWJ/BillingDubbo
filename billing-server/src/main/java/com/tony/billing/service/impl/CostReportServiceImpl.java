@@ -4,11 +4,13 @@ import com.tony.billing.constants.InOutType;
 import com.tony.billing.constants.enums.EnumDeleted;
 import com.tony.billing.constants.enums.EnumHidden;
 import com.tony.billing.dao.mapper.CostReportMapper;
+import com.tony.billing.entity.CostRecord;
 import com.tony.billing.entity.RawReportEntity;
 import com.tony.billing.entity.ReportEntity;
-import com.tony.billing.entity.query.ConditionalReportEntityQuery;
 import com.tony.billing.entity.query.ReportEntityQuery;
 import com.tony.billing.service.api.CostReportService;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.dubbo.config.annotation.Service;
 
 import javax.annotation.Resource;
@@ -19,6 +21,7 @@ import java.util.stream.Collectors;
  * @author by TonyJiang on 2017/6/11.
  */
 @Service
+@Slf4j
 public class CostReportServiceImpl implements CostReportService {
 
     @Resource
@@ -45,42 +48,76 @@ public class CostReportServiceImpl implements CostReportService {
         }
     }
 
-    private ReportEntity getReportInfoRaw(String datePrefix, Long userId) {
-        ConditionalReportEntityQuery conditionalQuery = new ConditionalReportEntityQuery();
-        conditionalQuery.setDatePrefix(datePrefix);
-        conditionalQuery.setUserId(userId);
+    @Override
+    public List<ReportEntity> getReportInfoBetween(String startDate, String endDate, Long userId) {
 
-        RawReportEntity rawReportEntity = new RawReportEntity();
-        conditionalQuery.setInOutType(InOutType.COST);
-        rawReportEntity.setTotalCost(costReportMapper.getReportAmountByCondition(conditionalQuery));
-        conditionalQuery.setIsDeleted(EnumDeleted.DELETED.val());
-        rawReportEntity.setTotalCostDeleted(costReportMapper.getReportAmountByCondition(conditionalQuery));
-        conditionalQuery.setIsDeleted(null);
-        conditionalQuery.setIsHidden(EnumHidden.HIDDEN.val());
-        rawReportEntity.setTotalCostHidden(costReportMapper.getReportAmountByCondition(conditionalQuery));
-        conditionalQuery.setIsDeleted(EnumDeleted.DELETED.val());
-        rawReportEntity.setTotalCostDeletedAndHidden(costReportMapper.getReportAmountByCondition(conditionalQuery));
-        conditionalQuery.setIsDeleted(EnumDeleted.NOT_DELETED.val());
-        conditionalQuery.setIsHidden(EnumHidden.NOT_HIDDEN.val());
-        rawReportEntity.setTotalCostExceptDeletedAndHidden(costReportMapper.getReportAmountByCondition(conditionalQuery));
+        List<CostRecord> costRecords = costReportMapper.getAllCostInfoBetween(startDate, endDate, userId);
+        return costRecords.parallelStream()
+                .collect(Collectors.groupingByConcurrent(record -> record.getCostCreateTime().substring(0, 10)))
+                .entrySet()
+                .parallelStream()
+                .map(entry -> {
+                            String date = entry.getKey();
+                            ReportEntity reportEntity = new ReportEntity(date, new RawReportEntity());
+                            List<CostRecord> records = entry.getValue();
+                            if (CollectionUtils.isNotEmpty(records)) {
+                                long totalCost = 0L;
+                                long totalCostExceptDeleted = 0L;
+                                long totalCostExceptHidden = 0L;
+                                long totalCostExceptDeletedAndHidden = 0L;
 
-        conditionalQuery.setInOutType(InOutType.INCOME);
-        conditionalQuery.setIsHidden(null);
-        conditionalQuery.setIsDeleted(null);
-        rawReportEntity.setTotalIncome(costReportMapper.getReportAmountByCondition(conditionalQuery));
-        conditionalQuery.setIsDeleted(EnumDeleted.DELETED.val());
-        rawReportEntity.setTotalIncomeDeleted(costReportMapper.getReportAmountByCondition(conditionalQuery));
-        conditionalQuery.setIsDeleted(null);
-        conditionalQuery.setIsHidden(EnumHidden.HIDDEN.val());
-        rawReportEntity.setTotalIncomeHidden(costReportMapper.getReportAmountByCondition(conditionalQuery));
-        conditionalQuery.setIsDeleted(EnumDeleted.DELETED.val());
-        rawReportEntity.setTotalIncomeDeletedAndHidden(costReportMapper.getReportAmountByCondition(conditionalQuery));
-        conditionalQuery.setIsDeleted(EnumDeleted.NOT_DELETED.val());
-        conditionalQuery.setIsHidden(EnumHidden.NOT_HIDDEN.val());
-        rawReportEntity.setTotalIncomeExceptDeletedAndHidden(costReportMapper.getReportAmountByCondition(conditionalQuery));
+                                long totalIncomeExceptDeleted = 0L;
+                                long totalIncomeExceptHidden = 0L;
+                                long totalIncomeExceptDeletedAndHidden = 0L;
+                                long totalIncome = 0L;
 
-        rawReportEntity.calculateAdditional();
-        return new ReportEntity(datePrefix, rawReportEntity);
+                                for (CostRecord record : records) {
+                                    if (InOutType.COST.equals(record.getInOutType())) {
+                                        totalCost += record.getMoney();
+                                        int flag = 1;
+                                        if (!EnumHidden.HIDDEN.val().equals(record.getIsHidden())) {
+                                            totalCostExceptHidden += record.getMoney();
+                                            flag = flag << 1;
+                                        }
+                                        if (!EnumDeleted.DELETED.val().equals(record.getIsDeleted())) {
+                                            totalCostExceptDeleted += record.getMoney();
+                                            flag = flag << 1;
+                                        }
+                                        if (flag == 4) {
+                                            totalCostExceptDeletedAndHidden += record.getMoney();
+                                        }
+                                    } else if (InOutType.INCOME.equals(record.getInOutType())) {
+                                        totalIncome += record.getMoney();
+                                        int flag = 1;
+                                        if (!EnumHidden.HIDDEN.val().equals(record.getIsHidden())) {
+                                            totalIncomeExceptHidden += record.getMoney();
+                                            flag = flag << 1;
+                                        }
+                                        if (!EnumDeleted.DELETED.val().equals(record.getIsDeleted())) {
+                                            totalIncomeExceptDeleted += record.getMoney();
+                                            flag = flag << 1;
+                                        }
+                                        if (flag == 4) {
+                                            totalIncomeExceptDeletedAndHidden += record.getMoney();
+                                        }
+                                    }
+                                }
+                                RawReportEntity rawReportEntity = new RawReportEntity();
+                                rawReportEntity.setTotalCost(totalCost);
+                                rawReportEntity.setTotalCostExceptDeletedAndHidden(totalCostExceptDeletedAndHidden);
+                                rawReportEntity.setTotalCostExceptDeleted(totalCostExceptDeleted);
+                                rawReportEntity.setTotalCostExceptHidden(totalCostExceptHidden);
+                                rawReportEntity.setTotalIncome(totalIncome);
+                                rawReportEntity.setTotalIncomeExceptDeletedAndHidden(totalIncomeExceptDeletedAndHidden);
+                                rawReportEntity.setTotalIncomeExceptDeleted(totalIncomeExceptDeleted);
+                                rawReportEntity.setTotalIncomeExceptHidden(totalIncomeExceptHidden);
+                                rawReportEntity.calculateAdditional();
+                                reportEntity = new ReportEntity(date, rawReportEntity);
+
+                            }
+                            return reportEntity;
+                        }
+                ).collect(Collectors.toList());
     }
 
 }

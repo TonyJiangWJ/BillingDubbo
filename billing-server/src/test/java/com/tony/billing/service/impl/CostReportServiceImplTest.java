@@ -36,4 +36,15 @@ public class CostReportServiceImplTest extends BaseServiceTest {
         log.info("get report cost: {}ms infos: {}", cost, JSON.toJSONString(reports));
 
     }
+
+    @Test
+    public void test() {
+
+        long start = System.currentTimeMillis();
+        List<ReportEntity> reportEntities = costReportService.getReportInfoBetween("2019-12-01", "2020-01-01", 2L);
+
+        long cost = System.currentTimeMillis() - start;
+        log.info("cost: {}ms", cost);
+        log.info("costReports: {}", JSON.toJSONString(reportEntities));
+    }
 }

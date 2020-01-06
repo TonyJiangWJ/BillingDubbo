@@ -28,6 +28,23 @@ public class RawReportEntity implements Serializable {
     private Long totalIncomeDeleted;
     private Long totalIncomeDeletedAndHidden;
 
+    public RawReportEntity() {
+        totalCost = 0L;
+        totalCostExceptDeleted = 0L;
+        totalCostExceptHidden = 0L;
+        totalCostExceptDeletedAndHidden = 0L;
+        totalCostHidden = 0L;
+        totalCostDeleted = 0L;
+        totalCostDeletedAndHidden = 0L;
+        totalIncome = 0L;
+        totalIncomeExceptDeleted = 0L;
+        totalIncomeExceptHidden = 0L;
+        totalIncomeExceptDeletedAndHidden = 0L;
+        totalIncomeHidden = 0L;
+        totalIncomeDeleted = 0L;
+        totalIncomeDeletedAndHidden = 0L;
+    }
+
     public void calculateAdditional() {
         totalCostExceptDeleted = totalCost - totalCostDeleted;
         totalCostExceptHidden = totalCost - totalCostHidden;

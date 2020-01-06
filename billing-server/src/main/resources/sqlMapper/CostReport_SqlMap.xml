@@ -95,4 +95,10 @@
                 AND costCreateTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
                 AND inOutType = '支出' ) costExceptDeletedAndHidden
     </select>
+    <select id="getAllCostInfoBetween" resultType="com.tony.billing.entity.CostRecord">
+        SELECT * FROM t_cost_info
+        WHERE userId=#{userId,jdbcType=BIGINT}
+        AND costCreateTime &gt;= #{startDate,jdbcType=VARCHAR}
+        AND costCreateTime &lt;= #{endDate,jdbcType=VARCHAR}
+    </select>
 </mapper>
