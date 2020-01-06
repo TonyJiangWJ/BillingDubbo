@@ -2,6 +2,7 @@ package com.tony.billing.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.tony.billing.constants.enums.EnumLiabilityStatus;
+import com.tony.billing.constants.timing.TimeConstants;
 import com.tony.billing.dao.mapper.LiabilityMapper;
 import com.tony.billing.dto.LiabilityDTO;
 import com.tony.billing.entity.AssetTypes;
@@ -11,18 +12,19 @@ import com.tony.billing.model.MonthLiabilityModel;
 import com.tony.billing.service.api.AssetTypesService;
 import com.tony.billing.service.api.LiabilityService;
 import com.tony.billing.service.base.AbstractService;
+import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.dubbo.config.annotation.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.dubbo.config.annotation.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -115,14 +117,16 @@ public class LiabilityServiceImpl extends AbstractService<Liability, LiabilityMa
      */
     private List<LiabilityModel> getLiabilityModelsByLiabilityList(List<Liability> liabilities) {
         List<LiabilityModel> modelResultList = new ArrayList<>();
+        Long userId = UserIdContainer.getUserId();
         if (CollectionUtils.isNotEmpty(liabilities)) {
-            modelResultList = liabilities.stream()
+            modelResultList = liabilities.parallelStream()
                     .collect(Collectors.groupingBy(Liability::getType))
                     .entrySet()
-                    .stream()
+                    .parallelStream()
                     .filter(entry -> CollectionUtils.isNotEmpty(entry.getValue()))
                     .map(entry -> {
                         Long assetTypesId = entry.getKey();
+                        UserIdContainer.setUserId(userId);
                         AssetTypes type = assetTypesService.getAssetTypeByIdWithCache(assetTypesId);
                         LiabilityModel liabilityModel = new LiabilityModel();
                         liabilityModel.setType(type.getTypeDesc());
@@ -139,6 +143,7 @@ public class LiabilityServiceImpl extends AbstractService<Liability, LiabilityMa
                         );
                         liabilityModel.setTotal(sumContainer.getTotal());
                         liabilityModel.setRemain(sumContainer.getRemain());
+                        UserIdContainer.removeUserId();
                         return liabilityModel;
                     }).collect(Collectors.toList());
         }
@@ -152,16 +157,15 @@ public class LiabilityServiceImpl extends AbstractService<Liability, LiabilityMa
         query.setStatus(0);
         List<Liability> liabilities = super.list(query);
         Collections.sort(liabilities);
-        final SimpleDateFormat monthFormat = new SimpleDateFormat("yyyy-MM");
-
         List<MonthLiabilityModel> monthLiabilityModels = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(liabilities)) {
-            monthLiabilityModels = liabilities.stream()
-                    .collect(Collectors.groupingBy(liability -> monthFormat.format(liability.getRepaymentDay())))
+            monthLiabilityModels = liabilities.parallelStream()
+                    .collect(Collectors.groupingBy(liability -> liability.getRepaymentDay().toInstant().atZone(TimeConstants.CHINA_ZONE).format(DateTimeFormatter.ofPattern("yyyy-MM"))))
                     .entrySet()
-                    .stream()
+                    .parallelStream()
                     .filter(listEntry -> CollectionUtils.isNotEmpty(listEntry.getValue()))
                     .map(entry -> {
+                        UserIdContainer.setUserId(userId);
                         MonthLiabilityModel monthLiabilityModel = new MonthLiabilityModel(entry.getKey());
                         monthLiabilityModel.setLiabilityModels(getLiabilityModelsByLiabilityList(entry.getValue()));
                         MultiSumContainer sumContainer = getMultiFieldSums(monthLiabilityModel.getLiabilityModels(),
@@ -169,6 +173,7 @@ public class LiabilityServiceImpl extends AbstractService<Liability, LiabilityMa
                                         multiSumContainer.getRemain() + liabilityModel.getRemain()));
                         monthLiabilityModel.setTotal(sumContainer.getTotal());
                         monthLiabilityModel.setRemain(sumContainer.getRemain());
+                        UserIdContainer.removeUserId();
                         return monthLiabilityModel;
                     }).collect(Collectors.toList());
             monthLiabilityModels.sort(Comparator.comparing(MonthLiabilityModel::getMonth));
@@ -193,7 +198,7 @@ public class LiabilityServiceImpl extends AbstractService<Liability, LiabilityMa
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean createLiabilityInfo(Liability liability) throws SQLException {
-        Date repaymentDay = liability.getRepaymentDay();
+        LocalDate repaymentDay = LocalDate.from(liability.getRepaymentDay().toInstant().atZone(TimeConstants.CHINA_ZONE));
         int installment = liability.getInstallment();
 
         AssetTypes assetTypes = assetTypesService.getAssetTypeByIdWithCache(liability.getType());
@@ -214,8 +219,7 @@ public class LiabilityServiceImpl extends AbstractService<Liability, LiabilityMa
             if (totalAmount % installment != 0) {
                 overflow = totalAmount - perInstallmentAmount * installment;
             }
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(repaymentDay);
+
             List<Liability> newLiabilities = new ArrayList<>();
             Liability newRecord = null;
 
@@ -229,14 +233,14 @@ public class LiabilityServiceImpl extends AbstractService<Liability, LiabilityMa
                 newRecord.setIndex(i);
                 newRecord.setInstallment(installment);
                 newRecord.setName(liability.getName());
-                newRecord.setRepaymentDay(calendar.getTime());
+                newRecord.setRepaymentDay(Date.from(repaymentDay.atStartOfDay(TimeConstants.CHINA_ZONE).toInstant()));
                 newRecord.setType(liability.getType());
                 newRecord.setUserId(liability.getUserId());
                 newLiabilities.add(newRecord);
                 if (super.insert(newRecord) <= 0) {
                     throw new SQLException("error insert");
                 }
-                calendar.add(Calendar.MONTH, 1);
+                repaymentDay = repaymentDay.plusMonths(1);
             }
             logger.info("new Inserted:{}", JSON.toJSONString(newLiabilities));
         }
@@ -260,7 +264,7 @@ public class LiabilityServiceImpl extends AbstractService<Liability, LiabilityMa
     }
 
 
-    private class MultiSumContainer {
+    private static class MultiSumContainer {
         private long total;
         private long remain;
 

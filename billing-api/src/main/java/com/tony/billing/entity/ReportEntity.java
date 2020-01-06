@@ -5,13 +5,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 /**
  * @author by TonyJiang on 2017/6/11.
  */
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode
-public class ReportEntity {
+public class ReportEntity implements Serializable {
     private String month;
     private String totalCost;
     private String totalCostExceptDeleted;
@@ -27,6 +29,8 @@ public class ReportEntity {
     private String totalIncomeHidden;
     private String totalIncomeDeleted;
     private String totalIncomeDeletedAndHidden;
+
+    public ReportEntity() {}
 
     public ReportEntity(String datePrefix, RawReportEntity rawReportEntity) {
         month = datePrefix;

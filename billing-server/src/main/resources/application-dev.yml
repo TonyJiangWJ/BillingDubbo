@@ -3,15 +3,15 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://127.0.0.1:3306/my_daily_cost?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+      url: jdbc:mysql://127.0.0.1:13306/my_daily_cost?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&zeroDateTimeBehavior=convertToNull
       username: root
-      password:
+      password: 123456
   mail:
     host: smtp.yeah.net
     username: tony_sama@yeah.net
     password:
   redis:
-    database: 0
+    database: 1
     host: 127.0.0.1
     port: 6379
     password:
@@ -26,7 +26,7 @@ dubbo:
   registry:
     address: zookeeper://127.0.0.1:${embedded.zookeeper.port}
     file: ${user.home}/dubbo-cache/${spring.application.name}/dubbo.cache
-    id: my_registry
+    id: my_registry_dev
   provider:
     filter: dubboContextFilter
 # server properties

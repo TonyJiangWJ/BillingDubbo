@@ -41,7 +41,7 @@ public interface BudgetService {
     Budget getById(Long id);
 
 
-    BudgetReportModel getBudgetReportByMonth(String monthInfo);
+    BudgetReportModel getBudgetReportByMonth(String monthInfo, Long userId);
 
     /**
      * 获取最近6个月的预算概述信息

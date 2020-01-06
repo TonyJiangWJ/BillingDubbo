@@ -1,13 +1,13 @@
 package com.tony.billing.dto;
 
-import com.tony.billing.dto.base.BaseDTO;
+import com.tony.billing.dto.base.VersionedDTO;
 
 import java.util.List;
 
 /**
  * @author jiangwj20966 on 2017/7/13.
  */
-public class BudgetDTO extends BaseDTO {
+public class BudgetDTO extends VersionedDTO {
 
     private Long id;
     private String budgetName;

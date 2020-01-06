@@ -2,6 +2,21 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.tony.billing.dao.mapper.CostReportMapper">
 
+    <select id="getReportAmountByCondition" parameterType="com.tony.billing.entity.query.ConditionalReportEntityQuery" resultType="java.lang.Long">
+        SELECT ifnull( SUM(money), 0 ) FROM t_cost_info
+        WHERE userId = #{userId, jdbcType=BIGINT}
+        AND costCreateTime LIKE CONCAT(#{datePrefix, jdbcType=VARCHAR}, '%')
+        <if test="inOutType != null and inOutType !=''">
+            AND inOutType = #{inOutType, jdbcType=VARCHAR}
+        </if>
+        <if test="isDeleted != null">
+            AND isDeleted = #{isDeleted, jdbcType=INTEGER}
+        </if>
+        <if test="isHidden != null">
+            AND isHidden = #{isHidden, jdbcType=INTEGER}
+        </if>
+    </select>
+
     <select id="getReportTypeAmountByCondition" parameterType="com.tony.billing.entity.query.ReportEntityQuery"
         resultType="com.tony.billing.entity.RawReportEntity">
         SELECT
@@ -13,7 +28,7 @@
                 t_cost_info
             WHERE
                 userId = #{userId,jdbcType=BIGINT}
-                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND costCreateTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
                 AND inOutType = '支出' ) cost
         JOIN ( SELECT
                 ifnull( SUM(money), 0 ) AS totalIncome
@@ -21,7 +36,7 @@
                 t_cost_info
             WHERE
                 userId = #{userId,jdbcType=BIGINT}
-                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND costCreateTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
                 AND inOutType = '收入' ) income
         JOIN ( SELECT
                 ifnull( SUM(money), 0 ) AS totalIncomeDeleted
@@ -29,7 +44,7 @@
                 t_cost_info
             WHERE
                 userId = #{userId,jdbcType=BIGINT}
-                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND costCreateTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
                 AND isDeleted = '1'
                 AND inOutType = '收入' ) incomeDeleted
         JOIN ( SELECT
@@ -39,7 +54,7 @@
             WHERE
                 userId = #{userId,jdbcType=BIGINT}
                 AND isHidden = '1'
-                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND costCreateTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
                 AND inOutType = '收入' ) incomeHidden
         JOIN ( SELECT
                 ifnull( SUM(money), 0 ) AS totalIncomeExceptDeletedAndHidden
@@ -49,7 +64,7 @@
                 userId = #{userId,jdbcType=BIGINT}
                 AND isHidden = '0'
                 AND isDeleted = '0'
-                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND costCreateTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
                 AND inOutType = '收入' ) incomeExceptDeletedAndHidden
         JOIN ( SELECT
                 ifnull( SUM(money), 0 ) AS totalCostDeleted
@@ -58,7 +73,7 @@
             WHERE
                 userId = #{userId,jdbcType=BIGINT}
                 AND isDeleted = '1'
-                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND costCreateTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
                 AND inOutType = '支出' ) costDeleted
         JOIN ( SELECT
                 ifnull( SUM(money), 0 ) AS totalCostHidden
@@ -67,7 +82,7 @@
             WHERE
                 userId = #{userId,jdbcType=BIGINT}
                 AND isHidden = '1'
-                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND costCreateTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
                 AND inOutType = '支出' ) costHidden
         JOIN ( SELECT
                 ifnull( SUM(money), 0 ) AS totalCostExceptDeletedAndHidden
@@ -77,7 +92,7 @@
                 userId = #{userId,jdbcType=BIGINT}
                 AND isHidden = '0'
                 AND isDeleted = '0'
-                AND createTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
+                AND costCreateTime LIKE CONCAT(#{datePrefix,jdbcType=VARCHAR}, '%')
                 AND inOutType = '支出' ) costExceptDeletedAndHidden
     </select>
 </mapper>

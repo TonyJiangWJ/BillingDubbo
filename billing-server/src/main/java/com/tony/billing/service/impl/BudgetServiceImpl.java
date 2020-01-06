@@ -20,12 +20,13 @@ import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.dubbo.config.annotation.Service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.apache.dubbo.config.annotation.Service;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,7 +52,6 @@ public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> imp
     private RedisUtils redisUtils;
 
     private final String MONTH_MODEL_CACHE_PREFIX = "month_budget_";
-
 
 
     @Override
@@ -102,7 +102,7 @@ public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> imp
 
 
     @Override
-    public BudgetReportModel getBudgetReportByMonth(String monthInfo) {
+    public BudgetReportModel getBudgetReportByMonth(String monthInfo, Long userId) {
         Preconditions.checkState(YEAR_MONTH_PATTERN.matcher(monthInfo).find(), "参数错误");
         BudgetReportModel reportInfo = new BudgetReportModel();
         reportInfo.setYearMonthInfo(monthInfo);
@@ -111,32 +111,32 @@ public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> imp
         Budget query = new Budget();
         query.setBelongYear(year);
         query.setBelongMonth(month);
-        query.setUserId(UserIdContainer.getUserId());
+        query.setUserId(userId);
         List<Budget> budgets = mapper.findByYearMonth(query);
         if (CollectionUtils.isNotEmpty(budgets)) {
-            List<Long> monthTagIds = tagInfoMapper.listTagIdsByBudgetMonth(year, month, UserIdContainer.getUserId(), null);
-            List<CostRecord> noBudgetRecords = costRecordMapper.listByMonthAndExceptTagIds(monthInfo, UserIdContainer.getUserId(), monthTagIds);
+            List<Long> monthTagIds = tagInfoMapper.listTagIdsByBudgetMonth(year, month, userId, null);
+            List<CostRecord> noBudgetRecords = costRecordMapper.listByMonthAndExceptTagIds(monthInfo, userId, monthTagIds);
             if (CollectionUtils.isNotEmpty(noBudgetRecords)) {
                 reportInfo.setNoBudgetUsed(noBudgetRecords.stream().mapToLong(CostRecord::getMoney).sum());
             } else {
                 logger.info("[{}] 未关联预算账单数据不存在", monthInfo);
             }
-            List<CostRecord> budgetRecords = costRecordMapper.listByMonthAndTagIds(monthInfo, UserIdContainer.getUserId(), monthTagIds);
+            List<CostRecord> budgetRecords = costRecordMapper.listByMonthAndTagIds(monthInfo, userId, monthTagIds);
             if (CollectionUtils.isNotEmpty(budgetRecords)) {
                 reportInfo.setBudgetUsed(budgetRecords.stream().mapToLong(CostRecord::getMoney).sum());
             } else {
                 logger.info("[{}] 预算关联账单数据不存在", monthInfo);
             }
             budgets.forEach(b -> {
-                List<TagInfo> budgetTags = tagInfoMapper.listTagInfoByBudgetId(b.getId(), UserIdContainer.getUserId());
+                List<TagInfo> budgetTags = tagInfoMapper.listTagInfoByBudgetId(b.getId(), userId);
                 Long sum = 0L;
                 BudgetReportItemDTO item = new BudgetReportItemDTO();
                 List<CostRecord> costRecords = new ArrayList<>();
                 if (CollectionUtils.isNotEmpty(budgetTags)) {
-                    item.setTagInfos(budgetTags.stream().map(tag -> {
+                    item.setTagInfos(budgetTags.parallelStream().map(tag -> {
                         TagCostInfoDTO costInfoDTO = new TagCostInfoDTO();
                         List<CostRecord> tagCostRecords = costRecordMapper.listByMonthAndTagIds(monthInfo,
-                                UserIdContainer.getUserId(),
+                                userId,
                                 Collections.singletonList(tag.getId()));
                         if (CollectionUtils.isNotEmpty(tagCostRecords)) {
                             costInfoDTO.setAmount(tagCostRecords.stream().mapToLong(CostRecord::getMoney).sum());
@@ -152,7 +152,7 @@ public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> imp
                 item.setName(b.getBudgetName());
                 item.setAmount(b.getBudgetMoney());
                 if (CollectionUtils.isNotEmpty(costRecords)) {
-                    sum = costRecords.stream().distinct().mapToLong(CostRecord::getMoney).sum();
+                    sum = costRecords.parallelStream().distinct().mapToLong(CostRecord::getMoney).sum();
                 }
                 item.setUsed(sum);
                 item.setRemain(b.getBudgetMoney() - sum);
@@ -168,33 +168,60 @@ public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> imp
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
         LocalDate localDate = LocalDate.now();
         List<BudgetReportModel> models = new ArrayList<>();
+        List<MonthReport> months = new ArrayList<>();
         // 获取下个月的预算数据
         localDate = localDate.plusMonths(1);
-        // 下个月的预算信息
-        models.add(getAndSetCache(localDate.format(dateTimeFormatter), 3600));
+        Long userId = UserIdContainer.getUserId();
+        months.add(new MonthReport(localDate.format(dateTimeFormatter), 3600L, userId));
         // 获取当前月份
         localDate = localDate.plusMonths(-1);
-        models.add(getBudgetReportByMonth(localDate.format(dateTimeFormatter)));
+        months.add(new MonthReport(localDate.format(dateTimeFormatter), 3600L, userId));
         // 过去五个月的预算信息
         for (int i = 0; i < 6; i++) {
             localDate = localDate.plusMonths(-1);
-            models.add(getAndSetCache(localDate.format(dateTimeFormatter)));
+            months.add(new MonthReport(localDate.format(dateTimeFormatter), null, userId));
         }
+        models = months.parallelStream().map(this::getAndSetCache).collect(Collectors.toList());
+
         models = models.stream().filter(Objects::nonNull).collect(Collectors.toList());
         return models;
     }
 
-    private BudgetReportModel getAndSetCache(String monthInfo) {
-        return getAndSetCache(monthInfo, 3600 * 24);
+    private static class MonthReport {
+        private String monthInfo;
+        private Long cacheTime;
+        private Long userId;
+
+        public MonthReport(String monthInfo, Long cacheTime, Long userId) {
+            this.monthInfo = monthInfo;
+            this.cacheTime = cacheTime;
+            this.userId = userId;
+        }
+
+        public String getMonthInfo() {
+            return monthInfo;
+        }
+
+        public Long getCacheTime() {
+            return cacheTime == null ? 3600 * 24 : cacheTime;
+        }
+
+        public Long getUserId() {
+            return userId;
+        }
     }
 
-    private BudgetReportModel getAndSetCache(String monthInfo, long cacheTime) {
-        String redisKey = MONTH_MODEL_CACHE_PREFIX + UserIdContainer.getUserId() + "_" + monthInfo;
+    private BudgetReportModel getAndSetCache(MonthReport monthInfo) {
+        return getAndSetCache(monthInfo.getMonthInfo(), monthInfo.getCacheTime(), monthInfo.getUserId());
+    }
+
+    private BudgetReportModel getAndSetCache(String monthInfo, long cacheTime, long userId) {
+        String redisKey = MONTH_MODEL_CACHE_PREFIX + userId + "_" + monthInfo;
         Optional<BudgetReportModel> reportModelOptional = redisUtils.get(redisKey, BudgetReportModel.class);
         if (reportModelOptional.isPresent()) {
             return reportModelOptional.get();
         } else {
-            BudgetReportModel reportModel = getBudgetReportByMonth(monthInfo);
+            BudgetReportModel reportModel = getBudgetReportByMonth(monthInfo, userId);
             if (reportModel != null) {
                 redisUtils.set(redisKey, reportModel, cacheTime);
             }
@@ -203,8 +230,8 @@ public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> imp
     }
 
     private void cleanCache(Budget budget) {
-        String monthInfo = budget.getBelongYear() + "-" + budget.getBelongMonth();
-        String redisKey = MONTH_MODEL_CACHE_PREFIX + UserIdContainer.getUserId() + "_" + monthInfo;
+        String monthInfo = YearMonth.of(Integer.parseInt(budget.getBelongYear()), budget.getBelongMonth()).format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        String redisKey = MONTH_MODEL_CACHE_PREFIX + budget.getUserId() + "_" + monthInfo;
         redisUtils.del(redisKey);
     }
 }

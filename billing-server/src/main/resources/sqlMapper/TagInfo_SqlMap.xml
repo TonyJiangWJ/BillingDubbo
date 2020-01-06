@@ -187,7 +187,10 @@
     </select>
 
     <select id="countTagUsage" resultType="java.lang.Long">
-        SELECT COUNT(1) FROM t_cost_tag WHERE isDeleted = 0 AND tagId = #{tagId,jdbcType=BIGINT}
+        SELECT COUNT(1) FROM t_cost_tag ct WHERE isDeleted = 0 AND tagId = #{id,jdbcType=BIGINT} AND
+        EXISTS (
+            SELECT 1 FROM t_tag_info tag WHERE tag.id=ct.tagId AND userId=#{userId, jdbcType=BIGINT}
+        )
     </select>
 
     <insert id="insertTagBudgetRef" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.TagBudgetRef">

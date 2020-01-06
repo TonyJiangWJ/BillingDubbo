@@ -1,6 +1,7 @@
 package com.tony.billing.controller;
 
 import com.tony.billing.constants.TradeStatus;
+import com.tony.billing.constants.timing.TimeConstants;
 import com.tony.billing.dto.CostRecordDTO;
 import com.tony.billing.dto.CostRecordDetailDTO;
 import com.tony.billing.dto.TagInfoDTO;
@@ -42,9 +43,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -296,11 +297,10 @@ public class CostRecordController {
 
         OutputStreamWriter outputStreamWriter = null;
         BufferedWriter bufferedWriter = null;
-        SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddHHmmss");
         try {
             response.reset();
             response.setContentType("application/octet-stream; charset=utf-8");
-            response.setHeader("Content-Disposition", "attachment; filename=" + "backup" + sf.format(new Date()) + ".csv");
+            response.setHeader("Content-Disposition", "attachment; filename=" + "backup" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss")) + ".csv");
             OutputStream outputStream = response.getOutputStream();
             outputStreamWriter = new OutputStreamWriter(outputStream, "GBK");
             bufferedWriter = new BufferedWriter(outputStreamWriter);
@@ -334,12 +334,9 @@ public class CostRecordController {
     }
 
     private String generateTradeNo(String createTime) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date datetime = sdf.parse(createTime);
-        SimpleDateFormat sf = new SimpleDateFormat("yyyyMMddHHmmss");
-        String dateCode = sf.format(datetime);
-
-        return dateCode + datetime.getTime() / 1000 % 1000000000;
+        LocalDateTime datetime = LocalDateTime.parse(createTime, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        String dateCode = datetime.format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        return dateCode + datetime.toInstant(TimeConstants.CHINA_ZONE_OFFSET).toEpochMilli() / 1000 % 1000000000;
     }
 
     private CostRecordDetailDTO formatDetailModel(CostRecord record) {

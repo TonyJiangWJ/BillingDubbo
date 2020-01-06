@@ -129,7 +129,7 @@
         </trim>
 
     </select>
-    <select id="getById" resultType="com.tony.billing.entity.Budget">
+    <select id="getById" resultType="com.tony.billing.entity.Budget" useCache="true">
         SELECT <include refid="all"/> FROM t_budget
        where id=#{id,jdbcType=BIGINT}
        and isDeleted='0' and userId=#{userId, jdbcType=BIGINT}

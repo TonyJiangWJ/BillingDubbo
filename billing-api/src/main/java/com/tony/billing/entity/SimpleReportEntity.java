@@ -4,13 +4,15 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.io.Serializable;
+
 /**
  * @author by TonyJiang on 2017/6/11.
  */
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode
-public class SimpleReportEntity {
+public class SimpleReportEntity implements Serializable {
     private String month;
     private Long totalCost;
     private Long totalIncome;

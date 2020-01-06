@@ -15,9 +15,9 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -186,9 +186,7 @@ public class CsvParser {
 
     public void createCsv(String biao, List cvsLines, String path)
             throws IOException {
-        SimpleDateFormat dataFormat = new SimpleDateFormat("yyyyMMdd");
-        Date today = new Date();
-        String dateToday = dataFormat.format(today);
+        String dateToday = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         File file = new File(path + "resource/expert/" + dateToday
                 + "importerrorinfo.csv");
         if (!file.exists()) {

@@ -114,8 +114,8 @@ public class TagInfoServiceImpl extends AbstractService<TagInfo, TagInfoMapper> 
     }
 
     @Override
-    public Long countTagUsage(Long id) {
-        return mapper.countTagUsage(id);
+    public Long countTagUsage(Long id, Long userId) {
+        return mapper.countTagUsage(id, userId);
     }
 
     @Override

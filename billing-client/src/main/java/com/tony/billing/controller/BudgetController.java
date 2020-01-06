@@ -4,24 +4,27 @@ import com.tony.billing.dto.BudgetDTO;
 import com.tony.billing.entity.Budget;
 import com.tony.billing.model.BudgetReportModel;
 import com.tony.billing.request.budget.BudgetDeleteRequest;
+import com.tony.billing.request.budget.BudgetDetailRequest;
 import com.tony.billing.request.budget.BudgetListRequest;
 import com.tony.billing.request.budget.BudgetPutRequest;
 import com.tony.billing.request.budget.BudgetUpdateRequest;
 import com.tony.billing.response.BaseResponse;
+import com.tony.billing.response.budget.BudgetDetailResponse;
 import com.tony.billing.response.budget.BudgetListResponse;
 import com.tony.billing.response.budget.BudgetOverviewResponse;
 import com.tony.billing.service.api.BudgetService;
+import com.tony.billing.util.MoneyUtil;
 import com.tony.billing.util.ResponseUtil;
-import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.dubbo.config.annotation.Reference;
-import org.apache.dubbo.rpc.RpcContext;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
@@ -62,6 +65,9 @@ public class BudgetController extends BaseController {
         updateInfo.setBudgetName(request.getName());
         updateInfo.setVersion(request.getVersion());
         updateInfo.setBudgetMoney(request.getAmount());
+        Budget oldBudgetInfo = budgetService.getById(request.getId());
+        updateInfo.setBelongMonth(oldBudgetInfo.getBelongMonth());
+        updateInfo.setBelongYear(oldBudgetInfo.getBelongYear());
         if (budgetService.updateBudget(updateInfo)) {
             return ResponseUtil.success();
         } else {
@@ -72,6 +78,23 @@ public class BudgetController extends BaseController {
     @PostMapping("/budget/delete")
     public BaseResponse deleteBudget(@ModelAttribute("request") @Validated BudgetDeleteRequest request) {
         return budgetService.deleteBudget(request.getId()) ? ResponseUtil.success() : ResponseUtil.error();
+    }
+
+    @RequestMapping("/budget/get")
+    public BaseResponse getBudgetInfo(@ModelAttribute("request") @Validated BudgetDetailRequest request) {
+        Budget budget = budgetService.getById(request.getId());
+        if (budget != null) {
+            BudgetDetailResponse response = ResponseUtil.success(new BudgetDetailResponse());
+            BudgetDTO budgetDTO = new BudgetDTO();
+            budgetDTO.setId(budget.getId());
+            budgetDTO.setYearMonth(YearMonth.of(Integer.parseInt(budget.getBelongYear()), budget.getBelongMonth()).format(DateTimeFormatter.ofPattern("yyyy-MM")));
+            budgetDTO.setBudgetName(budget.getBudgetName());
+            budgetDTO.setBudgetMoney(MoneyUtil.fen2Yuan(budget.getBudgetMoney()));
+            budgetDTO.setVersion(budget.getVersion());
+            response.setBudgetInfo(budgetDTO);
+            return response;
+        }
+        return ResponseUtil.dataNotExisting();
     }
 
     @RequestMapping("/budget/list")

@@ -25,7 +25,7 @@ public interface TagInfoService {
 
     Long deleteTagById(Long id);
 
-    Long countTagUsage(Long id);
+    Long countTagUsage(Long id, Long userId);
 
     /**
      * 添加预算标签关联关系

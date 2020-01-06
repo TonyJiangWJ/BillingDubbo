@@ -16,10 +16,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -36,26 +37,25 @@ public class CostReportController extends BaseController {
     public ReportResponse getReport(@ModelAttribute("request") CostReportRequest request) {
         ReportResponse response = new ReportResponse();
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-            Calendar calendar = Calendar.getInstance();
+            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM");
+            LocalDate localDate = LocalDate.now();
+
             List<String> monthList = new ArrayList<>();
             if (StringUtils.isEmpty(request.getStartMonth()) || StringUtils.isEmpty(request.getEndMonth())) {
                 int ngm = -6;
-                calendar.add(Calendar.MONTH, ngm);
+                localDate = localDate.plusMonths(ngm);
                 for (int i = 0; i < -ngm; i++) {
-                    calendar.add(Calendar.MONTH, 1);
-                    monthList.add(sdf.format(calendar.getTime()));
+                    localDate = localDate.plusMonths(1);
+                    monthList.add(localDate.format(dateTimeFormatter));
                 }
             } else {
-                Date startDate = sdf.parse(request.getStartMonth());
-                Date endDate = sdf.parse(request.getEndMonth());
-                calendar.setTime(startDate);
-                Date tempDate;
+                YearMonth start = YearMonth.parse(request.getStartMonth(), dateTimeFormatter);
+                YearMonth end = YearMonth.parse(request.getEndMonth(), dateTimeFormatter);
+
                 do {
-                    monthList.add(sdf.format(calendar.getTime()));
-                    calendar.add(Calendar.MONTH, 1);
-                    tempDate = calendar.getTime();
-                } while (tempDate.compareTo(endDate) <= 0);
+                    monthList.add(start.format(dateTimeFormatter));
+                    start = start.plusMonths(1);
+                } while (start.isBefore(end));
             }
             return getReportResponse(monthList, request.getUserId(), response);
         } catch (Exception e) {
@@ -68,18 +68,16 @@ public class CostReportController extends BaseController {
     @RequestMapping("/daily/report/get")
     public ReportResponse getDailyCostReport(@ModelAttribute("request") @Validated DailyCostReportRequest reportRequest) {
         ReportResponse response = new ReportResponse();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         try {
-            Date startDate = simpleDateFormat.parse(reportRequest.getStartDate());
-            Date endDate = simpleDateFormat.parse(reportRequest.getEndDate());
-            Calendar start = Calendar.getInstance();
-            start.setTime(startDate);
+            LocalDate startDate = LocalDate.parse(reportRequest.getStartDate(), dateTimeFormatter);
+            LocalDate endDate = LocalDate.parse(reportRequest.getEndDate(), dateTimeFormatter);
 
-            long dayBetween = (endDate.getTime() - startDate.getTime()) / (3600 * 24 * 1000);
             List<String> datePrefixes = new ArrayList<>();
-            while (dayBetween-- >= 0) {
-                datePrefixes.add(simpleDateFormat.format(start.getTime()));
-                start.add(Calendar.DATE, 1);
+            datePrefixes.add(startDate.format(dateTimeFormatter));
+            while (startDate.isBefore(endDate)) {
+                startDate = startDate.plusDays(1);
+                datePrefixes.add(startDate.format(dateTimeFormatter));
             }
 
             return getReportResponse(datePrefixes, reportRequest.getUserId(), response);

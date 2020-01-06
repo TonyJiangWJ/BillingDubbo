@@ -6,10 +6,10 @@ import com.tony.billing.request.BaseRequest;
 import lombok.Data;
 
 /**
- * @author jiangwenjie 2019-03-25
+ * @author jiangwenjie 2020/1/6
  */
 @Data
-public class BudgetDeleteRequest extends BaseRequest {
+public class BudgetDetailRequest extends BaseRequest {
     @OwnershipCheck(value = EnumOwnershipCheckTables.BUDGET)
     private Long id;
 }

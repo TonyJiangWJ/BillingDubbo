@@ -1,8 +1,8 @@
 package com.tony.billing.util;
 
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -30,8 +30,7 @@ public class CodeGeneratorUtil {
                 COUNTER.set(0);
             }
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
-        code.append(sdf.format(new Date())).append(
+        code.append(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"))).append(
                 mod(COUNTER.addAndGet(1), size - 14));
         return code.toString();
     }

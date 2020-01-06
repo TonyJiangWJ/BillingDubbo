@@ -62,12 +62,12 @@ public class TagInfoController extends BaseController {
         tagInfo.setUserId(request.getUserId());
         List<TagInfo> tagInfos = tagInfoService.listTagInfo(tagInfo);
         if (!CollectionUtils.isEmpty(tagInfos)) {
-            response.setTagInfoList(tagInfos.stream()
+            response.setTagInfoList(tagInfos.parallelStream()
                     .map(tag -> {
                         TagInfoDTO model = new TagInfoDTO();
                         model.setTagName(tag.getTagName());
                         model.setTagId(tag.getId());
-                        model.setUsageCount(tagInfoService.countTagUsage(tag.getId()));
+                        model.setUsageCount(tagInfoService.countTagUsage(tag.getId(), request.getUserId()));
                         return model;
                     })
                     .sorted(Comparator.comparing(TagInfoDTO::getUsageCount).reversed())

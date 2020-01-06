@@ -31,7 +31,7 @@ public interface TagInfoMapper extends AbstractMapper<TagInfo> {
 
     List<TagInfo> queryTagByName(@Param("tagName") String tagName, @Param("userId") Long userId);
 
-    Long countTagUsage(Long id);
+    Long countTagUsage(@Param("id")Long id, @Param("userId") Long userId);
 
     Long insertTagBudgetRef(TagBudgetRef tagBudgetRef);
 

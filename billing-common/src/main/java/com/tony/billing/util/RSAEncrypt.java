@@ -91,6 +91,8 @@ public class RSAEncrypt {
      * @throws Exception 加载公钥时产生的异常
      */
     public static byte[] loadPublicKeyByFile(String path) throws Exception {
+        logger.info("读取秘钥钥路径：{}", path);
+
         try (BufferedInputStream br = new BufferedInputStream(new FileInputStream(path
                 + "/publicKey.keystore"))
         ) {

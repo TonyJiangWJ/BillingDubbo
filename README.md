@@ -1,4 +1,5 @@
-## BillingDubbo 账单管理后台
+# BillingDubbo 账单管理后台
+
 - 基于Dubbo2.7.3 SpringBoot2.0.1实现，数据库采用MySQL 需要Redis支持，zookeeper可选内置zookeeper，建议外置
 - 开发IDE需要下载lombok插件，否则编译报错，具体可以百度
 - 数据库结构见[doc/SQL_STRUCT.sql](./doc/SQL_STRUCT.sql)
@@ -6,11 +7,14 @@
 - 前端工程[vue-bill-manager-wp4](https://github.com/TonyJiangWJ/vue-bill-manager-wp4)
 
 ## 项目结构说明
+
 - billing-api 存放POJO 暴露给客户端的service接口等等
 - billing-common 存放一些通用的工具类
 - billing-server 是服务提供方，实现service接口，业务判断，数据持久化操作等等
 - billing-client 是服务消费方，将http请求转换成对service的请求，并做简单的必填项判断，然后将service执行结果转换成json传递给前端
+
 ### client 和 server 之间的用户信息传递
+
 - 通过自定义的DubboFilter，将userId放到RpcContext的attachments中
 
 ## 开发部署说明
@@ -60,11 +64,19 @@
   export const rsaPubKeyDev = '开发用公钥信息';
   ```
   
+### lombok插件安装[必选]
+
+- 项目中采用了lombok来减少getter/setter等冗余代码，IDE需要安装对应的插件，否则编译报错
+- [ECLIPSE中安装](https://projectlombok.org/setup/eclipse)
+- [IDEA中安装](https://projectlombok.org/setup/intellij)
+
 ### 完成以上步骤后，在IDE中导入项目代码并启动即可
+
 - 先运行 `billing-server` 的 `com.tony.billing.bootstrap.DubboRegistryZooKeeperProviderApplication` 启动服务
 - 然后运行 `billing-client` 的 `com.tony.billing.DubboConsumerApplication` 启动客户端
 
 ### 打包
+
 - 默认profile是开发环境的，生产打包需要添加参数`-P release`
   ```shell script
   mvn clean install -Dmaven.test.skip -P release

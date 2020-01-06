@@ -1,13 +1,16 @@
 package com.tony.billing.dto;
 
+import com.tony.billing.constants.timing.TimeConstants;
 import com.tony.billing.dto.base.VersionedDTO;
 import com.tony.billing.entity.Liability;
+import lombok.ToString;
 
-import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @author TonyJiang on 2018/2/12
  */
+@ToString(callSuper = true)
 public class LiabilityDTO extends VersionedDTO {
 
     public LiabilityDTO() {
@@ -16,8 +19,6 @@ public class LiabilityDTO extends VersionedDTO {
 
     public LiabilityDTO(Liability liability) {
         if (liability != null) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
             this.id = liability.getId();
             this.amount = liability.getAmount();
             this.paid = liability.getPaid();
@@ -25,7 +26,7 @@ public class LiabilityDTO extends VersionedDTO {
             this.installment = liability.getInstallment();
             this.name = liability.getName();
             if (liability.getRepaymentDay() != null) {
-                this.repaymentDay = simpleDateFormat.format(liability.getRepaymentDay());
+                this.repaymentDay = liability.getRepaymentDay().toInstant().atZone(TimeConstants.CHINA_ZONE).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             }
             this.status = liability.getStatus();
             this.setVersion(liability.getVersion());
@@ -34,8 +35,6 @@ public class LiabilityDTO extends VersionedDTO {
 
     public LiabilityDTO(Liability liability, String typeDesc) {
         if (liability != null) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
             this.id = liability.getId();
             this.amount = liability.getAmount();
             this.paid = liability.getPaid();
@@ -43,7 +42,7 @@ public class LiabilityDTO extends VersionedDTO {
             this.installment = liability.getInstallment();
             this.name = liability.getName();
             if (liability.getRepaymentDay() != null) {
-                this.repaymentDay = simpleDateFormat.format(liability.getRepaymentDay());
+                this.repaymentDay = liability.getRepaymentDay().toInstant().atZone(TimeConstants.CHINA_ZONE).format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
             }
             this.status = liability.getStatus();
             this.setVersion(liability.getVersion());

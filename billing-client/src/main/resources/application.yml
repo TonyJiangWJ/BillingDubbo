@@ -13,6 +13,9 @@ spring:
       max-file-size: 30MB
       max-request-size: 40MB
 
+dubbo:
+  application:
+    logger: slf4j
 validation:
   fail:
     fast: false

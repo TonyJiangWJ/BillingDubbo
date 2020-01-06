@@ -18,8 +18,8 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
-        logger.info("请求方法：{}", o.getClass());
-        logger.info("收到请求{}", JSON.toJSONString(httpServletRequest.getParameterMap()));
+        logger.debug("请求方法：{}", o.getClass());
+        logger.debug("收到请求{}", JSON.toJSONString(httpServletRequest.getParameterMap()));
         return true;
     }
 
