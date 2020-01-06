@@ -8,6 +8,7 @@ import com.tony.billing.dao.mapper.TagInfoMapper;
 import com.tony.billing.dto.BudgetDTO;
 import com.tony.billing.dto.BudgetReportItemDTO;
 import com.tony.billing.dto.TagCostInfoDTO;
+import com.tony.billing.dto.TagInfoDTO;
 import com.tony.billing.entity.Budget;
 import com.tony.billing.entity.CostRecord;
 import com.tony.billing.entity.TagInfo;
@@ -102,6 +103,11 @@ public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> imp
         return super.deleteById(budgetId);
     }
 
+    @Override
+    public List<TagInfoDTO> getTagInfosByBudgetId(Long id, Long userId) {
+        List<TagInfo> tagInfos = tagInfoMapper.listTagInfoByBudgetId(id, userId);
+        return new TagInfoToDtoListSupplier(tagInfos).get();
+    }
 
     @Override
     public BudgetReportModel getBudgetReportByMonth(String monthInfo, Long userId) {

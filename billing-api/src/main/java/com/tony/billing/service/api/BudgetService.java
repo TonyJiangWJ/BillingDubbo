@@ -1,6 +1,7 @@
 package com.tony.billing.service.api;
 
 import com.tony.billing.dto.BudgetDTO;
+import com.tony.billing.dto.TagInfoDTO;
 import com.tony.billing.entity.Budget;
 import com.tony.billing.model.BudgetReportModel;
 
@@ -40,6 +41,8 @@ public interface BudgetService {
 
     Budget getById(Long id);
 
+
+    List<TagInfoDTO> getTagInfosByBudgetId(Long id, Long userId);
 
     BudgetReportModel getBudgetReportByMonth(String monthInfo, Long userId);
 

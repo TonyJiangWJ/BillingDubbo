@@ -91,6 +91,7 @@ public class BudgetController extends BaseController {
             budgetDTO.setBudgetName(budget.getBudgetName());
             budgetDTO.setBudgetMoney(MoneyUtil.fen2Yuan(budget.getBudgetMoney()));
             budgetDTO.setVersion(budget.getVersion());
+            budgetDTO.setTagInfos(budgetService.getTagInfosByBudgetId(budget.getId(), request.getUserId()));
             response.setBudgetInfo(budgetDTO);
             return response;
         }
