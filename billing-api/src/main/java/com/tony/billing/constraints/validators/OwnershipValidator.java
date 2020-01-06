@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.util.Objects;
 
 /**
  * @author jiangwenjie 2019-03-20
@@ -29,10 +30,10 @@ public class OwnershipValidator implements ConstraintValidator<OwnershipCheck, O
 
     @Override
     public boolean isValid(Object value, ConstraintValidatorContext context) {
-        CommonValidateService commonValidateService = BeanHelper.getBean(DubboBeanBridge.class).getCommonValidateService();
+        CommonValidateService commonValidateService = Objects.requireNonNull(BeanHelper.getBean(DubboBeanBridge.class)).getCommonValidateService();
         if (commonValidateService != null) {
             boolean result = commonValidateService.validateOwnership(table, value);
-            logger.info("针对数据表：{} 数据所有权校验结果：{}", table.getTableName(), result ? "通过" : "不通过");
+            logger.debug("针对数据表：{} 数据所有权校验结果：{}", table.getTableName(), result ? "通过" : "不通过");
             return result;
         } else {
             logger.error("校验service注入失败");

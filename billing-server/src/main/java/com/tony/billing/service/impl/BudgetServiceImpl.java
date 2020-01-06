@@ -1,6 +1,7 @@
 package com.tony.billing.service.impl;
 
 import com.google.common.base.Preconditions;
+import com.tony.billing.constants.timing.TimeConstants;
 import com.tony.billing.dao.mapper.BudgetMapper;
 import com.tony.billing.dao.mapper.CostRecordMapper;
 import com.tony.billing.dao.mapper.TagInfoMapper;
@@ -26,6 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -216,13 +218,18 @@ public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> imp
     }
 
     private BudgetReportModel getAndSetCache(String monthInfo, long cacheTime, long userId) {
+        YearMonth thisMonth = YearMonth.now(TimeConstants.CHINA_ZONE);
+        Optional<BudgetReportModel> reportModelOptional = Optional.empty();
+        boolean usingCache = thisMonth.isAfter(YearMonth.parse(monthInfo, DateTimeFormatter.ofPattern("yyyy-MM")));
         String redisKey = MONTH_MODEL_CACHE_PREFIX + userId + "_" + monthInfo;
-        Optional<BudgetReportModel> reportModelOptional = redisUtils.get(redisKey, BudgetReportModel.class);
+        if (usingCache) {
+            reportModelOptional = redisUtils.get(redisKey, BudgetReportModel.class);
+        }
         if (reportModelOptional.isPresent()) {
             return reportModelOptional.get();
         } else {
             BudgetReportModel reportModel = getBudgetReportByMonth(monthInfo, userId);
-            if (reportModel != null) {
+            if (usingCache && reportModel != null) {
                 redisUtils.set(redisKey, reportModel, cacheTime);
             }
             return reportModel;
