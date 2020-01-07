@@ -23,7 +23,7 @@ import java.util.zip.ZipInputStream;
 @Component
 public class AlipayBillCsvUtil {
 
-    @Reference
+    @Reference(timeout = 10000)
     private AlipayBillCsvConvertService alipayBillCsvConvertService;
 
     private final String ALIPAY_RECORD_FLAG = "支付宝交易记录明细查询";

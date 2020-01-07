@@ -11,10 +11,12 @@ import com.tony.billing.entity.query.ReportEntityQuery;
 import com.tony.billing.service.api.CostReportService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -29,10 +31,10 @@ public class CostReportServiceImpl implements CostReportService {
 
     @Override
     public List<ReportEntity> getReportByDatePrefix(List<String> datePrefixes, Long userId) {
-        return datePrefixes.parallelStream().map(
-                (dataPrefix) -> getReportInfo(dataPrefix, userId)
-        ).collect(Collectors.toList());
-
+        return datePrefixes.parallelStream().map(dataPrefix -> getReportInfo(dataPrefix, userId))
+                .filter(Objects::nonNull)
+                .sorted((a, b)-> StringUtils.compare(a.getMonth(), b.getMonth()))
+                .collect(Collectors.toList());
     }
 
     private ReportEntity getReportInfo(String datePrefix, Long userId) {
@@ -117,7 +119,9 @@ public class CostReportServiceImpl implements CostReportService {
                             }
                             return reportEntity;
                         }
-                ).collect(Collectors.toList());
+                )
+                .sorted((a, b)-> StringUtils.compare(a.getMonth(), b.getMonth()))
+                .collect(Collectors.toList());
     }
 
 }

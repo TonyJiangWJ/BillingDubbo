@@ -35,7 +35,7 @@ public class AlipayBillCsvConvertServiceImpl extends AbstractService<CostRecord,
     public void convertToPOJO(List<String> fixedList) {
         RecordRefUtil<Record> recordRefUtil = new RecordRefUtil<>();
         if (!CollectionUtils.isEmpty(fixedList)) {
-            List<CostRecord> insertList = fixedList.stream()
+            List<CostRecord> insertList = fixedList.parallelStream()
                     .map(csvLine -> {
                         try {
                             return recordRefUtil.convertCsv2POJO(csvLine, Record.class);

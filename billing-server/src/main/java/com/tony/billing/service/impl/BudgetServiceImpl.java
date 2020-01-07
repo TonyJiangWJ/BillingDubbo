@@ -79,7 +79,7 @@ public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> imp
                     dto.setId(budget.getId());
                     dto.setBudgetName(budget.getBudgetName());
                     dto.setBudgetMoney(MoneyUtil.fen2Yuan(budget.getBudgetMoney()));
-                    dto.setYearMonth(budget.getBelongYear() + "-" + budget.getBelongMonth());
+                    dto.setYearMonth(YearMonth.of(Integer.parseInt(budget.getBelongYear()), budget.getBelongMonth()).format(DateTimeFormatter.ofPattern("yyyy-MM")));
                     List<TagInfo> tagInfos = tagInfoMapper.listTagInfoByBudgetId(budget.getId(), budget.getUserId());
                     dto.setTagInfos(new TagInfoToDtoListSupplier(tagInfos).get());
                     return dto;
@@ -191,7 +191,7 @@ public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> imp
         }
         models = months.parallelStream().map(this::getAndSetCache).collect(Collectors.toList());
 
-        models = models.stream().filter(Objects::nonNull).collect(Collectors.toList());
+        models = models.stream().filter(Objects::nonNull).sorted((a, b) -> StringUtils.compare(a.getYearMonthInfo(), b.getYearMonthInfo())).collect(Collectors.toList());
         return models;
     }
 
