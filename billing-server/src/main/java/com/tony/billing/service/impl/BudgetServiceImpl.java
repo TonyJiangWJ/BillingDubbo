@@ -33,6 +33,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -191,8 +192,7 @@ public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> imp
         }
         models = months.parallelStream().map(this::getAndSetCache).collect(Collectors.toList());
 
-        models = models.stream().filter(Objects::nonNull).sorted((a, b) -> StringUtils.compare(a.getYearMonthInfo(), b.getYearMonthInfo())).collect(Collectors.toList());
-        return models;
+        return models.stream().filter(Objects::nonNull).sorted(Comparator.comparing(BudgetReportModel::getYearMonthInfo).reversed()).collect(Collectors.toList());
     }
 
     private static class MonthReport {
