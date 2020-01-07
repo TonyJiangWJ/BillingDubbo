@@ -54,7 +54,7 @@ public class CostReportController extends BaseController {
                 do {
                     monthList.add(start.format(dateTimeFormatter));
                     start = start.plusMonths(1);
-                } while (start.isBefore(end));
+                } while (!start.isAfter(end));
             }
             return getReportResponse(monthList, request.getUserId(), response);
         } catch (Exception e) {
