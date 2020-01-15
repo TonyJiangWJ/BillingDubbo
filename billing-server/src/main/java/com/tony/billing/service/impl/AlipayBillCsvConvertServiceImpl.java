@@ -33,18 +33,19 @@ public class AlipayBillCsvConvertServiceImpl extends AbstractService<CostRecord,
 
     @Override
     public void convertToPOJO(List<String> fixedList) {
+        final Long userId = UserIdContainer.getUserId();
         RecordRefUtil<Record> recordRefUtil = new RecordRefUtil<>();
         if (!CollectionUtils.isEmpty(fixedList)) {
             List<CostRecord> insertList = fixedList.parallelStream()
                     .map(csvLine -> {
                         try {
                             return recordRefUtil.convertCsv2POJO(csvLine, Record.class);
-                        } catch (IllegalAccessException | InstantiationException e) {
+                        } catch (Exception e) {
                             logger.error("转换CSV文件内容失败", e);
                         }
                         return null;
                     })
-                    .map(this::convertToDoForInsert)
+                    .map(record -> convertToDoForInsert(record, userId))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(insertList)) {
@@ -71,19 +72,19 @@ public class AlipayBillCsvConvertServiceImpl extends AbstractService<CostRecord,
 
     @Override
     public void getFromBackUp(List<String> fixedList) {
-
+        final Long userId = UserIdContainer.getUserId();
         RecordRefUtil<CostRecord> recordRefUtil = new RecordRefUtil<>();
         if (!CollectionUtils.isEmpty(fixedList)) {
             List<CostRecord> insertList = fixedList.stream()
                     .map(csvLine -> {
                         try {
                             return recordRefUtil.convertCsv2POJO(csvLine, CostRecord.class);
-                        } catch (IllegalAccessException | InstantiationException e) {
+                        } catch (Exception e) {
                             logger.error("转换备份文件内容失败", e);
                         }
                         return null;
                     })
-                    .map(this::convertToDBJOAndInsertCostRecord)
+                    .map(entity -> convertToDBJOAndInsertCostRecord(entity, userId))
                     .filter(Objects::nonNull)
                     .collect(Collectors.toList());
             if (!CollectionUtils.isEmpty(insertList)) {
@@ -93,64 +94,50 @@ public class AlipayBillCsvConvertServiceImpl extends AbstractService<CostRecord,
 
     }
 
-    private CostRecord convertToDBJOAndInsertCostRecord(CostRecord entity) {
+    private CostRecord convertToDBJOAndInsertCostRecord(CostRecord entity, Long userId) {
         if (entity == null) {
             return null;
         }
-        Long userId = UserIdContainer.getUserId();
-        Integer recordCount = mapper.checkTradeExistence(entity.getTradeNo(), userId);
-        if (recordCount == 0) {
-            entity.setId(null);
-            entity.setUserId(userId);
-            entity.setCreateTime(new Date());
-            entity.setModifyTime(new Date());
-            return entity;
-        } else {
-            logger.error("record already exist");
-        }
-        return null;
+        entity.setId(null);
+        entity.setUserId(userId);
+        entity.setCreateTime(new Date());
+        entity.setModifyTime(new Date());
+        return entity;
     }
 
 
-    private CostRecord convertToDoForInsert(Record entity) {
+    private CostRecord convertToDoForInsert(Record entity, Long userId) {
         if (entity == null) {
             return null;
         }
-        Long userId = UserIdContainer.getUserId();
-        Integer recordCount = mapper.checkTradeExistence(entity.getTradeNo(), userId);
-        if (recordCount == 0) {
-            CostRecord record = new CostRecord();
+        CostRecord record = new CostRecord();
 
 
-            record.setIsDeleted(0);
-            record.setCostCreateTime(entity.getCreateTime());
-            record.setGoodsName(entity.getGoodsName());
-            record.setInOutType(entity.getInOutType());
-            record.setLocation(entity.getLocation());
-            record.setMemo(entity.getMemo());
-            record.setCostModifyTime(entity.getModifyTime());
-            record.setMoney(MoneyUtil.yuan2fen(entity.getMoney()));
-            record.setOrderNo(entity.getOrderNo());
-            record.setOrderStatus(entity.getOrderStatus());
-            record.setOrderType(entity.getOrderType());
-            record.setPaidTime(entity.getPaidTime());
-            record.setRefundMoney(MoneyUtil.yuan2fen(entity.getRefundMoney()));
-            record.setServiceCost(MoneyUtil.yuan2fen(entity.getServiceCost()));
-            record.setTarget(entity.getTarget());
-            record.setTradeNo(entity.getTradeNo());
-            record.setTradeStatus(entity.getTradeStatus());
-            record.setUserId(userId);
+        record.setIsDeleted(0);
+        record.setCostCreateTime(entity.getCreateTime());
+        record.setGoodsName(entity.getGoodsName());
+        record.setInOutType(entity.getInOutType());
+        record.setLocation(entity.getLocation());
+        record.setMemo(entity.getMemo());
+        record.setCostModifyTime(entity.getModifyTime());
+        record.setMoney(MoneyUtil.yuan2fen(entity.getMoney()));
+        record.setOrderNo(entity.getOrderNo());
+        record.setOrderStatus(entity.getOrderStatus());
+        record.setOrderType(entity.getOrderType());
+        record.setPaidTime(entity.getPaidTime());
+        record.setRefundMoney(MoneyUtil.yuan2fen(entity.getRefundMoney()));
+        record.setServiceCost(MoneyUtil.yuan2fen(entity.getServiceCost()));
+        record.setTarget(entity.getTarget());
+        record.setTradeNo(entity.getTradeNo());
+        record.setTradeStatus(entity.getTradeStatus());
+        record.setUserId(userId);
 
-            record.setVersion(0);
-            record.setIsHidden(EnumHidden.NOT_HIDDEN.val());
-            record.setIsDeleted(EnumDeleted.NOT_DELETED.val());
-            record.setCreateTime(new Date());
-            record.setModifyTime(new Date());
-            return record;
-        } else {
-            logger.warn("record already exist");
-        }
-        return null;
+        record.setVersion(0);
+        record.setIsHidden(EnumHidden.NOT_HIDDEN.val());
+        record.setIsDeleted(EnumDeleted.NOT_DELETED.val());
+        record.setCreateTime(new Date());
+        record.setModifyTime(new Date());
+        return record;
     }
 
     private static class RecordRefUtil<T> {
@@ -168,7 +155,7 @@ public class AlipayBillCsvConvertServiceImpl extends AbstractService<CostRecord,
                     fields[i].set(record, StringUtils.trim(strings[i]));
                 }
 
-                return (T) record;
+                return (T)record;
             }
         }
 

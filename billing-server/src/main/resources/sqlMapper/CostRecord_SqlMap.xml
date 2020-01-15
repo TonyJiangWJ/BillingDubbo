@@ -569,7 +569,7 @@
         </if>
     </select>
     <insert id="batchInsert" parameterType="java.util.List">
-        INSERT INTO t_cost_info
+        INSERT IGNORE INTO t_cost_info
         (userId, tradeNo, orderNo, costCreateTime, paidTime, costModifyTime, location, orderType, target, goodsName, 
         money, inOutType, orderStatus, serviceCost, refundMoney, memo, tradeStatus, isDeleted, isHidden, version, 
         createTime, modifyTime)
