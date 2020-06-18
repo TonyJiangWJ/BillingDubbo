@@ -25,7 +25,7 @@
         <beanutils.version>1.9.4</beanutils.version>
         <jjwt.version>0.7.0</jjwt.version>
         <aspectj.version>1.8.4</aspectj.version>
-        <guava.version>19.0</guava.version>
+        <guava.version>29.0-jre</guava.version>
         <fileupload.version>1.4</fileupload.version>
         <commons-io.version>2.5</commons-io.version>
         <commons-codec.version>1.10</commons-codec.version>
