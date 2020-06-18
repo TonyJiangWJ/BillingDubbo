@@ -7,6 +7,7 @@ import com.tony.billing.entity.CostRecord;
 import com.tony.billing.entity.PagerGrid;
 import com.tony.billing.service.api.CostRecordService;
 import com.tony.billing.service.base.AbstractService;
+import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Service;
 
@@ -80,5 +81,15 @@ public class CostRecordServiceImpl extends AbstractService<CostRecord, CostRecor
         Preconditions.checkNotNull(record.getVersion(), "version must not be null");
         record.setModifyTime(new Date());
         return mapper.updateByTradeNo(record);
+    }
+
+    @Override
+    public Integer batchToggleDeleteStatus(List<Long> costIds, Integer isDeleted) {
+        return mapper.batchToggleDelete(costIds, UserIdContainer.getUserId(), isDeleted);
+    }
+
+    @Override
+    public Integer batchToggleHiddenStatus(List<Long> costIds, Integer isHidden) {
+        return mapper.batchToggleHidden(costIds, UserIdContainer.getUserId(), isHidden);
     }
 }

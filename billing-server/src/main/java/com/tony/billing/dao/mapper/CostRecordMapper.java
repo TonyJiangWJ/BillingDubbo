@@ -53,4 +53,22 @@ public interface CostRecordMapper extends AbstractMapper<CostRecord> {
     List<CostRecord> listByMonthAndExceptTagIds(@Param("month") String monthPrefix,
                                                 @Param("userId") Long userId,
                                                 @Param("tagIds") List<Long> tagIds);
+
+    /**
+     * 批量切换删除状态
+     * @param ids
+     * @param userId
+     * @param isDeleted
+     * @return
+     */
+    Integer batchToggleDelete(@Param("ids") List<Long> ids, @Param("userId") Long userId, @Param("isDeleted") Integer isDeleted);
+
+    /**
+     * 批量切换是否显示
+     * @param ids
+     * @param userId
+     * @param isHidden
+     * @return
+     */
+    Integer batchToggleHidden(@Param("ids") List<Long> ids, @Param("userId") Long userId, @Param("isHidden") Integer isHidden);
 }

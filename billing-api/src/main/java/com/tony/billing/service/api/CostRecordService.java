@@ -24,4 +24,8 @@ public interface CostRecordService {
     Long orderPut(CostRecord record);
 
     Integer updateByTradeNo(CostRecord record);
+
+    Integer batchToggleDeleteStatus(List<Long> costIds, Integer isDeleted);
+
+    Integer batchToggleHiddenStatus(List<Long> costIds, Integer isHidden);
 }

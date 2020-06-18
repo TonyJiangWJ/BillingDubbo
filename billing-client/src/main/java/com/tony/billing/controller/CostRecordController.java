@@ -10,6 +10,8 @@ import com.tony.billing.entity.PagerGrid;
 import com.tony.billing.entity.TagInfo;
 import com.tony.billing.entity.query.CostRecordQuery;
 import com.tony.billing.request.BaseRequest;
+import com.tony.billing.request.costrecord.CostRecordBatchDeleteRequest;
+import com.tony.billing.request.costrecord.CostRecordBatchHideRequest;
 import com.tony.billing.request.costrecord.CostRecordDeleteRequest;
 import com.tony.billing.request.costrecord.CostRecordDetailRequest;
 import com.tony.billing.request.costrecord.CostRecordHideRequest;
@@ -33,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -230,6 +233,34 @@ public class CostRecordController {
             ResponseUtil.sysError(response);
         }
         return response;
+    }
+
+    @RequestMapping(value = "/record/batch/delete", method = RequestMethod.POST)
+    public BaseResponse batchUpdateDeleteStatus(@ModelAttribute("request") @Validated CostRecordBatchDeleteRequest request) {
+        try {
+            if (costRecordService.batchToggleDeleteStatus(request.getCostIds(), request.getIsDeleted()) > 0) {
+                return ResponseUtil.success();
+            } else {
+                return ResponseUtil.error();
+            }
+        } catch (Exception e) {
+            logger.error("/record/batch/delete error", e);
+            return ResponseUtil.sysError();
+        }
+    }
+
+    @RequestMapping(value = "/record/batch/hide", method = RequestMethod.POST)
+    public BaseResponse batchUpdateHiddenStatus(@ModelAttribute("request") @Validated CostRecordBatchHideRequest request) {
+        try {
+            if (costRecordService.batchToggleHiddenStatus(request.getCostIds(), request.getIsHidden()) > 0) {
+                return ResponseUtil.success();
+            } else {
+                return ResponseUtil.error();
+            }
+        } catch (Exception e) {
+            logger.error("/record/batch/hide error", e);
+            return ResponseUtil.sysError();
+        }
     }
 
     /**

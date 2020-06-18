@@ -317,7 +317,7 @@
     <update id="toggleDeleteStatus" parameterType="java.util.Map">
         UPDATE t_cost_info
         SET
-            isDeleted = #{isDeleted,jdbcType=INTEGER}
+            isDeleted = #{isDeleted,jdbcType=INTEGER}, modifyTime=sysdate()
         WHERE tradeNo = #{tradeNo,jdbcType=VARCHAR} AND userId = #{userId,jdbcType=BIGINT}
               AND isDeleted = #{nowStatus,jdbcType=INTEGER}
     </update>
@@ -325,9 +325,25 @@
     <update id="toggleHideStatus" parameterType="java.util.Map">
         UPDATE t_cost_info
         SET
-            isHidden = #{isHidden,jdbcType=INTEGER}
+            isHidden = #{isHidden,jdbcType=INTEGER}, modifyTime=sysdate()
         WHERE tradeNo = #{tradeNo,jdbcType=VARCHAR} AND userId = #{userId,jdbcType=BIGINT}
               AND isHidden = #{nowStatus,jdbcType=INTEGER}
+    </update>
+    <update id="batchToggleDelete">
+        UPDATE t_cost_info
+        SET isDeleted = #{isDeleted,jdbcType=INTEGER}, modifyTime=sysdate()
+        WHERE userId=#{userId,jdbcType=BIGINT} AND ID in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id,jdbcType=BIGINT}
+        </foreach>
+    </update>
+    <update id="batchToggleHidden">
+        UPDATE t_cost_info
+        SET isHidden = #{isHidden,jdbcType=INTEGER}, modifyTime=sysdate()
+        WHERE userId=#{userId,jdbcType=BIGINT} AND ID in
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            #{id,jdbcType=BIGINT}
+        </foreach>
     </update>
 
     <select id="list" parameterType="com.tony.billing.entity.CostRecord"
