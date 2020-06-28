@@ -5,6 +5,7 @@ import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.stereotype.Component;
 
 /**
+ * 用于桥接Dubbo中的commonValidateService bean对象
  * @author jiangwenjie 2019/9/10
  */
 @Component

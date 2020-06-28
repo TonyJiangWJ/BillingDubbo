@@ -41,7 +41,7 @@ public abstract class AbstractService<T extends BaseEntity, M extends AbstractMa
         entity.setCreateTime(new Date());
         entity.setIsDeleted(EnumDeleted.NOT_DELETED.val());
         if (entity instanceof BaseVersionedEntity) {
-            ((BaseVersionedEntity) entity).setVersion(0);
+            ((BaseVersionedEntity)entity).setVersion(0);
         }
         if (mapper.insert(entity) > 0) {
             return entity.getId();
@@ -59,7 +59,7 @@ public abstract class AbstractService<T extends BaseEntity, M extends AbstractMa
     public boolean update(T entity) {
         Preconditions.checkNotNull(entity.getId(), "id must not be null");
         if (entity instanceof BaseVersionedEntity) {
-            Preconditions.checkNotNull(((BaseVersionedEntity) entity).getVersion(), "version must not be null");
+            Preconditions.checkNotNull(((BaseVersionedEntity)entity).getVersion(), "version must not be null");
         }
         entity.setModifyTime(new Date());
         return mapper.update(entity) > 0;

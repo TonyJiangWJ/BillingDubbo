@@ -1,7 +1,6 @@
 package com.tony.billing.entity;
 
 
-import com.tony.billing.annotation.Table;
 import com.tony.billing.entity.base.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

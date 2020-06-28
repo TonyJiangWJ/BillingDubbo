@@ -24,6 +24,7 @@ import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEven
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.StringUtils;
 
 /**
@@ -32,6 +33,7 @@ import org.springframework.util.StringUtils;
  * @author jiangwenjie
  * @since 2.7.0
  */
+@EnableScheduling
 @EnableAutoConfiguration
 @MapperScan("com.tony.billing.dao.mapper")
 @ComponentScan("com.tony.billing")

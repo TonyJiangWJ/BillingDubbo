@@ -1,6 +1,7 @@
 package com.tony.billing.util;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +63,7 @@ public class RedisUtils {
      * @param time 过期时间
      */
     public void set(final String key, final Object val, final long time) {
+        Preconditions.checkNotNull(key, "key can not be null");
         try {
             stringRedisTemplate.execute((RedisCallback<Boolean>) connection -> {
                 RedisSerializer<String> serializer = stringRedisTemplate.getStringSerializer();

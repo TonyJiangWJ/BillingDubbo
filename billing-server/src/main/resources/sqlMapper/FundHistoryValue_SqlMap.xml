@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tony.billing.dao.mapper.FundHistoryValueMapper">
+
+    <resultMap id="FundHistoryValueResultMap" type="com.tony.billing.entity.FundHistoryValue">
+        <result property="id" column="id" jdbcType="BIGINT"/>
+        <result property="fundCode" column="fundCode" jdbcType="VARCHAR"/>
+        <result property="fundName" column="fundName" jdbcType="VARCHAR"/>
+        <result property="fundValue" column="fundValue" jdbcType="DECIMAL"/>
+        <result property="fundConfirmDate" column="fundConfirmDate" jdbcType="TIMESTAMP"/>
+        <result property="assessmentTime" column="assessmentTime" jdbcType="TIMESTAMP"/>
+        <result property="assessmentValue" column="assessmentValue" jdbcType="DECIMAL"/>
+        <result property="assessmentIncreaseRate" column="assessmentIncreaseRate" jdbcType="VARCHAR"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="modifyTime" column="modifyTime" jdbcType="TIMESTAMP"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="isDeleted" column="isDeleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="all">
+        id,
+        fundCode,
+        fundName,
+        fundValue,
+        fundConfirmDate,
+        assessmentTime,
+        assessmentValue,
+        assessmentIncreaseRate,
+        createTime,
+        modifyTime,
+        version,
+        isDeleted
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundHistoryValue">
+        INSERT INTO T_FUND_HISTORY_VALUE
+        <trim prefix="(" suffix=")"  suffixOverrides=",">
+            <if test=" id!=null">
+                id,
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                fundCode,
+            </if>
+            <if test=" fundName!=null and fundName!=''">
+                fundName,
+            </if>
+            <if test=" fundValue!=null">
+                fundValue,
+            </if>
+            <if test=" fundConfirmDate!=null">
+                fundConfirmDate,
+            </if>
+            <if test=" assessmentTime!=null">
+                assessmentTime,
+            </if>
+            <if test=" assessmentValue!=null">
+                assessmentValue,
+            </if>
+            <if test=" assessmentIncreaseRate!=null and assessmentIncreaseRate!=''">
+                assessmentIncreaseRate,
+            </if>
+            <if test=" createTime!=null">
+                createTime,
+            </if>
+            <if test=" modifyTime!=null">
+                modifyTime,
+            </if>
+            <if test=" version!=null">
+                version,
+            </if>
+            <if test=" isDeleted!=null">
+                isDeleted,
+            </if>
+        </trim>
+        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+            <if test=" id!=null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                #{fundCode,jdbcType=VARCHAR},
+            </if>
+            <if test=" fundName!=null and fundName!=''">
+                #{fundName,jdbcType=VARCHAR},
+            </if>
+            <if test=" fundValue!=null">
+                #{fundValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" fundConfirmDate!=null">
+                #{fundConfirmDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" assessmentTime!=null">
+                #{assessmentTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" assessmentValue!=null">
+                #{assessmentValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" assessmentIncreaseRate!=null and assessmentIncreaseRate!=''">
+                #{assessmentIncreaseRate,jdbcType=VARCHAR},
+            </if>
+            <if test=" createTime!=null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" version!=null">
+                #{version,jdbcType=INTEGER},
+            </if>
+            <if test=" isDeleted!=null">
+                #{isDeleted,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.tony.billing.entity.FundHistoryValue">
+        UPDATE T_FUND_HISTORY_VALUE
+        <trim prefix="SET" suffixOverrides=",">
+            <if test=" id!=null">
+                id=#{id,jdbcType=BIGINT},
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                fundCode=#{fundCode,jdbcType=VARCHAR},
+            </if>
+            <if test=" fundName!=null and fundName!=''">
+                fundName=#{fundName,jdbcType=VARCHAR},
+            </if>
+            <if test=" fundValue!=null">
+                fundValue=#{fundValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" fundConfirmDate!=null">
+                fundConfirmDate=#{fundConfirmDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" assessmentTime!=null">
+                assessmentTime=#{assessmentTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" assessmentValue!=null">
+                assessmentValue=#{assessmentValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" assessmentIncreaseRate!=null and assessmentIncreaseRate!=''">
+                assessmentIncreaseRate=#{assessmentIncreaseRate,jdbcType=VARCHAR},
+            </if>
+            <if test=" createTime!=null">
+                createTime=#{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null">
+                modifyTime=#{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" version!=null">
+                version=#{version,jdbcType=INTEGER},
+            </if>
+            <if test=" isDeleted!=null">
+                isDeleted=#{isDeleted,jdbcType=INTEGER},
+            </if>
+        </trim>
+        WHERE id=#{id, jdbcType=BIGINT} AND isDeleted='0'
+    </update>
+<!--
+    <sql id="queryWhere">
+        <trim prefix="WHERE" prefixOverrides="and">
+            AND isDeleted='0'
+            <if test=" id!=null">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                and fundCode=#{fundCode,jdbcType=VARCHAR}
+            </if>
+            <if test=" fundName!=null and fundName!=''">
+                and fundName=#{fundName,jdbcType=VARCHAR}
+            </if>
+            <if test=" fundValue!=null">
+                and fundValue=#{fundValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" fundConfirmDate!=null">
+                and fundConfirmDate=#{fundConfirmDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" assessmentTime!=null">
+                and assessmentTime=#{assessmentTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" assessmentValue!=null">
+                and assessmentValue=#{assessmentValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" assessmentIncreaseRate!=null and assessmentIncreaseRate!=''">
+                and assessmentIncreaseRate=#{assessmentIncreaseRate,jdbcType=VARCHAR}
+            </if>
+            <if test=" createTime!=null">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" version!=null">
+                and version=#{version,jdbcType=INTEGER}
+            </if>
+            <if test=" isDeleted!=null">
+                and isDeleted=#{isDeleted,jdbcType=INTEGER}
+            </if>
+        </trim>
+    </sql>
+    <select id="countByQuery" parameterType="com.tony.billing.query.FundHistoryValueQuery"
+            resultType="Integer">
+        SELECT count(*) FROM T_FUND_HISTORY_VALUE
+        <include refid="queryWhere"/>
+    </select>
+
+    <select id="queryByPagination" parameterType="com.tony.billing.query.FundHistoryValueQuery"
+            resultMap="FundHistoryValueResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM T_FUND_HISTORY_VALUE
+        <include refid="queryWhere"/>
+        ORDER BY GMT_MODIFY DESC
+        <if test="mysqlPageFristItem != null">
+            <if test="pageSize != null and pageSize.toString() != ''">
+                limit #{mysqlPageFristItem},#{pageSize}
+            </if>
+        </if>
+    </select>
+-->
+    <select id="list" parameterType="com.tony.billing.entity.FundHistoryValue" resultMap="FundHistoryValueResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM T_FUND_HISTORY_VALUE
+        <trim prefix="WHERE" prefixOverrides="and">
+            AND isDeleted='0'
+            <if test=" id!=null">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                and fundCode=#{fundCode,jdbcType=VARCHAR}
+            </if>
+            <if test=" fundName!=null and fundName!=''">
+                and fundName=#{fundName,jdbcType=VARCHAR}
+            </if>
+            <if test=" fundValue!=null">
+                and fundValue=#{fundValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" fundConfirmDate!=null">
+                and fundConfirmDate=#{fundConfirmDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" assessmentTime!=null">
+                and assessmentTime=#{assessmentTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" assessmentValue!=null">
+                and assessmentValue=#{assessmentValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" assessmentIncreaseRate!=null and assessmentIncreaseRate!=''">
+                and assessmentIncreaseRate=#{assessmentIncreaseRate,jdbcType=VARCHAR}
+            </if>
+            <if test=" createTime!=null">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" version!=null">
+                and version=#{version,jdbcType=INTEGER}
+            </if>
+            <if test=" isDeleted!=null">
+                and isDeleted=#{isDeleted,jdbcType=INTEGER}
+            </if>
+        </trim>
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultMap="FundHistoryValueResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM T_FUND_HISTORY_VALUE WHERE id=#{id,jdbcType=BIGINT} AND isDeleted='0'
+    </select>
+
+    <update id="deleteById">
+        update T_FUND_HISTORY_VALUE set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} and userId=#{userId,jdbcType=BIGINT}
+    </update>
+
+    <select id="checkIsHistoryValueExists" resultType="java.lang.Integer">
+        select count(1) from T_FUND_HISTORY_VALUE where fundCode=#{fundCode,jdbcType=VARCHAR} and assessmentTime=#{assessmentTime,jdbcType=TIMESTAMP}
+    </select>
+
+    <select id="getFundHistoriesByFundCodes" resultMap="FundHistoryValueResultMap">
+        select <include refid="all"/> from t_fund_history_value
+        where fundConfirmDate=#{confirmDate,jdbcType=VARCHAR} and fundCode in
+        <foreach collection="fundCodes" open="(" close=")" separator="," item="fundCode">
+            #{fundCode,jdbcType=VARCHAR}
+        </foreach>
+        order by fundCode, assessmentTime desc
+    </select>
+</mapper>

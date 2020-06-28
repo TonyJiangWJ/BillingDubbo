@@ -1,6 +1,5 @@
 package com.tony.billing.entity.query;
 
-import com.tony.billing.annotation.Table;
 import com.tony.billing.entity.CostRecord;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -16,6 +16,9 @@ spring:
 dubbo:
   application:
     logger: slf4j
+  consumer:
+    check: false
+
 validation:
   fail:
     fast: false

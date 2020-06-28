@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tony.billing.dao.mapper.FundSoldInfoMapper">
+
+    <resultMap id="FundSoldInfoResultMap" type="com.tony.billing.entity.FundSoldInfo">
+        <result property="id" column="id" jdbcType="BIGINT"/>
+        <result property="userId" column="userId" jdbcType="BIGINT"/>
+        <result property="fundCode" column="fundCode" jdbcType="VARCHAR"/>
+        <result property="fundName" column="fundName" jdbcType="VARCHAR"/>
+        <result property="originValue" column="originValue" jdbcType="DECIMAL"/>
+        <result property="soldValue" column="soldValue" jdbcType="DECIMAL"/>
+        <result property="soldAmount" column="soldAmount" jdbcType="DECIMAL"/>
+        <result property="soldIncome" column="soldIncome" jdbcType="DECIMAL"/>
+        <result property="soldFee" column="soldFee" jdbcType="DECIMAL"/>
+        <result property="soldDate" column="soldDate" jdbcType="TIMESTAMP"/>
+        <result property="soldConfirmDate" column="soldConfirmDate" jdbcType="TIMESTAMP"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="modifyTime" column="modifyTime" jdbcType="TIMESTAMP"/>
+        <result property="version" column="version" jdbcType="INTEGER"/>
+        <result property="isDeleted" column="isDeleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="all">
+        id,
+        userId,
+        fundCode,
+        fundName,
+        originValue,
+        soldValue,
+        soldAmount,
+        soldIncome,
+        soldFee,
+        soldDate,
+        soldConfirmDate,
+        createTime,
+        modifyTime,
+        version,
+        isDeleted
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundSoldInfo">
+        INSERT INTO T_FUND_SOLD_INFO
+        <trim prefix="(" suffix=")"  suffixOverrides=",">
+            <if test=" id!=null">
+                id,
+            </if>
+            <if test=" userId!=null">
+                userId,
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                fundCode,
+            </if>
+            <if test=" fundName!=null and fundName!=''">
+                fundName,
+            </if>
+            <if test=" originValue!=null">
+                originValue,
+            </if>
+            <if test=" soldValue!=null">
+                soldValue,
+            </if>
+            <if test=" soldAmount!=null">
+                soldAmount,
+            </if>
+            <if test=" soldIncome!=null">
+                soldIncome,
+            </if>
+            <if test=" soldFee!=null">
+                soldFee,
+            </if>
+            <if test=" soldDate!=null">
+                soldDate,
+            </if>
+            <if test=" soldConfirmDate!=null">
+                soldConfirmDate,
+            </if>
+            <if test=" createTime!=null">
+                createTime,
+            </if>
+            <if test=" modifyTime!=null">
+                modifyTime,
+            </if>
+            <if test=" version!=null">
+                version,
+            </if>
+            <if test=" isDeleted!=null">
+                isDeleted,
+            </if>
+        </trim>
+        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+            <if test=" id!=null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test=" userId!=null">
+                #{userId,jdbcType=BIGINT},
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                #{fundCode,jdbcType=VARCHAR},
+            </if>
+            <if test=" fundName!=null and fundName!=''">
+                #{fundName,jdbcType=VARCHAR},
+            </if>
+            <if test=" originValue!=null">
+                #{originValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" soldValue!=null">
+                #{soldValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" soldAmount!=null">
+                #{soldAmount,jdbcType=DECIMAL},
+            </if>
+            <if test=" soldIncome!=null">
+                #{soldIncome,jdbcType=DECIMAL},
+            </if>
+            <if test=" soldFee!=null">
+                #{soldFee,jdbcType=DECIMAL},
+            </if>
+            <if test=" soldDate!=null">
+                #{soldDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" soldConfirmDate!=null">
+                #{soldConfirmDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" createTime!=null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" version!=null">
+                #{version,jdbcType=INTEGER},
+            </if>
+            <if test=" isDeleted!=null">
+                #{isDeleted,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.tony.billing.entity.FundSoldInfo">
+        UPDATE T_FUND_SOLD_INFO
+        <trim prefix="SET" suffixOverrides=",">
+            <if test=" id!=null">
+                id=#{id,jdbcType=BIGINT},
+            </if>
+            <if test=" userId!=null">
+                userId=#{userId,jdbcType=BIGINT},
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                fundCode=#{fundCode,jdbcType=VARCHAR},
+            </if>
+            <if test=" fundName!=null and fundName!=''">
+                fundName=#{fundName,jdbcType=VARCHAR},
+            </if>
+            <if test=" originValue!=null">
+                originValue=#{originValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" soldValue!=null">
+                soldValue=#{soldValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" soldAmount!=null">
+                soldAmount=#{soldAmount,jdbcType=DECIMAL},
+            </if>
+            <if test=" soldIncome!=null">
+                soldIncome=#{soldIncome,jdbcType=DECIMAL},
+            </if>
+            <if test=" soldFee!=null">
+                soldFee=#{soldFee,jdbcType=DECIMAL},
+            </if>
+            <if test=" soldDate!=null">
+                soldDate=#{soldDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" soldConfirmDate!=null">
+                soldConfirmDate=#{soldConfirmDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" createTime!=null">
+                createTime=#{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null">
+                modifyTime=#{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" version!=null">
+                version=#{version,jdbcType=INTEGER},
+            </if>
+            <if test=" isDeleted!=null">
+                isDeleted=#{isDeleted,jdbcType=INTEGER},
+            </if>
+        </trim>
+        WHERE id=#{id, jdbcType=BIGINT} AND isDeleted='0'
+    </update>
+<!--
+    <sql id="queryWhere">
+        <trim prefix="WHERE" prefixOverrides="and">
+            AND isDeleted='0'
+            <if test=" id!=null">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" userId!=null">
+                and userId=#{userId,jdbcType=BIGINT}
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                and fundCode=#{fundCode,jdbcType=VARCHAR}
+            </if>
+            <if test=" fundName!=null and fundName!=''">
+                and fundName=#{fundName,jdbcType=VARCHAR}
+            </if>
+            <if test=" originValue!=null">
+                and originValue=#{originValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" soldValue!=null">
+                and soldValue=#{soldValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" soldAmount!=null">
+                and soldAmount=#{soldAmount,jdbcType=DECIMAL}
+            </if>
+            <if test=" soldIncome!=null">
+                and soldIncome=#{soldIncome,jdbcType=DECIMAL}
+            </if>
+            <if test=" soldFee!=null">
+                and soldFee=#{soldFee,jdbcType=DECIMAL}
+            </if>
+            <if test=" soldDate!=null">
+                and soldDate=#{soldDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" soldConfirmDate!=null">
+                and soldConfirmDate=#{soldConfirmDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" createTime!=null">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" version!=null">
+                and version=#{version,jdbcType=INTEGER}
+            </if>
+            <if test=" isDeleted!=null">
+                and isDeleted=#{isDeleted,jdbcType=INTEGER}
+            </if>
+        </trim>
+    </sql>
+    <select id="countByQuery" parameterType="com.tony.billing.query.FundSoldInfoQuery"
+            resultType="Integer">
+        SELECT count(*) FROM T_FUND_SOLD_INFO
+        <include refid="queryWhere"/>
+    </select>
+
+    <select id="queryByPagination" parameterType="com.tony.billing.query.FundSoldInfoQuery"
+            resultMap="FundSoldInfoResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM T_FUND_SOLD_INFO
+        <include refid="queryWhere"/>
+        ORDER BY GMT_MODIFY DESC
+        <if test="mysqlPageFristItem != null">
+            <if test="pageSize != null and pageSize.toString() != ''">
+                limit #{mysqlPageFristItem},#{pageSize}
+            </if>
+        </if>
+    </select>
+-->
+    <select id="list" parameterType="com.tony.billing.entity.FundSoldInfo" resultMap="FundSoldInfoResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM T_FUND_SOLD_INFO
+        <trim prefix="WHERE" prefixOverrides="and">
+            AND isDeleted='0'
+            <if test=" id!=null">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" userId!=null">
+                and userId=#{userId,jdbcType=BIGINT}
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                and fundCode=#{fundCode,jdbcType=VARCHAR}
+            </if>
+            <if test=" fundName!=null and fundName!=''">
+                and fundName=#{fundName,jdbcType=VARCHAR}
+            </if>
+            <if test=" originValue!=null">
+                and originValue=#{originValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" soldValue!=null">
+                and soldValue=#{soldValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" soldAmount!=null">
+                and soldAmount=#{soldAmount,jdbcType=DECIMAL}
+            </if>
+            <if test=" soldIncome!=null">
+                and soldIncome=#{soldIncome,jdbcType=DECIMAL}
+            </if>
+            <if test=" soldFee!=null">
+                and soldFee=#{soldFee,jdbcType=DECIMAL}
+            </if>
+            <if test=" soldDate!=null">
+                and soldDate=#{soldDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" soldConfirmDate!=null">
+                and soldConfirmDate=#{soldConfirmDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" createTime!=null">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" version!=null">
+                and version=#{version,jdbcType=INTEGER}
+            </if>
+            <if test=" isDeleted!=null">
+                and isDeleted=#{isDeleted,jdbcType=INTEGER}
+            </if>
+        </trim>
+    </select>
+
+    <select id="getById" parameterType="java.lang.Long" resultMap="FundSoldInfoResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM T_FUND_SOLD_INFO WHERE id=#{id,jdbcType=BIGINT} AND isDeleted='0'
+    </select>
+
+    <update id="deleteById">
+        update T_FUND_SOLD_INFO set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} and userId=#{userId,jdbcType=BIGINT}
+    </update>
+</mapper>
