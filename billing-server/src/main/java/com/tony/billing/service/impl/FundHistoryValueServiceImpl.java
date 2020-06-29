@@ -188,9 +188,16 @@ public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValu
             List<FundHistoryValue> latestHistoryValues = mapper.getLatestFundHistoryValueByFundCodes(
                     userFunds.stream().map(FundInfo::getFundCode).collect(Collectors.toList()), assessmentDate
             );
+
+            Map<String, FundHistoryValue> latestHistoryValueMap = new HashMap<>(latestHistoryValues.size());
             if (CollectionUtils.isNotEmpty(latestHistoryValues)) {
-                Map<String, FundHistoryValue> latestHistoryValueMap = new HashMap<>(latestHistoryValues.size());
                 latestHistoryValues.forEach(fundHistoryValue -> latestHistoryValueMap.put(fundHistoryValue.getFundCode(), fundHistoryValue));
+                response.setSummaryFundInfos(getFundChangedInfos(userFunds, latestHistoryValueMap));
+                response.setFundDetailInfos(getFundChangedInfos(userFundDetailList, latestHistoryValueMap));
+                response.setAssessmentDate(assessmentDate);
+                // 计算总额
+                response.calculateIncreaseInfo();
+            } else {
                 response.setSummaryFundInfos(getFundChangedInfos(userFunds, latestHistoryValueMap));
                 response.setFundDetailInfos(getFundChangedInfos(userFundDetailList, latestHistoryValueMap));
                 response.setAssessmentDate(assessmentDate);
