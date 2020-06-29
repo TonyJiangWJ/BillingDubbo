@@ -25,5 +25,13 @@ public interface FundHistoryValueMapper extends AbstractMapper<FundHistoryValue>
      * @param fundCodes
      * @return
      */
-    List<FundHistoryValue> getFundHistoriesByFundCodes(@Param("fundCodes") List<String> fundCodes, @Param("confirmDate") String confirmDate);
+    List<FundHistoryValue> getFundHistoriesByFundCodes(@Param("fundCodes") List<String> fundCodes, @Param("assessmentDate") String assessmentDate);
+
+    /**
+     * 获取最新估值信息
+     * @param fundCodes
+     * @param assessmentDate
+     * @return
+     */
+    List<FundHistoryValue> getLatestFundHistoryValueByFundCodes(@Param("fundCodes") List<String> fundCodes, @Param("assessmentDate") String assessmentDate);
 }

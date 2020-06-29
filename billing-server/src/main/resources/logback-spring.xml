@@ -13,6 +13,14 @@
         </encoder>
     </appender>
 
+    <appender name="FILE-APP" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_PATH}/app.log</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--格式化输出：%d表示日期，%thread表示线程名，%-5level：级别从左显示5个字符宽度%msg：日志消息，%n是换行符-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
     <appender name="FILE-INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <filter class="ch.qos.logback.classic.filter.LevelFilter">
             <level>INFO</level>
@@ -106,7 +114,7 @@
         <queueSize>500</queueSize>
         <appender-ref ref="FILE-DEBUG"/>
     </appender>
-    、
+
     <appender name="asyncFileAppenderError" class="ch.qos.logback.classic.AsyncAppender">
         <discardingThreshold>0</discardingThreshold>
         <queueSize>500</queueSize>
@@ -114,7 +122,12 @@
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
+        <springProfile name="dev">
+            <appender-ref ref="STDOUT"/>
+        </springProfile>
+        <springProfile name="release">
+            <appender-ref ref="FILE-APP"/>
+        </springProfile>
         <appender-ref ref="asyncFileAppenderInfo"/>
         <appender-ref ref="asyncFileAppenderDebug"/>
         <appender-ref ref="asyncFileAppenderError"/>

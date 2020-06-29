@@ -8,6 +8,7 @@
         <result property="fundName" column="fundName" jdbcType="VARCHAR"/>
         <result property="fundValue" column="fundValue" jdbcType="DECIMAL"/>
         <result property="fundConfirmDate" column="fundConfirmDate" jdbcType="TIMESTAMP"/>
+        <result property="assessmentDate" column="assessmentDate" jdbcType="TIMESTAMP"/>
         <result property="assessmentTime" column="assessmentTime" jdbcType="TIMESTAMP"/>
         <result property="assessmentValue" column="assessmentValue" jdbcType="DECIMAL"/>
         <result property="assessmentIncreaseRate" column="assessmentIncreaseRate" jdbcType="VARCHAR"/>
@@ -23,6 +24,7 @@
         fundName,
         fundValue,
         fundConfirmDate,
+        assessmentDate,
         assessmentTime,
         assessmentValue,
         assessmentIncreaseRate,
@@ -48,6 +50,9 @@
             </if>
             <if test=" fundConfirmDate!=null">
                 fundConfirmDate,
+            </if>
+            <if test=" assessmentDate!=null">
+                assessmentDate,
             </if>
             <if test=" assessmentTime!=null">
                 assessmentTime,
@@ -86,6 +91,9 @@
             </if>
             <if test=" fundConfirmDate!=null">
                 #{fundConfirmDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" assessmentDate!=null">
+                #{assessmentDate,jdbcType=TIMESTAMP},
             </if>
             <if test=" assessmentTime!=null">
                 #{assessmentTime,jdbcType=TIMESTAMP},
@@ -127,6 +135,9 @@
             </if>
             <if test=" fundConfirmDate!=null">
                 fundConfirmDate=#{fundConfirmDate,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" assessmentDate!=null">
+                assessmentDate=#{assessmentDate,jdbcType=TIMESTAMP},
             </if>
             <if test=" assessmentTime!=null">
                 assessmentTime=#{assessmentTime,jdbcType=TIMESTAMP},
@@ -170,6 +181,9 @@
             </if>
             <if test=" fundConfirmDate!=null">
                 and fundConfirmDate=#{fundConfirmDate,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" assessmentDate!=null">
+                and assessmentDate=#{assessmentDate,jdbcType=TIMESTAMP}
             </if>
             <if test=" assessmentTime!=null">
                 and assessmentTime=#{assessmentTime,jdbcType=TIMESTAMP}
@@ -235,6 +249,9 @@
             <if test=" fundConfirmDate!=null">
                 and fundConfirmDate=#{fundConfirmDate,jdbcType=TIMESTAMP}
             </if>
+            <if test=" assessmentDate!=null">
+                and assessmentDate=#{assessmentDate,jdbcType=TIMESTAMP}
+            </if>
             <if test=" assessmentTime!=null">
                 and assessmentTime=#{assessmentTime,jdbcType=TIMESTAMP}
             </if>
@@ -275,10 +292,21 @@
 
     <select id="getFundHistoriesByFundCodes" resultMap="FundHistoryValueResultMap">
         select <include refid="all"/> from t_fund_history_value
-        where fundConfirmDate=#{confirmDate,jdbcType=VARCHAR} and fundCode in
+        where assessmentDate=#{assessmentDate,jdbcType=VARCHAR} and fundCode in
         <foreach collection="fundCodes" open="(" close=")" separator="," item="fundCode">
             #{fundCode,jdbcType=VARCHAR}
         </foreach>
         order by fundCode, assessmentTime desc
+    </select>
+
+    <select id="getLatestFundHistoryValueByFundCodes" resultMap="FundHistoryValueResultMap">
+        select <include refid="all"/> from t_fund_history_value
+        where fundCode in
+        <foreach collection="fundCodes" open="(" close=")" separator="," item="fundCode">
+            #{fundCode,jdbcType=VARCHAR}
+        </foreach>
+        and id IN (
+            SELECT max(id) AS id FROM t_fund_history_value tfhv WHERE assessmentDate=#{assessmentDate,jdbcType=VARCHAR} GROUP BY fundCode
+        )
     </select>
 </mapper>

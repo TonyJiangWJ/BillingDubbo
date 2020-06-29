@@ -6,7 +6,6 @@ import lombok.ToString;
 import org.apache.dubbo.common.utils.CollectionUtils;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +15,7 @@ import java.util.Map;
 @Data
 @ToString(callSuper = true)
 public class DailyFundHistoryValueResponse extends BaseResponse {
-    private String confirmDate;
+    private String assessmentDate;
     private Integer length;
     private Map<String, List<String>> increaseRateMapping;
     private Map<String, String> fundInfoMap;

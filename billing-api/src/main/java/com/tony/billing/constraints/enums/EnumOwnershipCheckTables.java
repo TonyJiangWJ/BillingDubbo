@@ -14,6 +14,7 @@ public enum EnumOwnershipCheckTables {
     COST_RECORD("t_cost_info", "tradeNo","userId","账单表"),
     COST_RECORD_WITH_ID("t_cost_info", "id","userId","账单表"),
     TAG_INFO("t_tag_info", "标签信息表"),
+    FUND_INFO("t_fund_info", "基金信息表")
     ;
     private String tableName;
     private String primaryKey;

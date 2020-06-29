@@ -25,7 +25,7 @@ public class FundInfoServiceImpl extends AbstractService<FundInfo, FundInfoMappe
         FundInfo fundInfo = new FundInfo();
         fundInfo.setUserId(userId);
         fundInfo.setIsDeleted(EnumDeleted.NOT_DELETED.val());
-        fundInfo.setInStore(EnumYesOrNo.NO.val());
+        fundInfo.setInStore(EnumYesOrNo.YES.val());
 
         List<FundInfo> fundInfos = mapper.list(fundInfo);
 

@@ -19,6 +19,7 @@ public class FundHistoryValue extends BaseVersionedEntity {
     private String fundName;
     private BigDecimal fundValue;
     private Date fundConfirmDate;
+    private Date assessmentDate;
     private Date assessmentTime;
     private BigDecimal assessmentValue;
     private String assessmentIncreaseRate;

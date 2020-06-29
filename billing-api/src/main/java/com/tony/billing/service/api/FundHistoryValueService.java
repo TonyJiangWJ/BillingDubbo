@@ -1,5 +1,6 @@
 package com.tony.billing.service.api;
 
+import com.tony.billing.response.fund.DailyFundChangedResponse;
 import com.tony.billing.response.fund.DailyFundHistoryValueResponse;
 
 /**
@@ -15,8 +16,16 @@ public interface FundHistoryValueService {
     /**
      * 获取用户基金指定日期的估值变化
      *
-     * @param confirmDate 确认时间
+     * @param assessmentDate 估算日期
      * @return
      */
-    DailyFundHistoryValueResponse getFundHistoryValuesByConfirmDate(String confirmDate);
+    DailyFundHistoryValueResponse getFundHistoryValuesByAssessmentDate(String assessmentDate);
+
+    /**
+     * 获取所有基金的估值变化明细
+     *
+     * @param assessmentDate 估算日期
+     * @return
+     */
+    DailyFundChangedResponse getFundChangedInfosByAssessmentDate(String assessmentDate);
 }

@@ -27,4 +27,6 @@ public interface FundInfoService {
      * @return
      */
     List<FundInfo> listGroupedFundsByUserId(Long userId);
+
+    boolean deleteById(Long id);
 }
