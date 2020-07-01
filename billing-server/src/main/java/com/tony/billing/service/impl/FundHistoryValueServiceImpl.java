@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Value;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -76,8 +75,9 @@ public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValu
         boolean succeed = false;
         // 尝试三次
         while (!succeed && tryTime-- > 0) {
-            try {
-                Response response = client.newCall(request).execute();
+            try (
+                    Response response = client.newCall(request).execute()
+            ) {
                 if (response.isSuccessful() && response.body() != null) {
                     String responseBodyStr = response.body().string();
                     responseBodyStr = responseBodyStr.replaceAll("jsonpgz\\(", "").replaceAll("\\);", "");
@@ -130,7 +130,6 @@ public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValu
                 Map<String, List<String>> resultMap = fundHistoryValues.entrySet().stream().map(entry -> {
                     String fundCode = entry.getKey();
                     List<String> increaseRateList = entry.getValue().stream().map(FundHistoryValue::getAssessmentIncreaseRate).collect(Collectors.toList());
-                    Collections.reverse(increaseRateList);
                     Map<String, List<String>> map = new HashMap<>(1);
                     map.put(fundCode, increaseRateList);
                     return map;
@@ -139,10 +138,10 @@ public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValu
                     return a;
                 });
                 response.setIncreaseRateMapping(resultMap);
-                response.checkMinLength();
                 // 计算总增长率
                 generateTotalIncreaseRateInfo(response, userId);
-                response.revertFundCodeAndName();
+                response.reverseFundCodeAndName();
+                response.reverseRateList();
             }
         }
         return response;
@@ -152,6 +151,7 @@ public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValu
         List<FundInfo> userFundsWithValue = fundInfoService.listGroupedFundsByUserId(userId);
         List<String> totalIncreaseRateList = new ArrayList<>();
         logger.debug("用户持有总量信息：{}", JSON.toJSONString(userFundsWithValue));
+        response.calMaxLength();
         for (int i = 0; i < response.getLength(); i++) {
             totalIncreaseRateList.add(calculateResult(i, response.getIncreaseRateMapping(), userFundsWithValue));
         }
@@ -164,12 +164,12 @@ public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValu
         BigDecimal totalValue = BigDecimal.ZERO;
         for (FundInfo fundInfo : userFundsWithValue) {
             List<String> rateList = increaseRateMapping.get(fundInfo.getFundCode());
-            if (CollectionUtils.isNotEmpty(rateList)) {
+            if (CollectionUtils.isNotEmpty(rateList) && index < rateList.size()) {
                 String rate = rateList.get(index);
                 totalIncrease = totalIncrease.add(new BigDecimal(rate).multiply(fundInfo.getPurchaseAmount().multiply(fundInfo.getPurchaseValue())));
                 totalValue = totalValue.add(fundInfo.getPurchaseValue().multiply(fundInfo.getPurchaseAmount()));
             } else {
-                logger.warn("fund[{}]'s rate is not exist", fundInfo.getFundCode());
+                logger.warn("fund[{}]'s rate is not exist, index: {}", fundInfo.getFundCode(), index);
             }
         }
         return totalIncrease.divide(totalValue, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
@@ -216,7 +216,7 @@ public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValu
                 changedModel.setFundCode(fundInfo.getFundCode());
                 changedModel.setFundName(fundInfo.getFundName());
                 changedModel.setFundPurchaseValue(fundInfo.getPurchaseValue().toString());
-                changedModel.setPurchaseAmount(fundInfo.getPurchaseAmount().toString());
+                changedModel.setPurchaseAmount(fundInfo.getPurchaseAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString());
                 changedModel.setPurchaseCost(fundInfo.getPurchaseCost().toString());
                 changedModel.setPurchaseFee(fundInfo.getPurchaseFee().toString());
                 changedModel.setPurchaseDate(fundInfo.getPurchaseDate());

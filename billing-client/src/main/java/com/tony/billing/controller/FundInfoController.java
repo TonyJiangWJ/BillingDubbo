@@ -1,21 +1,33 @@
 package com.tony.billing.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.tony.billing.constants.enums.EnumYesOrNo;
 import com.tony.billing.entity.FundInfo;
 import com.tony.billing.request.fund.FundAddRequest;
 import com.tony.billing.request.fund.FundDeleteRequest;
+import com.tony.billing.request.fund.FundInfoQueryRequest;
 import com.tony.billing.response.BaseResponse;
+import com.tony.billing.response.fund.FundInfoQueryResponse;
 import com.tony.billing.service.api.FundInfoService;
+import com.tony.billing.util.RedisUtils;
 import com.tony.billing.util.ResponseUtil;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author jiangwenjie 2020/6/29
@@ -26,6 +38,15 @@ public class FundInfoController extends BaseController {
 
     @Reference
     private FundInfoService fundInfoService;
+
+    @Autowired
+    private RedisUtils redisUtils;
+
+    @Value("${fund.value.query.url:http://fundgz.1234567.com.cn/js/%s.js}")
+    private String fundValueQueryUrl;
+
+    private final String FUND_INFO_HASH_KEY = "fund_info_hash";
+    private final String FUND_INFO_KEY_PREFIX = "fund_code_";
 
     @RequestMapping(value = "/fund/info/put", method = RequestMethod.POST)
     public BaseResponse addFundInfo(@ModelAttribute("request") @Validated FundAddRequest request) {
@@ -57,5 +78,45 @@ public class FundInfoController extends BaseController {
             return ResponseUtil.error();
         }
 
+    }
+
+    @RequestMapping(value = "/fund/info/query", method = RequestMethod.POST)
+    public FundInfoQueryResponse queryFundInfo(@ModelAttribute("request") @Validated FundInfoQueryRequest request) {
+        FundInfoQueryResponse response = ResponseUtil.success(new FundInfoQueryResponse());
+        response.setFundCode(request.getFundCode());
+        if (StringUtils.isEmpty(request.getPurchaseDate())) {
+            Optional<String> fundName = redisUtils.hGet(FUND_INFO_HASH_KEY, FUND_INFO_KEY_PREFIX + request.getFundCode(), String.class);
+            if (fundName.isPresent()) {
+                response.setFundName(fundName.get());
+                return response;
+            }
+
+            String queryUrl = String.format(fundValueQueryUrl, request.getFundCode());
+            OkHttpClient client = new OkHttpClient.Builder().callTimeout(10, TimeUnit.SECONDS).build();
+            Request req = new Request.Builder().url(queryUrl).build();
+
+            try (
+                    Response res = client.newCall(req).execute()
+            ) {
+                if (res.isSuccessful() && res.body() != null) {
+                    String responseBodyStr = res.body().string();
+                    responseBodyStr = responseBodyStr.replaceAll("jsonpgz\\(", "").replaceAll("\\);", "");
+                    logger.debug("responseBody: {}", responseBodyStr);
+                    JSONObject jsonObject = JSONObject.parseObject(responseBodyStr);
+
+                    response.setFundConfirmedDate(jsonObject.getString("jzrq"));
+                    response.setFundConfirmedValue(jsonObject.getString("dwjz"));
+                    response.setFundName(jsonObject.getString("name"));
+
+                    if (StringUtils.isNotEmpty(response.getFundName())) {
+                        redisUtils.hSet(FUND_INFO_HASH_KEY, FUND_INFO_KEY_PREFIX + request.getFundCode(), response.getFundName());
+                        return response;
+                    }
+                }
+            } catch (IOException e) {
+                logger.error("获取基金:" + request.getFundCode() + " 估值信息失败", e);
+            }
+        }
+        return ResponseUtil.dataNotExisting(response);
     }
 }

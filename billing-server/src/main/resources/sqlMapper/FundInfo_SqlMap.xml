@@ -37,7 +37,7 @@
         isDeleted,
         inStore
     </sql>
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundInfo">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundInfo" flushCache="true">
         INSERT INTO T_FUND_INFO
         <trim prefix="(" suffix=")"  suffixOverrides=",">
             <if test=" id!=null">
@@ -134,7 +134,7 @@
             </if>
         </trim>
     </insert>
-    <update id="update" parameterType="com.tony.billing.entity.FundInfo">
+    <update id="update" parameterType="com.tony.billing.entity.FundInfo" flushCache="true">
         UPDATE T_FUND_INFO
         <trim prefix="SET" suffixOverrides=",">
             <if test=" id!=null">
@@ -256,7 +256,7 @@
         </if>
     </select>
 -->
-    <select id="list" parameterType="com.tony.billing.entity.FundInfo" resultMap="FundInfoResultMap">
+    <select id="list" parameterType="com.tony.billing.entity.FundInfo" resultMap="FundInfoResultMap" useCache="true">
         SELECT
         <include refid="all"/>
         FROM T_FUND_INFO
@@ -310,21 +310,29 @@
         </trim>
     </select>
 
-    <select id="getById" parameterType="java.lang.Long" resultMap="FundInfoResultMap">
+    <select id="getById" parameterType="java.lang.Long" resultMap="FundInfoResultMap" useCache="true">
         SELECT
         <include refid="all"/>
         FROM T_FUND_INFO WHERE id=#{id,jdbcType=BIGINT} AND isDeleted='0'
     </select>
 
-    <update id="deleteById">
+    <update id="deleteById" flushCache="true">
         update T_FUND_INFO set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} and userId=#{userId,jdbcType=BIGINT}
     </update>
 
-    <select id="getFundInfoDistinct" resultType="com.tony.billing.entity.FundInfo">
+    <select id="getFundInfoDistinct" resultType="com.tony.billing.entity.FundInfo" useCache="true">
         select distinct fundCode, fundName from t_fund_info
     </select>
 
-    <select id="getFundInfoDistinctByUser" resultType="com.tony.billing.entity.FundInfo">
+    <select id="getFundInfoDistinctByUser" resultType="com.tony.billing.entity.FundInfo" useCache="true">
         select distinct fundCode, fundName from t_fund_info where inStore='1' and userId=#{userId,jdbcType=BIGINT} and isDeleted='0'
+    </select>
+
+    <select id="listInStoreFunds" resultMap="FundInfoResultMap">
+        select <include refid="all"/> from t_fund_info where userId=#{userId,jdbcType=BIGINT} and inStore='1' and isDeleted='0'
+        and id in
+        <foreach collection="fundIds" item="id" separator="," open="(" close=")">
+            #{id,jdbcType=BIGINT}
+        </foreach>
     </select>
 </mapper>

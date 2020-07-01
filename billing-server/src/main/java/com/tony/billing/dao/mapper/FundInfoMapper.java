@@ -23,4 +23,12 @@ public interface FundInfoMapper extends AbstractMapper<FundInfo> {
      * @return
      */
     List<FundInfo> getFundInfoDistinctByUser(@Param("userId") Long userId);
+
+    /**
+     * 根据基金id获取当前持有的基金列表
+     * @param fundIds
+     * @param userId
+     * @return
+     */
+    List<FundInfo> listInStoreFunds(@Param("fundIds") List<Long> fundIds, @Param("userId") Long userId);
 }

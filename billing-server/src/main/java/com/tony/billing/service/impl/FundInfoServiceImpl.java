@@ -1,14 +1,17 @@
 package com.tony.billing.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.base.Preconditions;
 import com.tony.billing.constants.enums.EnumDeleted;
 import com.tony.billing.constants.enums.EnumYesOrNo;
 import com.tony.billing.dao.mapper.FundInfoMapper;
 import com.tony.billing.entity.FundInfo;
 import com.tony.billing.service.api.FundInfoService;
 import com.tony.billing.service.base.AbstractService;
+import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.dubbo.config.annotation.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -61,5 +64,19 @@ public class FundInfoServiceImpl extends AbstractService<FundInfo, FundInfoMappe
                     .collect(Collectors.toList());
         }
         return fundInfos;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean markFundsAsSold(List<Long> fundIds) {
+        Preconditions.checkState(CollectionUtils.isNotEmpty(fundIds), "基金id列表不能为空");
+        List<FundInfo> inStoreFunds = mapper.listInStoreFunds(fundIds, UserIdContainer.getUserId());
+        if (CollectionUtils.isNotEmpty(inStoreFunds)) {
+            inStoreFunds.forEach(fundInfo -> {
+                fundInfo.setInStore(EnumYesOrNo.NO.val());
+                super.update(fundInfo);
+            });
+        }
+        return false;
     }
 }

@@ -29,4 +29,6 @@ public interface FundInfoService {
     List<FundInfo> listGroupedFundsByUserId(Long userId);
 
     boolean deleteById(Long id);
+
+    boolean markFundsAsSold(List<Long> fundIds);
 }
