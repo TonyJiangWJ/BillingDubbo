@@ -131,6 +131,7 @@ public class FundInfoController extends BaseController {
     public BaseResponse updateFundInfo(@ModelAttribute("request") @Validated FundUpdateRequest request) {
         FundInfo fundInfo = new FundInfo();
         BeanUtils.copyProperties(request, fundInfo);
+        fundInfo.setConfirmDate(request.getPurchaseConfirmDate());
         if (fundInfoService.update(fundInfo)) {
             return ResponseUtil.success();
         } else {
