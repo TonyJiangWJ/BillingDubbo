@@ -18,6 +18,7 @@ dubbo:
     logger: slf4j
   consumer:
     check: false
+    timeout: 5000
 
 validation:
   fail:

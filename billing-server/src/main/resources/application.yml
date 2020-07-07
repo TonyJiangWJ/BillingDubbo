@@ -39,6 +39,7 @@ dubbo:
     port: -1
   provider:
     filter: dubboContextFilter
+    timeout: 5000
 # server properties
 system:
   host:
