@@ -26,7 +26,7 @@ public class FundAddModel implements Serializable {
     private Date purchaseDate;
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date purchaseConfirmedDate;
+    private Date purchaseConfirmDate;
     @NotEmpty
     private String purchaseCost;
     @NotEmpty

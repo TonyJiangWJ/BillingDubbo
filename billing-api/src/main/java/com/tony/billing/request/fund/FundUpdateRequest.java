@@ -27,7 +27,7 @@ public class FundUpdateRequest extends BaseVersionedRequest {
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date purchaseDate;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date purchaseConfirmedDate;
+    private Date purchaseConfirmDate;
     private BigDecimal purchaseCost;
     private BigDecimal purchaseAmount;
     private BigDecimal purchaseValue;

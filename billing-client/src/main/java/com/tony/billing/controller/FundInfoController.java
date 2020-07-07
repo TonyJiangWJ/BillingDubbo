@@ -66,7 +66,7 @@ public class FundInfoController extends BaseController {
         fundInfo.setPurchaseCost(new BigDecimal(request.getPurchaseCost()));
         fundInfo.setPurchaseFee(new BigDecimal(request.getPurchaseFee()));
         fundInfo.setInStore(EnumYesOrNo.YES.val());
-        fundInfo.setConfirmDate(request.getPurchaseConfirmedDate());
+        fundInfo.setConfirmDate(request.getPurchaseConfirmDate());
         fundInfo.setPurchaseDate(request.getPurchaseDate());
 
         if (fundInfoService.insert(fundInfo) > 0) {

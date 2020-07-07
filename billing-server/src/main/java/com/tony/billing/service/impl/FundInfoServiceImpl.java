@@ -26,9 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -215,7 +213,7 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
             fundInfo.setPurchaseValue(new BigDecimal(addFund.getPurchaseValue()));
             fundInfo.setPurchaseCost(new BigDecimal(addFund.getPurchaseCost()));
             fundInfo.setPurchaseFee(new BigDecimal(addFund.getPurchaseFee()));
-            fundInfo.setConfirmDate(addFund.getPurchaseConfirmedDate());
+            fundInfo.setConfirmDate(addFund.getPurchaseConfirmDate());
             fundInfo.setPurchaseDate(addFund.getPurchaseDate());
             fundInfo.setModifyTime(new Date());
             fundInfo.setCreateTime(new Date());

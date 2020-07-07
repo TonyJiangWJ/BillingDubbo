@@ -26,7 +26,7 @@ public class FundAddRequest extends BaseRequest {
     private Date purchaseDate;
     @NotNull
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date purchaseConfirmedDate;
+    private Date purchaseConfirmDate;
     @NotEmpty
     private String purchaseCost;
     @NotEmpty
