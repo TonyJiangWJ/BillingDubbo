@@ -18,6 +18,7 @@ public class FundValueChangedModel implements Serializable {
     private Long id;
     private String fundCode;
     private String fundName;
+    private Integer version;
     /**
      * 买入时间
      */

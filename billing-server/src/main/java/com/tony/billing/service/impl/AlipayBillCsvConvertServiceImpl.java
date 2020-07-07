@@ -5,7 +5,7 @@ import com.tony.billing.constants.enums.EnumHidden;
 import com.tony.billing.dao.mapper.CostRecordMapper;
 import com.tony.billing.entity.CostRecord;
 import com.tony.billing.service.api.AlipayBillCsvConvertService;
-import com.tony.billing.service.base.AbstractService;
+import com.tony.billing.service.base.AbstractServiceImpl;
 import com.tony.billing.util.MoneyUtil;
 import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
  * @author by TonyJiang on 2017/6/3.
  */
 @Service
-public class AlipayBillCsvConvertServiceImpl extends AbstractService<CostRecord, CostRecordMapper> implements AlipayBillCsvConvertService {
+public class AlipayBillCsvConvertServiceImpl extends AbstractServiceImpl<CostRecord, CostRecordMapper> implements AlipayBillCsvConvertService {
 
     private Logger logger = LoggerFactory.getLogger(AlipayBillCsvConvertService.class);
 

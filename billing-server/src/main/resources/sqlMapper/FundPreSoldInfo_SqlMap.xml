@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tony.billing.dao.mapper.FundSoldInfoMapper">
+<mapper namespace="com.tony.billing.dao.mapper.FundPreSoldInfoMapper">
 
-    <resultMap id="FundSoldInfoResultMap" type="com.tony.billing.entity.FundSoldInfo">
+    <resultMap id="FundPreSoldInfoResultMap" type="com.tony.billing.entity.FundPreSoldInfo">
         <result property="id" column="id" jdbcType="BIGINT"/>
         <result property="userId" column="userId" jdbcType="BIGINT"/>
         <result property="fundCode" column="fundCode" jdbcType="VARCHAR"/>
         <result property="fundName" column="fundName" jdbcType="VARCHAR"/>
         <result property="purchaseCost" column="purchaseCost" jdbcType="DECIMAL"/>
         <result property="purchaseFee" column="purchaseFee" jdbcType="DECIMAL"/>
-        <result property="soldIncome" column="soldIncome" jdbcType="DECIMAL"/>
-        <result property="soldFee" column="soldFee" jdbcType="DECIMAL"/>
+        <result property="assessmentSoldIncome" column="assessmentSoldIncome" jdbcType="DECIMAL"/>
+        <result property="assessmentSoldFee" column="assessmentSoldFee" jdbcType="DECIMAL"/>
+        <result property="assessmentValue" column="assessmentValue" jdbcType="DECIMAL"/>
         <result property="costValue" column="costValue" jdbcType="DECIMAL"/>
-        <result property="soldValue" column="soldValue" jdbcType="DECIMAL"/>
         <result property="soldAmount" column="soldAmount" jdbcType="DECIMAL"/>
         <result property="soldDate" column="soldDate" jdbcType="TIMESTAMP"/>
-        <result property="soldConfirmDate" column="soldConfirmDate" jdbcType="TIMESTAMP"/>
+        <result property="converted" column="converted" jdbcType="INTEGER"/>
         <result property="version" column="version" jdbcType="INTEGER"/>
         <result property="isDeleted" column="isDeleted" jdbcType="INTEGER"/>
         <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
@@ -29,20 +29,20 @@
         fundName,
         purchaseCost,
         purchaseFee,
-        soldIncome,
-        soldFee,
+        assessmentSoldIncome,
+        assessmentSoldFee,
+        assessmentValue,
         costValue,
-        soldValue,
         soldAmount,
         soldDate,
-        soldConfirmDate,
+        converted,
         version,
         isDeleted,
         createTime,
         modifyTime
     </sql>
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundSoldInfo">
-        INSERT INTO T_FUND_SOLD_INFO
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundPreSoldInfo">
+        INSERT INTO T_FUND_PRE_SOLD_INFO
         <trim prefix="(" suffix=")"  suffixOverrides=",">
             <if test=" id!=null">
                 id,
@@ -62,17 +62,17 @@
             <if test=" purchaseFee!=null">
                 purchaseFee,
             </if>
-            <if test=" soldIncome!=null">
-                soldIncome,
+            <if test=" assessmentSoldIncome!=null">
+                assessmentSoldIncome,
             </if>
-            <if test=" soldFee!=null">
-                soldFee,
+            <if test=" assessmentSoldFee!=null">
+                assessmentSoldFee,
+            </if>
+            <if test=" assessmentValue!=null">
+                assessmentValue,
             </if>
             <if test=" costValue!=null">
                 costValue,
-            </if>
-            <if test=" soldValue!=null">
-                soldValue,
             </if>
             <if test=" soldAmount!=null">
                 soldAmount,
@@ -80,8 +80,8 @@
             <if test=" soldDate!=null">
                 soldDate,
             </if>
-            <if test=" soldConfirmDate!=null">
-                soldConfirmDate,
+            <if test=" converted!=null">
+                converted,
             </if>
             <if test=" version!=null">
                 version,
@@ -115,17 +115,17 @@
             <if test=" purchaseFee!=null">
                 #{purchaseFee,jdbcType=DECIMAL},
             </if>
-            <if test=" soldIncome!=null">
-                #{soldIncome,jdbcType=DECIMAL},
+            <if test=" assessmentSoldIncome!=null">
+                #{assessmentSoldIncome,jdbcType=DECIMAL},
             </if>
-            <if test=" soldFee!=null">
-                #{soldFee,jdbcType=DECIMAL},
+            <if test=" assessmentSoldFee!=null">
+                #{assessmentSoldFee,jdbcType=DECIMAL},
+            </if>
+            <if test=" assessmentValue!=null">
+                #{assessmentValue,jdbcType=DECIMAL},
             </if>
             <if test=" costValue!=null">
                 #{costValue,jdbcType=DECIMAL},
-            </if>
-            <if test=" soldValue!=null">
-                #{soldValue,jdbcType=DECIMAL},
             </if>
             <if test=" soldAmount!=null">
                 #{soldAmount,jdbcType=DECIMAL},
@@ -133,8 +133,8 @@
             <if test=" soldDate!=null">
                 #{soldDate,jdbcType=TIMESTAMP},
             </if>
-            <if test=" soldConfirmDate!=null">
-                #{soldConfirmDate,jdbcType=TIMESTAMP},
+            <if test=" converted!=null">
+                #{converted,jdbcType=INTEGER},
             </if>
             <if test=" version!=null">
                 #{version,jdbcType=INTEGER},
@@ -150,8 +150,8 @@
             </if>
         </trim>
     </insert>
-    <update id="update" parameterType="com.tony.billing.entity.FundSoldInfo">
-        UPDATE T_FUND_SOLD_INFO
+    <update id="update" parameterType="com.tony.billing.entity.FundPreSoldInfo">
+        UPDATE T_FUND_PRE_SOLD_INFO
         <trim prefix="SET" suffixOverrides=",">
             <if test=" id!=null">
                 id=#{id,jdbcType=BIGINT},
@@ -171,17 +171,17 @@
             <if test=" purchaseFee!=null">
                 purchaseFee=#{purchaseFee,jdbcType=DECIMAL},
             </if>
-            <if test=" soldIncome!=null">
-                soldIncome=#{soldIncome,jdbcType=DECIMAL},
+            <if test=" assessmentSoldIncome!=null">
+                assessmentSoldIncome=#{assessmentSoldIncome,jdbcType=DECIMAL},
             </if>
-            <if test=" soldFee!=null">
-                soldFee=#{soldFee,jdbcType=DECIMAL},
+            <if test=" assessmentSoldFee!=null">
+                assessmentSoldFee=#{assessmentSoldFee,jdbcType=DECIMAL},
+            </if>
+            <if test=" assessmentValue!=null">
+                assessmentValue=#{assessmentValue,jdbcType=DECIMAL},
             </if>
             <if test=" costValue!=null">
                 costValue=#{costValue,jdbcType=DECIMAL},
-            </if>
-            <if test=" soldValue!=null">
-                soldValue=#{soldValue,jdbcType=DECIMAL},
             </if>
             <if test=" soldAmount!=null">
                 soldAmount=#{soldAmount,jdbcType=DECIMAL},
@@ -189,8 +189,8 @@
             <if test=" soldDate!=null">
                 soldDate=#{soldDate,jdbcType=TIMESTAMP},
             </if>
-            <if test=" soldConfirmDate!=null">
-                soldConfirmDate=#{soldConfirmDate,jdbcType=TIMESTAMP},
+            <if test=" converted!=null">
+                converted=#{converted,jdbcType=INTEGER},
             </if>
             <if test=" version!=null">
                 version=#{version,jdbcType=INTEGER},
@@ -229,17 +229,17 @@
             <if test=" purchaseFee!=null">
                 and purchaseFee=#{purchaseFee,jdbcType=DECIMAL}
             </if>
-            <if test=" soldIncome!=null">
-                and soldIncome=#{soldIncome,jdbcType=DECIMAL}
+            <if test=" assessmentSoldIncome!=null">
+                and assessmentSoldIncome=#{assessmentSoldIncome,jdbcType=DECIMAL}
             </if>
-            <if test=" soldFee!=null">
-                and soldFee=#{soldFee,jdbcType=DECIMAL}
+            <if test=" assessmentSoldFee!=null">
+                and assessmentSoldFee=#{assessmentSoldFee,jdbcType=DECIMAL}
+            </if>
+            <if test=" assessmentValue!=null">
+                and assessmentValue=#{assessmentValue,jdbcType=DECIMAL}
             </if>
             <if test=" costValue!=null">
                 and costValue=#{costValue,jdbcType=DECIMAL}
-            </if>
-            <if test=" soldValue!=null">
-                and soldValue=#{soldValue,jdbcType=DECIMAL}
             </if>
             <if test=" soldAmount!=null">
                 and soldAmount=#{soldAmount,jdbcType=DECIMAL}
@@ -247,8 +247,8 @@
             <if test=" soldDate!=null">
                 and soldDate=#{soldDate,jdbcType=TIMESTAMP}
             </if>
-            <if test=" soldConfirmDate!=null">
-                and soldConfirmDate=#{soldConfirmDate,jdbcType=TIMESTAMP}
+            <if test=" converted!=null">
+                and converted=#{converted,jdbcType=INTEGER}
             </if>
             <if test=" version!=null">
                 and version=#{version,jdbcType=INTEGER}
@@ -264,17 +264,17 @@
             </if>
         </trim>
     </sql>
-    <select id="countByQuery" parameterType="com.tony.billing.query.FundSoldInfoQuery"
+    <select id="countByQuery" parameterType="com.tony.billing.query.FundPreSoldInfoQuery"
             resultType="Integer">
-        SELECT count(*) FROM T_FUND_SOLD_INFO
+        SELECT count(*) FROM T_FUND_PRE_SOLD_INFO
         <include refid="queryWhere"/>
     </select>
 
-    <select id="queryByPagination" parameterType="com.tony.billing.query.FundSoldInfoQuery"
-            resultMap="FundSoldInfoResultMap">
+    <select id="queryByPagination" parameterType="com.tony.billing.query.FundPreSoldInfoQuery"
+            resultMap="FundPreSoldInfoResultMap">
         SELECT
         <include refid="all"/>
-        FROM T_FUND_SOLD_INFO
+        FROM T_FUND_PRE_SOLD_INFO
         <include refid="queryWhere"/>
         ORDER BY GMT_MODIFY DESC
         <if test="mysqlPageFristItem != null">
@@ -284,10 +284,10 @@
         </if>
     </select>
 -->
-    <select id="list" parameterType="com.tony.billing.entity.FundSoldInfo" resultMap="FundSoldInfoResultMap">
+    <select id="list" parameterType="com.tony.billing.entity.FundPreSoldInfo" resultMap="FundPreSoldInfoResultMap">
         SELECT
         <include refid="all"/>
-        FROM T_FUND_SOLD_INFO
+        FROM T_FUND_PRE_SOLD_INFO
         <trim prefix="WHERE" prefixOverrides="and">
             AND isDeleted='0'
             <if test=" id!=null">
@@ -308,17 +308,17 @@
             <if test=" purchaseFee!=null">
                 and purchaseFee=#{purchaseFee,jdbcType=DECIMAL}
             </if>
-            <if test=" soldIncome!=null">
-                and soldIncome=#{soldIncome,jdbcType=DECIMAL}
+            <if test=" assessmentSoldIncome!=null">
+                and assessmentSoldIncome=#{assessmentSoldIncome,jdbcType=DECIMAL}
             </if>
-            <if test=" soldFee!=null">
-                and soldFee=#{soldFee,jdbcType=DECIMAL}
+            <if test=" assessmentSoldFee!=null">
+                and assessmentSoldFee=#{assessmentSoldFee,jdbcType=DECIMAL}
+            </if>
+            <if test=" assessmentValue!=null">
+                and assessmentValue=#{assessmentValue,jdbcType=DECIMAL}
             </if>
             <if test=" costValue!=null">
                 and costValue=#{costValue,jdbcType=DECIMAL}
-            </if>
-            <if test=" soldValue!=null">
-                and soldValue=#{soldValue,jdbcType=DECIMAL}
             </if>
             <if test=" soldAmount!=null">
                 and soldAmount=#{soldAmount,jdbcType=DECIMAL}
@@ -326,8 +326,8 @@
             <if test=" soldDate!=null">
                 and soldDate=#{soldDate,jdbcType=TIMESTAMP}
             </if>
-            <if test=" soldConfirmDate!=null">
-                and soldConfirmDate=#{soldConfirmDate,jdbcType=TIMESTAMP}
+            <if test=" converted!=null">
+                and converted=#{converted,jdbcType=INTEGER}
             </if>
             <if test=" version!=null">
                 and version=#{version,jdbcType=INTEGER}
@@ -344,13 +344,13 @@
         </trim>
     </select>
 
-    <select id="getById" resultMap="FundSoldInfoResultMap">
+    <select id="getById" resultMap="FundPreSoldInfoResultMap">
         SELECT
         <include refid="all"/>
-        FROM T_FUND_SOLD_INFO WHERE id=#{id,jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT} AND isDeleted='0'
+        FROM T_FUND_PRE_SOLD_INFO WHERE id=#{id,jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT} AND isDeleted='0'
     </select>
 
     <update id="deleteById">
-        update T_FUND_SOLD_INFO set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT}
+        update T_FUND_PRE_SOLD_INFO set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT}
     </update>
 </mapper>

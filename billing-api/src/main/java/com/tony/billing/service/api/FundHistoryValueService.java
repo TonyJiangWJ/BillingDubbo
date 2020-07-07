@@ -1,5 +1,7 @@
 package com.tony.billing.service.api;
 
+import com.tony.billing.entity.FundHistoryValue;
+import com.tony.billing.entity.FundInfo;
 import com.tony.billing.response.fund.DailyFundChangedResponse;
 import com.tony.billing.response.fund.DailyFundHistoryValueResponse;
 
@@ -28,4 +30,20 @@ public interface FundHistoryValueService {
      * @return
      */
     DailyFundChangedResponse getFundChangedInfosByAssessmentDate(String assessmentDate);
+
+    /**
+     * 获取指定日期指定基金的最新估算值，库中不存在返回null
+     *
+     * @param fundCode
+     * @param assessmentDate
+     * @return
+     */
+    FundHistoryValue getFundLatestValue(String fundCode, String assessmentDate);
+
+    /**
+     * 获取最新净值
+     * @param fundInfo
+     * @param force 是否强制更新
+     */
+    void queryLatestFundHistoryInfo(FundInfo fundInfo, Boolean force);
 }

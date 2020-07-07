@@ -5,6 +5,7 @@ import com.tony.billing.constants.enums.EnumDeleted;
 import com.tony.billing.dao.mapper.base.AbstractMapper;
 import com.tony.billing.entity.base.BaseEntity;
 import com.tony.billing.entity.base.BaseVersionedEntity;
+import com.tony.billing.service.api.base.AbstractService;
 import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -18,7 +19,7 @@ import java.util.List;
 /**
  * @author jiangwenjie 2019-03-18
  */
-public abstract class AbstractService<T extends BaseEntity, M extends AbstractMapper<T>> {
+public abstract class AbstractServiceImpl<T extends BaseEntity, M extends AbstractMapper<T>> implements AbstractService<T> {
 
     /**
      * 获取注入的mapper对象
@@ -36,6 +37,7 @@ public abstract class AbstractService<T extends BaseEntity, M extends AbstractMa
      * @param entity 存储对象
      * @return 插入成功返回插入后的id，失败返回-1
      */
+    @Override
     public Long insert(T entity) {
         entity.setModifyTime(new Date());
         entity.setCreateTime(new Date());
@@ -56,6 +58,7 @@ public abstract class AbstractService<T extends BaseEntity, M extends AbstractMa
      * @param entity 更新对象
      * @return 更新成功返回true
      */
+    @Override
     public boolean update(T entity) {
         Preconditions.checkNotNull(entity.getId(), "id must not be null");
         if (entity instanceof BaseVersionedEntity) {
@@ -65,11 +68,12 @@ public abstract class AbstractService<T extends BaseEntity, M extends AbstractMa
         return mapper.update(entity) > 0;
     }
 
-
+    @Override
     public T getById(Long id) {
         return mapper.getById(id, UserIdContainer.getUserId());
     }
 
+    @Override
     public List<T> list(T condition) {
         List<T> result = mapper.list(condition);
         if (CollectionUtils.isNotEmpty(result)) {
@@ -79,6 +83,7 @@ public abstract class AbstractService<T extends BaseEntity, M extends AbstractMa
         }
     }
 
+    @Override
     public boolean deleteById(Long id) {
         return mapper.deleteById(id, UserIdContainer.getUserId()) > 0;
     }

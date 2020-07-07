@@ -4,7 +4,7 @@ import com.tony.billing.constants.enums.EnumTypeIdentify;
 import com.tony.billing.dao.mapper.AssetTypesMapper;
 import com.tony.billing.entity.AssetTypes;
 import com.tony.billing.service.api.AssetTypesService;
-import com.tony.billing.service.base.AbstractService;
+import com.tony.billing.service.base.AbstractServiceImpl;
 import com.tony.billing.util.RedisUtils;
 import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.collections.CollectionUtils;
@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  * @author TonyJiang 2018/6/21
  */
 @Service
-public class AssetTypesServiceImpl extends AbstractService<AssetTypes, AssetTypesMapper> implements AssetTypesService {
+public class AssetTypesServiceImpl extends AbstractServiceImpl<AssetTypes, AssetTypesMapper> implements AssetTypesService {
 
 
     @Resource

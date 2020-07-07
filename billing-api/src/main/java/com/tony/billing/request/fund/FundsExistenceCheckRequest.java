@@ -1,27 +1,22 @@
 package com.tony.billing.request.fund;
 
 import com.tony.billing.request.BaseRequest;
+import com.tony.billing.model.FundExistenceCheck;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * @author jiangwenjie 2020/6/30
+ * @author jiangwenjie 2020/7/7
  */
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class FundPreSoldRequest extends BaseRequest {
-    @NotNull
-    private List<Long> fundIds;
-    @NotNull
-    private BigDecimal fundSoldFeeRate;
+public class FundsExistenceCheckRequest extends BaseRequest {
     @NotEmpty
-    private String assessmentDate;
+    private List<FundExistenceCheck> fundCheckList;
 
 }

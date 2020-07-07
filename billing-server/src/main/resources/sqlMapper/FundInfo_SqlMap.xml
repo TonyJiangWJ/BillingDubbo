@@ -134,6 +134,17 @@
             </if>
         </trim>
     </insert>
+    <insert id="batchInsert"  parameterType="java.util.List">
+        insert ignore into t_fund_info
+        (userId, fundCode, fundName, purchaseValue, purchaseAmount, purchaseCost, purchaseFee, purchaseDate, confirmDate, createTime, modifyTime, version, isDeleted, inStore)
+        values
+        <foreach collection="forAddFunds" separator="),(" open="(" close=")" item="fundInfo">
+        #{fundInfo.userId,jdbcType=BIGINT}, #{fundInfo.fundCode,jdbcType=VARCHAR}, #{fundInfo.fundName,jdbcType=VARCHAR}, #{fundInfo.purchaseValue,jdbcType=DECIMAL},
+        #{fundInfo.purchaseAmount,jdbcType=DECIMAL}, #{fundInfo.purchaseCost,jdbcType=DECIMAL}, #{fundInfo.purchaseFee,jdbcType=DECIMAL}, #{fundInfo.purchaseDate,jdbcType=TIMESTAMP},
+        #{fundInfo.confirmDate,jdbcType=TIMESTAMP}, #{fundInfo.createTime,jdbcType=TIMESTAMP}, #{fundInfo.modifyTime,jdbcType=TIMESTAMP}, #{fundInfo.version,jdbcType=INTEGER},
+        #{fundInfo.isDeleted,jdbcType=INTEGER}, #{fundInfo.inStore,jdbcType=INTEGER}
+        </foreach>
+    </insert>
     <update id="update" parameterType="com.tony.billing.entity.FundInfo" flushCache="true">
         UPDATE T_FUND_INFO
         <trim prefix="SET" suffixOverrides=",">
@@ -333,6 +344,13 @@
         and id in
         <foreach collection="fundIds" item="id" separator="," open="(" close=")">
             #{id,jdbcType=BIGINT}
+        </foreach>
+    </select>
+    <select id="listUserExistsFunds" resultMap="FundInfoResultMap">
+        select <include refid="all"/> from t_fund_info where userId=#{userId,jdbcType=BIGINT} and isDeleted='0'
+        and fundCode in
+        <foreach collection="fundCodes" item="fundCode" separator="," open="(" close=")">
+            #{fundCode,jdbcType=VARCHAR}
         </foreach>
     </select>
 </mapper>

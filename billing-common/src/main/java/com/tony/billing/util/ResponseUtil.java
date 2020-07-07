@@ -30,6 +30,12 @@ public class ResponseUtil {
         return response;
     }
 
+    public static BaseResponse success(String message) {
+        BaseResponse response = success();
+        response.setMsg(message);
+        return response;
+    }
+
     public static BaseResponse success() {
         return success(new BaseResponse());
     }
@@ -57,6 +63,12 @@ public class ResponseUtil {
     public static <T extends BaseResponse> T dataNotExisting(T response) {
         response.setMsg(MSG_DATA_NOT_EXIST);
         response.setCode(CODE_DATA_NOT_EXIST);
+        return response;
+    }
+
+    public static BaseResponse error(String message) {
+        BaseResponse response = error();
+        response.setMsg(message);
         return response;
     }
 

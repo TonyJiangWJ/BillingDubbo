@@ -1,7 +1,10 @@
 package com.tony.billing.service.api;
 
 import com.tony.billing.entity.FundInfo;
+import com.tony.billing.model.FundAddModel;
+import com.tony.billing.model.FundExistenceCheck;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -30,5 +33,16 @@ public interface FundInfoService {
 
     boolean deleteById(Long id);
 
-    boolean markFundsAsSold(List<Long> fundIds);
+    /**
+     * 预售出基金
+     * @param fundIds
+     * @param soldFeeRate
+     * @param assessmentDate
+     * @return
+     */
+    boolean preMarkFundsAsSold(List<Long> fundIds, BigDecimal soldFeeRate, String assessmentDate);
+
+    List<FundExistenceCheck> checkFundsExistence(List<FundExistenceCheck> fundCheckList);
+
+    boolean batchAddFunds(List<FundAddModel> fundInfoList);
 }

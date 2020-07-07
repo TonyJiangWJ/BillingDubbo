@@ -6,7 +6,7 @@ import com.tony.billing.dao.mapper.CostRecordMapper;
 import com.tony.billing.entity.CostRecord;
 import com.tony.billing.entity.PagerGrid;
 import com.tony.billing.service.api.CostRecordService;
-import com.tony.billing.service.base.AbstractService;
+import com.tony.billing.service.base.AbstractServiceImpl;
 import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Service;
@@ -20,7 +20,7 @@ import java.util.Map;
  * @author jiangwj20966 on 2017/6/2.
  */
 @Service
-public class CostRecordServiceImpl extends AbstractService<CostRecord, CostRecordMapper> implements CostRecordService {
+public class CostRecordServiceImpl extends AbstractServiceImpl<CostRecord, CostRecordMapper> implements CostRecordService {
 
     @Override
     public List<CostRecord> find(CostRecord record) {

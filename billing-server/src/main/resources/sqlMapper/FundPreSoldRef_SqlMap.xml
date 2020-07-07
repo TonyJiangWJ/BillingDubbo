@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tony.billing.dao.mapper.FundPreSoldRefMapper">
+
+    <resultMap id="FundPreSoldRefResultMap" type="com.tony.billing.entity.FundPreSoldRef">
+        <result property="id" column="id" jdbcType="BIGINT"/>
+        <result property="fundId" column="fundId" jdbcType="BIGINT"/>
+        <result property="fundPreSoldId" column="fundPreSoldId" jdbcType="BIGINT"/>
+        <result property="isDeleted" column="isDeleted" jdbcType="INTEGER"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="modifyTime" column="modifyTime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="all">
+        id,
+        fundId,
+        fundPreSoldId,
+        isDeleted,
+        createTime,
+        modifyTime
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundPreSoldRef">
+        INSERT INTO T_FUND_PRE_SOLD_REF
+        <trim prefix="(" suffix=")"  suffixOverrides=",">
+            <if test=" id!=null">
+                id,
+            </if>
+            <if test=" fundId!=null">
+                fundId,
+            </if>
+            <if test=" fundPreSoldId!=null">
+                fundPreSoldId,
+            </if>
+            <if test=" isDeleted!=null">
+                isDeleted,
+            </if>
+            <if test=" createTime!=null">
+                createTime,
+            </if>
+            <if test=" modifyTime!=null">
+                modifyTime,
+            </if>
+        </trim>
+        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+            <if test=" id!=null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test=" fundId!=null">
+                #{fundId,jdbcType=BIGINT},
+            </if>
+            <if test=" fundPreSoldId!=null">
+                #{fundPreSoldId,jdbcType=BIGINT},
+            </if>
+            <if test=" isDeleted!=null">
+                #{isDeleted,jdbcType=INTEGER},
+            </if>
+            <if test=" createTime!=null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.tony.billing.entity.FundPreSoldRef">
+        UPDATE T_FUND_PRE_SOLD_REF
+        <trim prefix="SET" suffixOverrides=",">
+            <if test=" id!=null">
+                id=#{id,jdbcType=BIGINT},
+            </if>
+            <if test=" fundId!=null">
+                fundId=#{fundId,jdbcType=BIGINT},
+            </if>
+            <if test=" fundPreSoldId!=null">
+                fundPreSoldId=#{fundPreSoldId,jdbcType=BIGINT},
+            </if>
+            <if test=" isDeleted!=null">
+                isDeleted=#{isDeleted,jdbcType=INTEGER},
+            </if>
+            <if test=" createTime!=null">
+                createTime=#{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null">
+                modifyTime=#{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+        </trim>
+        WHERE id=#{id, jdbcType=BIGINT} AND isDeleted='0'
+    </update>
+<!--
+    <sql id="queryWhere">
+        <trim prefix="WHERE" prefixOverrides="and">
+            AND isDeleted='0'
+            <if test=" id!=null">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" fundId!=null">
+                and fundId=#{fundId,jdbcType=BIGINT}
+            </if>
+            <if test=" fundPreSoldId!=null">
+                and fundPreSoldId=#{fundPreSoldId,jdbcType=BIGINT}
+            </if>
+            <if test=" isDeleted!=null">
+                and isDeleted=#{isDeleted,jdbcType=INTEGER}
+            </if>
+            <if test=" createTime!=null">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+        </trim>
+    </sql>
+    <select id="countByQuery" parameterType="com.tony.billing.query.FundPreSoldRefQuery"
+            resultType="Integer">
+        SELECT count(*) FROM T_FUND_PRE_SOLD_REF
+        <include refid="queryWhere"/>
+    </select>
+
+    <select id="queryByPagination" parameterType="com.tony.billing.query.FundPreSoldRefQuery"
+            resultMap="FundPreSoldRefResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM T_FUND_PRE_SOLD_REF
+        <include refid="queryWhere"/>
+        ORDER BY GMT_MODIFY DESC
+        <if test="mysqlPageFristItem != null">
+            <if test="pageSize != null and pageSize.toString() != ''">
+                limit #{mysqlPageFristItem},#{pageSize}
+            </if>
+        </if>
+    </select>
+-->
+    <select id="list" parameterType="com.tony.billing.entity.FundPreSoldRef" resultMap="FundPreSoldRefResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM T_FUND_PRE_SOLD_REF
+        <trim prefix="WHERE" prefixOverrides="and">
+            AND isDeleted='0'
+            <if test=" id!=null">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" fundId!=null">
+                and fundId=#{fundId,jdbcType=BIGINT}
+            </if>
+            <if test=" fundPreSoldId!=null">
+                and fundPreSoldId=#{fundPreSoldId,jdbcType=BIGINT}
+            </if>
+            <if test=" isDeleted!=null">
+                and isDeleted=#{isDeleted,jdbcType=INTEGER}
+            </if>
+            <if test=" createTime!=null">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+        </trim>
+    </select>
+
+    <select id="getById" resultMap="FundPreSoldRefResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM T_FUND_PRE_SOLD_REF WHERE id=#{id,jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT} AND isDeleted='0'
+    </select>
+
+    <update id="deleteById">
+        update T_FUND_PRE_SOLD_REF set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT}
+    </update>
+</mapper>

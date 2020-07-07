@@ -15,7 +15,7 @@ import com.tony.billing.entity.TagInfo;
 import com.tony.billing.functions.TagInfoToDtoListSupplier;
 import com.tony.billing.service.api.TagInfoService;
 import com.tony.billing.service.api.CommonValidateService;
-import com.tony.billing.service.base.AbstractService;
+import com.tony.billing.service.base.AbstractServiceImpl;
 import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
  * @author by TonyJiang on 2017/6/15.
  */
 @Service
-public class TagInfoServiceImpl extends AbstractService<TagInfo, TagInfoMapper> implements TagInfoService {
+public class TagInfoServiceImpl extends AbstractServiceImpl<TagInfo, TagInfoMapper> implements TagInfoService {
 
     @Resource
     private BudgetMapper budgetMapper;

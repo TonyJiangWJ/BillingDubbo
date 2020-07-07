@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class FundSoldInfo extends BaseVersionedEntity {
+public class FundPreSoldInfo extends BaseVersionedEntity {
 
     private Long userId;
     private String fundCode;
@@ -26,21 +26,21 @@ public class FundSoldInfo extends BaseVersionedEntity {
      */
     private BigDecimal purchaseFee;
     /**
-     * 卖出收益
+     * 预计卖出收益
      */
-    private BigDecimal soldIncome;
+    private BigDecimal assessmentSoldIncome;
     /**
-     * 卖出手续费
+     * 预计卖出手续费
      */
-    private BigDecimal soldFee;
+    private BigDecimal assessmentSoldFee;
+    /**
+     * 预计卖出单位净值
+     */
+    private BigDecimal assessmentValue;
     /**
      * 成本净值
      */
     private BigDecimal costValue;
-    /**
-     * 卖出单位净值
-     */
-    private BigDecimal soldValue;
     /**
      * 卖出份额
      */
@@ -50,8 +50,8 @@ public class FundSoldInfo extends BaseVersionedEntity {
      */
     private Date soldDate;
     /**
-     * 卖出确认日期
+     * 是否已确认卖出
      */
-    private Date soldConfirmDate;
+    private Integer converted;
 
 }

@@ -13,7 +13,7 @@ import com.tony.billing.response.fund.DailyFundChangedResponse;
 import com.tony.billing.response.fund.DailyFundHistoryValueResponse;
 import com.tony.billing.service.api.FundHistoryValueService;
 import com.tony.billing.service.api.FundInfoService;
-import com.tony.billing.service.base.AbstractService;
+import com.tony.billing.service.base.AbstractServiceImpl;
 import com.tony.billing.util.ResponseUtil;
 import com.tony.billing.util.UserIdContainer;
 import okhttp3.OkHttpClient;
@@ -28,6 +28,8 @@ import org.springframework.beans.factory.annotation.Value;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +43,7 @@ import java.util.stream.Collectors;
  * @author jiangwenjie 2020/6/28
  */
 @Service
-public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValue, FundHistoryValueMapper> implements FundHistoryValueService {
+public class FundHistoryValueServiceImpl extends AbstractServiceImpl<FundHistoryValue, FundHistoryValueMapper> implements FundHistoryValueService {
 
     @Autowired
     private FundInfoMapper fundInfoMapper;
@@ -167,10 +169,10 @@ public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValu
             if (CollectionUtils.isNotEmpty(rateList) && index < rateList.size()) {
                 String rate = rateList.get(index);
                 totalIncrease = totalIncrease.add(new BigDecimal(rate).multiply(fundInfo.getPurchaseAmount().multiply(fundInfo.getPurchaseValue())));
-                totalValue = totalValue.add(fundInfo.getPurchaseValue().multiply(fundInfo.getPurchaseAmount()));
             } else {
-                logger.warn("fund[{}]'s rate is not exist, index: {}", fundInfo.getFundCode(), index);
+                logger.debug("fund[{}]'s rate is not exist, index: {}", fundInfo.getFundCode(), index);
             }
+            totalValue = totalValue.add(fundInfo.getPurchaseValue().multiply(fundInfo.getPurchaseAmount()));
         }
         return totalIncrease.divide(totalValue, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
     }
@@ -192,18 +194,11 @@ public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValu
             Map<String, FundHistoryValue> latestHistoryValueMap = new HashMap<>(latestHistoryValues.size());
             if (CollectionUtils.isNotEmpty(latestHistoryValues)) {
                 latestHistoryValues.forEach(fundHistoryValue -> latestHistoryValueMap.put(fundHistoryValue.getFundCode(), fundHistoryValue));
-                response.setSummaryFundInfos(getFundChangedInfos(userFunds, latestHistoryValueMap));
-                response.setFundDetailInfos(getFundChangedInfos(userFundDetailList, latestHistoryValueMap));
-                response.setAssessmentDate(assessmentDate);
-                // 计算总额
-                response.calculateIncreaseInfo();
-            } else {
-                response.setSummaryFundInfos(getFundChangedInfos(userFunds, latestHistoryValueMap));
-                response.setFundDetailInfos(getFundChangedInfos(userFundDetailList, latestHistoryValueMap));
-                response.setAssessmentDate(assessmentDate);
-                // 计算总额
-                response.calculateIncreaseInfo();
             }
+            response.setSummaryFundInfos(getFundChangedInfos(userFunds, latestHistoryValueMap));
+            response.setFundDetailInfos(getFundChangedInfos(userFundDetailList, latestHistoryValueMap));
+            response.setAssessmentDate(assessmentDate);
+            response.calculateIncreaseInfo();
         }
         return response;
     }
@@ -221,6 +216,7 @@ public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValu
                 changedModel.setPurchaseFee(fundInfo.getPurchaseFee().toString());
                 changedModel.setPurchaseDate(fundInfo.getPurchaseDate());
                 changedModel.setPurchaseConfirmDate(fundInfo.getConfirmDate());
+                changedModel.setVersion(fundInfo.getVersion());
                 // 估算值
                 FundHistoryValue fundHistoryValue = latestHistoryValueMap.get(fundInfo.getFundCode());
                 if (fundHistoryValue != null) {
@@ -282,5 +278,21 @@ public class FundHistoryValueServiceImpl extends AbstractService<FundHistoryValu
             return BigDecimal.ZERO;
         }
         return newVal.subtract(oldVal).multiply(BigDecimal.valueOf(100)).divide(oldVal, BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP);
+    }
+
+    @Override
+    public FundHistoryValue getFundLatestValue(String fundCode, String assessmentDate) {
+        return mapper.getFundLatestValue(fundCode, assessmentDate);
+    }
+
+    @Override
+    public void queryLatestFundHistoryInfo(FundInfo fundInfo, Boolean force) {
+        if (!force) {
+            FundHistoryValue latestHistoryValue = this.getFundLatestValue(fundInfo.getFundCode(), LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            if (latestHistoryValue!=null) {
+                return;
+            }
+        }
+        updateFundInfo(fundInfo);
     }
 }

@@ -9,7 +9,7 @@ import com.tony.billing.entity.ModifyAdmin;
 import com.tony.billing.exceptions.BaseBusinessException;
 import com.tony.billing.service.api.AdminService;
 import com.tony.billing.service.api.EmailService;
-import com.tony.billing.service.base.AbstractService;
+import com.tony.billing.service.base.AbstractServiceImpl;
 import com.tony.billing.util.RSAUtil;
 import com.tony.billing.util.RedisUtils;
 import com.tony.billing.util.ShaSignHelper;
@@ -32,7 +32,7 @@ import java.util.UUID;
  * @author by TonyJiang on 2017/5/18.
  */
 @Service
-public class AdminServiceImpl extends AbstractService<Admin, AdminMapper> implements AdminService {
+public class AdminServiceImpl extends AbstractServiceImpl<Admin, AdminMapper> implements AdminService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 

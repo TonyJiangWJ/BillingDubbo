@@ -11,7 +11,7 @@ import com.tony.billing.model.LiabilityModel;
 import com.tony.billing.model.MonthLiabilityModel;
 import com.tony.billing.service.api.AssetTypesService;
 import com.tony.billing.service.api.LiabilityService;
-import com.tony.billing.service.base.AbstractService;
+import com.tony.billing.service.base.AbstractServiceImpl;
 import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,7 +33,7 @@ import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 @Service
-public class LiabilityServiceImpl extends AbstractService<Liability, LiabilityMapper> implements LiabilityService {
+public class LiabilityServiceImpl extends AbstractServiceImpl<Liability, LiabilityMapper> implements LiabilityService {
 
     @Resource
     private AssetTypesService assetTypesService;

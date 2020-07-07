@@ -3,11 +3,16 @@ package com.tony.billing.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.tony.billing.constants.enums.EnumYesOrNo;
 import com.tony.billing.entity.FundInfo;
+import com.tony.billing.model.FundExistenceCheck;
 import com.tony.billing.request.fund.FundAddRequest;
+import com.tony.billing.request.fund.FundBatchAddRequest;
 import com.tony.billing.request.fund.FundDeleteRequest;
 import com.tony.billing.request.fund.FundInfoQueryRequest;
+import com.tony.billing.request.fund.FundUpdateRequest;
+import com.tony.billing.request.fund.FundsExistenceCheckRequest;
 import com.tony.billing.response.BaseResponse;
 import com.tony.billing.response.fund.FundInfoQueryResponse;
+import com.tony.billing.response.fund.FundsExistenceCheckResponse;
 import com.tony.billing.service.api.FundInfoService;
 import com.tony.billing.util.RedisUtils;
 import com.tony.billing.util.ResponseUtil;
@@ -16,6 +21,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Reference;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +32,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -118,5 +125,33 @@ public class FundInfoController extends BaseController {
             }
         }
         return ResponseUtil.dataNotExisting(response);
+    }
+
+    @RequestMapping(value = "/fund/info/update", method = RequestMethod.POST)
+    public BaseResponse updateFundInfo(@ModelAttribute("request") @Validated FundUpdateRequest request) {
+        FundInfo fundInfo = new FundInfo();
+        BeanUtils.copyProperties(request, fundInfo);
+        if (fundInfoService.update(fundInfo)) {
+            return ResponseUtil.success();
+        } else {
+            return ResponseUtil.error();
+        }
+    }
+
+    @RequestMapping(value = "/fund/check/all/status", method = RequestMethod.POST)
+    public FundsExistenceCheckResponse checkAllFundsStatus(@ModelAttribute("request") @Validated FundsExistenceCheckRequest request) {
+        List<FundExistenceCheck> existsList = fundInfoService.checkFundsExistence(request.getFundCheckList());
+        FundsExistenceCheckResponse response = ResponseUtil.success(new FundsExistenceCheckResponse());
+        response.setExistsList(existsList);
+        return response;
+    }
+
+    @RequestMapping(value = "/fund/batch/add", method = RequestMethod.POST)
+    public BaseResponse batchAddFunds(@ModelAttribute("request") @Validated FundBatchAddRequest request) {
+        if (fundInfoService.batchAddFunds(request.getFundInfoList())) {
+            return ResponseUtil.success();
+        } else {
+            return ResponseUtil.error();
+        }
     }
 }

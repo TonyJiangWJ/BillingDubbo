@@ -15,7 +15,7 @@ import com.tony.billing.entity.TagInfo;
 import com.tony.billing.functions.TagInfoToDtoListSupplier;
 import com.tony.billing.model.BudgetReportModel;
 import com.tony.billing.service.api.BudgetService;
-import com.tony.billing.service.base.AbstractService;
+import com.tony.billing.service.base.AbstractServiceImpl;
 import com.tony.billing.util.MoneyUtil;
 import com.tony.billing.util.RedisUtils;
 import com.tony.billing.util.UserIdContainer;
@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
-import java.time.Year;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -44,7 +43,7 @@ import java.util.stream.Collectors;
  * @author by TonyJiang on 2017/7/8.
  */
 @Service
-public class BudgetServiceImpl extends AbstractService<Budget, BudgetMapper> implements BudgetService {
+public class BudgetServiceImpl extends AbstractServiceImpl<Budget, BudgetMapper> implements BudgetService {
 
     private Logger logger = LoggerFactory.getLogger(BudgetServiceImpl.class);
     @Resource
