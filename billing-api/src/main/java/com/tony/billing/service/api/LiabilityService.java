@@ -3,6 +3,7 @@ package com.tony.billing.service.api;
 import com.tony.billing.entity.Liability;
 import com.tony.billing.model.LiabilityModel;
 import com.tony.billing.model.MonthLiabilityModel;
+import org.apache.dubbo.config.annotation.Reference;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -48,6 +49,7 @@ public interface LiabilityService {
      * @param liability
      * @return
      */
+    @Reference(retries = 0)
     boolean createLiabilityInfo(Liability liability) throws SQLException;
 
 }

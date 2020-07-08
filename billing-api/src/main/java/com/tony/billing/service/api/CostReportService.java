@@ -1,6 +1,7 @@
 package com.tony.billing.service.api;
 
 import com.tony.billing.entity.ReportEntity;
+import org.apache.dubbo.config.annotation.Reference;
 
 import java.util.List;
 
@@ -14,7 +15,9 @@ public interface CostReportService {
      * @param userId 用户id
      * @return 每月的收支统计信息
      */
+    @Reference(timeout = 10000)
     List<ReportEntity> getReportByDatePrefix(List<String> datePrefix, Long userId);
 
+    @Reference(timeout = 10000)
     List<ReportEntity> getReportInfoBetween(String startDate, String endDate, Long userId);
 }

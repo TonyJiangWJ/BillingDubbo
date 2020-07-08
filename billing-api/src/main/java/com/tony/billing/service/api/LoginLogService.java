@@ -2,8 +2,6 @@ package com.tony.billing.service.api;
 
 import com.tony.billing.entity.LoginLog;
 
-import java.util.List;
-
 /**
  * @author: jiangwj20966 on 2018/1/25
  */

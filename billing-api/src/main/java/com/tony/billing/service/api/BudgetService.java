@@ -4,6 +4,7 @@ import com.tony.billing.dto.BudgetDTO;
 import com.tony.billing.dto.TagInfoDTO;
 import com.tony.billing.entity.Budget;
 import com.tony.billing.model.BudgetReportModel;
+import org.apache.dubbo.config.annotation.Reference;
 
 import java.util.List;
 
@@ -16,6 +17,7 @@ public interface BudgetService {
      * @param budget
      * @return
      */
+    @Reference(retries = 0)
     Long insert(Budget budget);
 
     /**
@@ -50,5 +52,6 @@ public interface BudgetService {
      * 获取最近6个月的预算概述信息
      * @return
      */
+    @Reference(timeout = 10000)
     List<BudgetReportModel> getNearlySixMonth();
 }

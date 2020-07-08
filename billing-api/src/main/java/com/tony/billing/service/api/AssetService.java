@@ -2,6 +2,7 @@ package com.tony.billing.service.api;
 
 import com.tony.billing.entity.Asset;
 import com.tony.billing.model.AssetModel;
+import org.apache.dubbo.config.annotation.Reference;
 
 import java.util.List;
 
@@ -33,6 +34,7 @@ public interface AssetService {
      * @param asset
      * @return
      */
+    @Reference(retries = 0)
     Long addAsset(Asset asset);
 
     /**

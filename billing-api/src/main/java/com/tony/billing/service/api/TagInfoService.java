@@ -4,6 +4,7 @@ import com.tony.billing.dto.TagInfoDTO;
 import com.tony.billing.entity.TagBudgetRef;
 import com.tony.billing.entity.TagCostRef;
 import com.tony.billing.entity.TagInfo;
+import org.apache.dubbo.config.annotation.Reference;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
 public interface TagInfoService {
     List<TagInfo> listTagInfo(TagInfo tagInfo);
 
+    @Reference(retries = 0)
     Long putTagInfo(TagInfo tagInfo);
 
     TagInfo findTagInfoByName(String tagName);
@@ -21,6 +23,7 @@ public interface TagInfoService {
 
     TagInfo getTagInfoById(Long id);
 
+    @Reference(retries = 0)
     Long insertTagCostRef(TagCostRef tagCostRef);
 
     Long deleteTagById(Long id);
@@ -33,6 +36,7 @@ public interface TagInfoService {
      * @param budgetRef
      * @return
      */
+    @Reference(retries = 0)
     Long insertTagBudgetRef(TagBudgetRef budgetRef);
 
     /**
@@ -56,6 +60,7 @@ public interface TagInfoService {
      * @param recordIds 账单id列表
      * @return
      */
+    @Reference(retries = 0, timeout = 10000)
     boolean batchInsertTagCostRef(Long tagId, List<Long> recordIds);
 
     List<TagInfoDTO> listCommonTagInfos(List<Long> recordIds);

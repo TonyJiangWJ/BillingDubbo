@@ -1,6 +1,7 @@
 package com.tony.billing.service.api.base;
 
 import com.tony.billing.entity.base.BaseEntity;
+import org.apache.dubbo.config.annotation.Reference;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ public interface AbstractService<T extends BaseEntity> {
      * @param entity 存储对象
      * @return 插入成功返回插入后的id，失败返回-1
      */
+    @Reference(retries = 0)
     Long insert(T entity);
 
     /**

@@ -3,6 +3,7 @@ package com.tony.billing.service.api;
 import com.tony.billing.entity.FundInfo;
 import com.tony.billing.model.FundAddModel;
 import com.tony.billing.model.FundExistenceCheck;
+import org.apache.dubbo.config.annotation.Reference;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -16,6 +17,7 @@ public interface FundInfoService {
      * @param fundInfo
      * @return
      */
+    @Reference(retries = 0)
     Long insert(FundInfo fundInfo);
 
     boolean update(FundInfo fundInfo);
@@ -40,9 +42,11 @@ public interface FundInfoService {
      * @param assessmentDate
      * @return
      */
+    @Reference(retries = 0)
     boolean preMarkFundsAsSold(List<Long> fundIds, BigDecimal soldFeeRate, String assessmentDate);
 
     List<FundExistenceCheck> checkFundsExistence(List<FundExistenceCheck> fundCheckList);
 
+    @Reference(retries = 0)
     boolean batchAddFunds(List<FundAddModel> fundInfoList);
 }

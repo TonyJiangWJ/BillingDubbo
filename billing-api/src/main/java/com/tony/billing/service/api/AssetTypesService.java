@@ -1,6 +1,7 @@
 package com.tony.billing.service.api;
 
 import com.tony.billing.entity.AssetTypes;
+import org.apache.dubbo.config.annotation.Reference;
 
 import java.util.List;
 
@@ -19,6 +20,7 @@ public interface AssetTypesService {
 
     List<AssetTypes> getAssetTypeByCondition(AssetTypes condition);
 
+    @Reference(retries = 0)
     Long insert(AssetTypes assetTypes);
 
     boolean update(AssetTypes assetTypes);
