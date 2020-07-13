@@ -13,6 +13,6 @@ import lombok.ToString;
 public class FundSoldRef extends BaseEntity {
 
     private Long fundId;
-    private Long fundPreSoldId;
+    private Long fundPreSaleId;
 
 }

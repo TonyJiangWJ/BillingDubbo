@@ -5,7 +5,7 @@
     <resultMap id="FundSoldRefResultMap" type="com.tony.billing.entity.FundSoldRef">
         <result property="id" column="id" jdbcType="BIGINT"/>
         <result property="fundId" column="fundId" jdbcType="BIGINT"/>
-        <result property="fundPreSoldId" column="fundPreSoldId" jdbcType="BIGINT"/>
+        <result property="fundPreSaleId" column="fundPreSaleId" jdbcType="BIGINT"/>
         <result property="isDeleted" column="isDeleted" jdbcType="INTEGER"/>
         <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
         <result property="modifyTime" column="modifyTime" jdbcType="TIMESTAMP"/>
@@ -14,7 +14,7 @@
     <sql id="all">
         id,
         fundId,
-        fundPreSoldId,
+        fundPreSaleId,
         isDeleted,
         createTime,
         modifyTime
@@ -28,8 +28,8 @@
             <if test=" fundId!=null">
                 fundId,
             </if>
-            <if test=" fundPreSoldId!=null">
-                fundPreSoldId,
+            <if test=" fundPreSaleId!=null">
+                fundPreSaleId,
             </if>
             <if test=" isDeleted!=null">
                 isDeleted,
@@ -48,8 +48,8 @@
             <if test=" fundId!=null">
                 #{fundId,jdbcType=BIGINT},
             </if>
-            <if test=" fundPreSoldId!=null">
-                #{fundPreSoldId,jdbcType=BIGINT},
+            <if test=" fundPreSaleId!=null">
+                #{fundPreSaleId,jdbcType=BIGINT},
             </if>
             <if test=" isDeleted!=null">
                 #{isDeleted,jdbcType=INTEGER},
@@ -71,8 +71,8 @@
             <if test=" fundId!=null">
                 fundId=#{fundId,jdbcType=BIGINT},
             </if>
-            <if test=" fundPreSoldId!=null">
-                fundPreSoldId=#{fundPreSoldId,jdbcType=BIGINT},
+            <if test=" fundPreSaleId!=null">
+                fundPreSaleId=#{fundPreSaleId,jdbcType=BIGINT},
             </if>
             <if test=" isDeleted!=null">
                 isDeleted=#{isDeleted,jdbcType=INTEGER},
@@ -96,8 +96,8 @@
             <if test=" fundId!=null">
                 and fundId=#{fundId,jdbcType=BIGINT}
             </if>
-            <if test=" fundPreSoldId!=null">
-                and fundPreSoldId=#{fundPreSoldId,jdbcType=BIGINT}
+            <if test=" fundPreSaleId!=null">
+                and fundPreSaleId=#{fundPreSaleId,jdbcType=BIGINT}
             </if>
             <if test=" isDeleted!=null">
                 and isDeleted=#{isDeleted,jdbcType=INTEGER}
@@ -142,8 +142,8 @@
             <if test=" fundId!=null">
                 and fundId=#{fundId,jdbcType=BIGINT}
             </if>
-            <if test=" fundPreSoldId!=null">
-                and fundPreSoldId=#{fundPreSoldId,jdbcType=BIGINT}
+            <if test=" fundPreSaleId!=null">
+                and fundPreSaleId=#{fundPreSaleId,jdbcType=BIGINT}
             </if>
             <if test=" isDeleted!=null">
                 and isDeleted=#{isDeleted,jdbcType=INTEGER}

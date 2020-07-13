@@ -10,9 +10,9 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class FundPreSoldRef extends BaseEntity {
+public class FundPreSaleRef extends BaseEntity {
 
     private Long fundId;
-    private Long fundPreSoldId;
+    private Long fundPreSaleId;
 
 }

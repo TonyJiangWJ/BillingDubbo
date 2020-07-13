@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tony.billing.dao.mapper.FundHistoryNetValueMapper">
+
+    <resultMap id="FundHistoryNetValueResultMap" type="com.tony.billing.entity.FundHistoryNetValue">
+        <result property="id" column="id" jdbcType="BIGINT"/>
+        <result property="fundCode" column="fundCode" jdbcType="VARCHAR"/>
+        <result property="fundNetValue" column="fundNetValue" jdbcType="DECIMAL"/>
+        <result property="fundAcNetValue" column="fundAcNetValue" jdbcType="DECIMAL"/>
+        <result property="confirmDate" column="confirmDate" jdbcType="VARCHAR"/>
+        <result property="increaseRate" column="increaseRate" jdbcType="DECIMAL"/>
+        <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
+        <result property="modifyTime" column="modifyTime" jdbcType="TIMESTAMP"/>
+        <result property="isDeleted" column="isDeleted" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="all">
+        id,
+        fundCode,
+        fundNetValue,
+        fundAcNetValue,
+        confirmDate,
+        increaseRate,
+        createTime,
+        modifyTime,
+        isDeleted
+    </sql>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundHistoryNetValue">
+        INSERT INTO t_fund_history_net_value
+        <trim prefix="(" suffix=")"  suffixOverrides=",">
+            <if test=" id!=null">
+                id,
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                fundCode,
+            </if>
+            <if test=" fundNetValue!=null">
+                fundNetValue,
+            </if>
+            <if test=" fundAcNetValue!=null">
+                fundAcNetValue,
+            </if>
+            <if test=" confirmDate!=null and confirmDate!=''">
+                confirmDate,
+            </if>
+            <if test=" increaseRate!=null">
+                increaseRate,
+            </if>
+            <if test=" createTime!=null">
+                createTime,
+            </if>
+            <if test=" modifyTime!=null">
+                modifyTime,
+            </if>
+            <if test=" isDeleted!=null">
+                isDeleted,
+            </if>
+        </trim>
+        <trim prefix="VALUES(" suffix=")" suffixOverrides=",">
+            <if test=" id!=null">
+                #{id,jdbcType=BIGINT},
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                #{fundCode,jdbcType=VARCHAR},
+            </if>
+            <if test=" fundNetValue!=null">
+                #{fundNetValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" fundAcNetValue!=null">
+                #{fundAcNetValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" confirmDate!=null and confirmDate!=''">
+                #{confirmDate,jdbcType=VARCHAR},
+            </if>
+            <if test=" increaseRate!=null">
+                #{increaseRate,jdbcType=DECIMAL},
+            </if>
+            <if test=" createTime!=null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null">
+                #{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" isDeleted!=null">
+                #{isDeleted,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="update" parameterType="com.tony.billing.entity.FundHistoryNetValue">
+        UPDATE t_fund_history_net_value
+        <trim prefix="SET" suffixOverrides=",">
+            <if test=" id!=null">
+                id=#{id,jdbcType=BIGINT},
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                fundCode=#{fundCode,jdbcType=VARCHAR},
+            </if>
+            <if test=" fundNetValue!=null">
+                fundNetValue=#{fundNetValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" fundAcNetValue!=null">
+                fundAcNetValue=#{fundAcNetValue,jdbcType=DECIMAL},
+            </if>
+            <if test=" confirmDate!=null and confirmDate!=''">
+                confirmDate=#{confirmDate,jdbcType=VARCHAR},
+            </if>
+            <if test=" increaseRate!=null">
+                increaseRate=#{increaseRate,jdbcType=DECIMAL},
+            </if>
+            <if test=" createTime!=null">
+                createTime=#{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" modifyTime!=null">
+                modifyTime=#{modifyTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test=" isDeleted!=null">
+                isDeleted=#{isDeleted,jdbcType=INTEGER},
+            </if>
+        </trim>
+        WHERE id=#{id, jdbcType=BIGINT} AND isDeleted='0'
+    </update>
+<!--
+    <sql id="queryWhere">
+        <trim prefix="WHERE" prefixOverrides="and">
+            AND isDeleted='0'
+            <if test=" id!=null">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                and fundCode=#{fundCode,jdbcType=VARCHAR}
+            </if>
+            <if test=" fundNetValue!=null">
+                and fundNetValue=#{fundNetValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" fundAcNetValue!=null">
+                and fundAcNetValue=#{fundAcNetValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" confirmDate!=null and confirmDate!=''">
+                and confirmDate=#{confirmDate,jdbcType=VARCHAR}
+            </if>
+            <if test=" increaseRate!=null">
+                and increaseRate=#{increaseRate,jdbcType=DECIMAL}
+            </if>
+            <if test=" createTime!=null">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" isDeleted!=null">
+                and isDeleted=#{isDeleted,jdbcType=INTEGER}
+            </if>
+        </trim>
+    </sql>
+    <select id="countByQuery" parameterType="com.tony.billing.query.FundHistoryNetValueQuery"
+            resultType="Integer">
+        SELECT count(*) FROM t_fund_history_net_value
+        <include refid="queryWhere"/>
+    </select>
+
+    <select id="queryByPagination" parameterType="com.tony.billing.query.FundHistoryNetValueQuery"
+            resultMap="FundHistoryNetValueResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM t_fund_history_net_value
+        <include refid="queryWhere"/>
+        ORDER BY GMT_MODIFY DESC
+        <if test="mysqlPageFristItem != null">
+            <if test="pageSize != null and pageSize.toString() != ''">
+                limit #{mysqlPageFristItem},#{pageSize}
+            </if>
+        </if>
+    </select>
+-->
+    <select id="list" parameterType="com.tony.billing.entity.FundHistoryNetValue" resultMap="FundHistoryNetValueResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM t_fund_history_net_value
+        <trim prefix="WHERE" prefixOverrides="and">
+            AND isDeleted='0'
+            <if test=" id!=null">
+                and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" fundCode!=null and fundCode!=''">
+                and fundCode=#{fundCode,jdbcType=VARCHAR}
+            </if>
+            <if test=" fundNetValue!=null">
+                and fundNetValue=#{fundNetValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" fundAcNetValue!=null">
+                and fundAcNetValue=#{fundAcNetValue,jdbcType=DECIMAL}
+            </if>
+            <if test=" confirmDate!=null and confirmDate!=''">
+                and confirmDate=#{confirmDate,jdbcType=VARCHAR}
+            </if>
+            <if test=" increaseRate!=null">
+                and increaseRate=#{increaseRate,jdbcType=DECIMAL}
+            </if>
+            <if test=" createTime!=null">
+                and createTime=#{createTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" modifyTime!=null">
+                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+            </if>
+            <if test=" isDeleted!=null">
+                and isDeleted=#{isDeleted,jdbcType=INTEGER}
+            </if>
+        </trim>
+    </select>
+
+    <select id="getById" resultMap="FundHistoryNetValueResultMap">
+        SELECT
+        <include refid="all"/>
+        FROM t_fund_history_net_value WHERE id=#{id,jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT} AND isDeleted='0'
+    </select>
+
+    <update id="deleteById">
+        update t_fund_history_net_value set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT}
+    </update>
+
+    <insert id="batchInsert">
+        insert ignore into t_fund_history_net_value (
+        fundCode, fundNetValue, fundAcNetValue, confirmDate, increaseRate, createTime, modifyTime, isDeleted
+        )
+        <foreach collection="fundNetValueList" item="fundNetValue" open="VALUES (" close=")" separator="),(">
+        #{fundNetValue.fundCode,jdbcType=VARCHAR},#{fundNetValue.fundNetValue,jdbcType=DECIMAL},#{fundNetValue.fundAcNetValue,jdbcType=DECIMAL},
+        #{fundNetValue.confirmDate,jdbcType=VARCHAR},#{fundNetValue.increaseRate,jdbcType=DECIMAL},#{fundNetValue.createTime,jdbcType=TIMESTAMP},
+        #{fundNetValue.modifyTime,jdbcType=TIMESTAMP},#{fundNetValue.isDeleted,jdbcType=INTEGER}
+        </foreach>
+    </insert>
+</mapper>

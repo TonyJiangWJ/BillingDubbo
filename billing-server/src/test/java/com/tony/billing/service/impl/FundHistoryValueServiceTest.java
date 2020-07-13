@@ -27,12 +27,12 @@ public class FundHistoryValueServiceTest extends BaseServiceTest {
     @Test
     public void testFundChangeLog() {
         UserIdContainer.setUserId(2L);
-        log.info("result:{}", JSON.toJSONString(fundHistoryValueService.getFundHistoryValuesByAssessmentDate("2020-06-24")));
+        log.info("result:{}", JSON.toJSONString(fundHistoryValueService.getFundHistoryValuesByAssessmentDate("2020-07-11")));
     }
 
     @Test
     public void testFundSummary() {
         UserIdContainer.setUserId(2L);
-        log.info("result:{}", JSON.toJSONString(fundHistoryValueService.getFundChangedInfosByAssessmentDate("2020-06-29")));
+        log.info("result:{}", JSON.toJSONString(fundHistoryValueService.getFundChangedInfosByAssessmentDate("2020-07-10")));
     }
 }

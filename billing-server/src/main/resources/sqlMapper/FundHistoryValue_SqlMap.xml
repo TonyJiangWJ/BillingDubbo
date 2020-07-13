@@ -287,12 +287,12 @@
     </update>
 
     <select id="checkIsHistoryValueExists" resultType="java.lang.Integer">
-        select count(1) from T_FUND_HISTORY_VALUE where fundCode=#{fundCode,jdbcType=VARCHAR} and assessmentTime=#{assessmentTime,jdbcType=TIMESTAMP}
+        select count(1) from T_FUND_HISTORY_VALUE where isDeleted='0' and fundCode=#{fundCode,jdbcType=VARCHAR} and assessmentTime=#{assessmentTime,jdbcType=TIMESTAMP}
     </select>
 
     <select id="getFundHistoriesByFundCodes" resultMap="FundHistoryValueResultMap">
         select <include refid="all"/> from t_fund_history_value
-        where assessmentDate=#{assessmentDate,jdbcType=VARCHAR} and fundCode in
+        where isDeleted='0' and assessmentDate=#{assessmentDate,jdbcType=VARCHAR} and fundCode in
         <foreach collection="fundCodes" open="(" close=")" separator="," item="fundCode">
             #{fundCode,jdbcType=VARCHAR}
         </foreach>
@@ -301,7 +301,7 @@
 
     <select id="getLatestFundHistoryValueByFundCodes" resultMap="FundHistoryValueResultMap">
         select <include refid="all"/> from t_fund_history_value
-        where fundCode in
+        where isDeleted='0' and fundCode in
         <foreach collection="fundCodes" open="(" close=")" separator="," item="fundCode">
             #{fundCode,jdbcType=VARCHAR}
         </foreach>
@@ -312,7 +312,7 @@
 
     <select id="getFundLatestValue" resultMap="FundHistoryValueResultMap">
       select <include refid="all"/> from t_fund_history_value
-        where fundCode = #{fundCode,jdbcType=VARCHAR} and assessmentDate=#{assessmentDate,jdbcType=VARCHAR}
+        where isDeleted='0' and fundCode = #{fundCode,jdbcType=VARCHAR} and assessmentDate=#{assessmentDate,jdbcType=VARCHAR}
         order by id desc limit 0,1
     </select>
 </mapper>

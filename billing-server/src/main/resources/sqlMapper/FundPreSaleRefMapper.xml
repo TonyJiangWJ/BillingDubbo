@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tony.billing.dao.mapper.FundPreSoldRefMapper">
+<mapper namespace="com.tony.billing.dao.mapper.FundPreSaleRefMapper">
 
-    <resultMap id="FundPreSoldRefResultMap" type="com.tony.billing.entity.FundPreSoldRef">
+    <resultMap id="FundPreSaleRefResultMap" type="com.tony.billing.entity.FundPreSaleRef">
         <result property="id" column="id" jdbcType="BIGINT"/>
         <result property="fundId" column="fundId" jdbcType="BIGINT"/>
-        <result property="fundPreSoldId" column="fundPreSoldId" jdbcType="BIGINT"/>
+        <result property="fundPreSaleId" column="fundPreSaleId" jdbcType="BIGINT"/>
         <result property="isDeleted" column="isDeleted" jdbcType="INTEGER"/>
         <result property="createTime" column="createTime" jdbcType="TIMESTAMP"/>
         <result property="modifyTime" column="modifyTime" jdbcType="TIMESTAMP"/>
@@ -14,12 +14,12 @@
     <sql id="all">
         id,
         fundId,
-        fundPreSoldId,
+        fundPreSaleId,
         isDeleted,
         createTime,
         modifyTime
     </sql>
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundPreSoldRef">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundPreSaleRef">
         INSERT INTO T_FUND_PRE_SOLD_REF
         <trim prefix="(" suffix=")"  suffixOverrides=",">
             <if test=" id!=null">
@@ -28,8 +28,8 @@
             <if test=" fundId!=null">
                 fundId,
             </if>
-            <if test=" fundPreSoldId!=null">
-                fundPreSoldId,
+            <if test=" fundPreSaleId!=null">
+                fundPreSaleId,
             </if>
             <if test=" isDeleted!=null">
                 isDeleted,
@@ -48,8 +48,8 @@
             <if test=" fundId!=null">
                 #{fundId,jdbcType=BIGINT},
             </if>
-            <if test=" fundPreSoldId!=null">
-                #{fundPreSoldId,jdbcType=BIGINT},
+            <if test=" fundPreSaleId!=null">
+                #{fundPreSaleId,jdbcType=BIGINT},
             </if>
             <if test=" isDeleted!=null">
                 #{isDeleted,jdbcType=INTEGER},
@@ -62,7 +62,7 @@
             </if>
         </trim>
     </insert>
-    <update id="update" parameterType="com.tony.billing.entity.FundPreSoldRef">
+    <update id="update" parameterType="com.tony.billing.entity.FundPreSaleRef">
         UPDATE T_FUND_PRE_SOLD_REF
         <trim prefix="SET" suffixOverrides=",">
             <if test=" id!=null">
@@ -71,8 +71,8 @@
             <if test=" fundId!=null">
                 fundId=#{fundId,jdbcType=BIGINT},
             </if>
-            <if test=" fundPreSoldId!=null">
-                fundPreSoldId=#{fundPreSoldId,jdbcType=BIGINT},
+            <if test=" fundPreSaleId!=null">
+                fundPreSaleId=#{fundPreSaleId,jdbcType=BIGINT},
             </if>
             <if test=" isDeleted!=null">
                 isDeleted=#{isDeleted,jdbcType=INTEGER},
@@ -96,8 +96,8 @@
             <if test=" fundId!=null">
                 and fundId=#{fundId,jdbcType=BIGINT}
             </if>
-            <if test=" fundPreSoldId!=null">
-                and fundPreSoldId=#{fundPreSoldId,jdbcType=BIGINT}
+            <if test=" fundPreSaleId!=null">
+                and fundPreSaleId=#{fundPreSaleId,jdbcType=BIGINT}
             </if>
             <if test=" isDeleted!=null">
                 and isDeleted=#{isDeleted,jdbcType=INTEGER}
@@ -110,14 +110,14 @@
             </if>
         </trim>
     </sql>
-    <select id="countByQuery" parameterType="com.tony.billing.query.FundPreSoldRefQuery"
+    <select id="countByQuery" parameterType="com.tony.billing.query.FundPreSaleRefQuery"
             resultType="Integer">
         SELECT count(*) FROM T_FUND_PRE_SOLD_REF
         <include refid="queryWhere"/>
     </select>
 
-    <select id="queryByPagination" parameterType="com.tony.billing.query.FundPreSoldRefQuery"
-            resultMap="FundPreSoldRefResultMap">
+    <select id="queryByPagination" parameterType="com.tony.billing.query.FundPreSaleRefQuery"
+            resultMap="FundPreSaleRefResultMap">
         SELECT
         <include refid="all"/>
         FROM T_FUND_PRE_SOLD_REF
@@ -130,7 +130,7 @@
         </if>
     </select>
 -->
-    <select id="list" parameterType="com.tony.billing.entity.FundPreSoldRef" resultMap="FundPreSoldRefResultMap">
+    <select id="list" parameterType="com.tony.billing.entity.FundPreSaleRef" resultMap="FundPreSaleRefResultMap">
         SELECT
         <include refid="all"/>
         FROM T_FUND_PRE_SOLD_REF
@@ -142,8 +142,8 @@
             <if test=" fundId!=null">
                 and fundId=#{fundId,jdbcType=BIGINT}
             </if>
-            <if test=" fundPreSoldId!=null">
-                and fundPreSoldId=#{fundPreSoldId,jdbcType=BIGINT}
+            <if test=" fundPreSaleId!=null">
+                and fundPreSaleId=#{fundPreSaleId,jdbcType=BIGINT}
             </if>
             <if test=" isDeleted!=null">
                 and isDeleted=#{isDeleted,jdbcType=INTEGER}
@@ -157,7 +157,7 @@
         </trim>
     </select>
 
-    <select id="getById" resultMap="FundPreSoldRefResultMap">
+    <select id="getById" resultMap="FundPreSaleRefResultMap">
         SELECT
         <include refid="all"/>
         FROM T_FUND_PRE_SOLD_REF WHERE id=#{id,jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT} AND isDeleted='0'

@@ -1,7 +1,8 @@
 package com.tony.billing.controller;
 
+import com.tony.billing.entity.FundSoldInfo;
 import com.tony.billing.exceptions.BaseBusinessException;
-import com.tony.billing.request.fund.FundPreSoldRequest;
+import com.tony.billing.request.fund.FundPreSaleRequest;
 import com.tony.billing.request.fund.FundSoldRequest;
 import com.tony.billing.response.BaseResponse;
 import com.tony.billing.service.api.FundInfoService;
@@ -29,12 +30,29 @@ public class FunSoldController extends BaseController {
 
     @RequestMapping(value = "/fund/sold/put", method = RequestMethod.POST)
     public BaseResponse addSoldInfo(@ModelAttribute("request") @Validated FundSoldRequest request) {
-        return ResponseUtil.success();
+        FundSoldInfo fundSoldInfo = new FundSoldInfo();
+        fundSoldInfo.setUserId(request.getUserId());
+        fundSoldInfo.setPurchaseCost(request.getPurchaseCost());
+        fundSoldInfo.setPurchaseFee(request.getPurchaseFee());
+        fundSoldInfo.setCostValue(request.getPurchaseCost().divide(request.getSoldAmount(), 4));
+        fundSoldInfo.setFundCode(request.getFundCode());
+        fundSoldInfo.setFundName(request.getFundName());
+        fundSoldInfo.setSoldAmount(request.getSoldAmount());
+        fundSoldInfo.setSoldConfirmDate(request.getSoldConfirmDate());
+        fundSoldInfo.setSoldDate(request.getSoldDate());
+        fundSoldInfo.setSoldFee(request.getSoldFee());
+        fundSoldInfo.setSoldIncome(request.getSoldIncome());
+        fundSoldInfo.setSoldValue(request.getSoldValue());
+        if (fundSoldInfoService.insert(fundSoldInfo) > 0) {
+            return ResponseUtil.success();
+        } else {
+            return ResponseUtil.error();
+        }
     }
 
 
     @RequestMapping(value = "/fund/pre/mark/as/sold", method = RequestMethod.POST)
-    public BaseResponse markFundAsSold(@ModelAttribute("request") @Validated FundPreSoldRequest request) {
+    public BaseResponse markFundAsSold(@ModelAttribute("request") @Validated FundPreSaleRequest request) {
         BaseResponse response = ResponseUtil.success();
         try {
             if (!fundInfoService.preMarkFundsAsSold(request.getFundIds(), request.getFundSoldFeeRate(), request.getAssessmentDate())) {

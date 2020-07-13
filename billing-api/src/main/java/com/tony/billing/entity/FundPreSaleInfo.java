@@ -12,7 +12,7 @@ import java.util.Date;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class FundPreSoldInfo extends BaseVersionedEntity {
+public class FundPreSaleInfo extends BaseVersionedEntity {
 
     private Long userId;
     private String fundCode;

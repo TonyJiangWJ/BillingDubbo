@@ -40,6 +40,9 @@ public class DailyFundChangedResponse extends BaseResponse {
     private String todayIncrease;
     private String todayIncreaseRate;
 
+    /**
+     * 计算总增长信息
+     */
     public void calculateIncreaseInfo() {
         BigDecimal totalCost = BigDecimal.ZERO;
         BigDecimal totalConfirmedIncrease = BigDecimal.ZERO;

@@ -57,7 +57,7 @@ public class FundHistoryValueServiceImpl extends AbstractServiceImpl<FundHistory
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(4, 8, 60,
-            TimeUnit.SECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setNameFormat("fund-history-%d").build());
+            TimeUnit.SECONDS, new LinkedBlockingQueue<>(1024), new ThreadFactoryBuilder().setNameFormat("fund-history-%d").build());
 
     @Override
     public int updateFundHistoryValues() {

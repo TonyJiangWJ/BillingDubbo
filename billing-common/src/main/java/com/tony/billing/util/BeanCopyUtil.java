@@ -76,7 +76,7 @@ public class BeanCopyUtil {
         try {
             PropertyUtils.copyProperties(dest, src);
         } catch (Exception e) {
-            logger.error("相同对象值拷贝是发生异常 {}", e);
+            logger.error("相同对象值拷贝时发生异常 ", e);
         }
     }
 }

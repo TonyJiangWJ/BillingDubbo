@@ -8,20 +8,22 @@ import com.tony.billing.constants.timing.TimeConstants;
 import com.tony.billing.dao.mapper.FundInfoMapper;
 import com.tony.billing.entity.FundHistoryValue;
 import com.tony.billing.entity.FundInfo;
-import com.tony.billing.entity.FundPreSoldInfo;
-import com.tony.billing.entity.FundPreSoldRef;
+import com.tony.billing.entity.FundPreSaleInfo;
+import com.tony.billing.entity.FundPreSaleRef;
 import com.tony.billing.exceptions.BaseBusinessException;
 import com.tony.billing.model.FundAddModel;
 import com.tony.billing.model.FundExistenceCheck;
+import com.tony.billing.request.fund.FundPreSalePortionRequest;
 import com.tony.billing.service.api.FundHistoryValueService;
 import com.tony.billing.service.api.FundInfoService;
-import com.tony.billing.service.api.FundPreSoldInfoService;
-import com.tony.billing.service.api.FundPreSoldRefService;
+import com.tony.billing.service.api.FundPreSaleInfoService;
+import com.tony.billing.service.api.FundPreSaleRefService;
 import com.tony.billing.service.base.AbstractServiceImpl;
 import com.tony.billing.util.UserIdContainer;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Service;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,11 +45,11 @@ import java.util.stream.Collectors;
 public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoMapper> implements FundInfoService {
 
     @Autowired
-    private FundPreSoldInfoService preSoldInfoService;
+    private FundPreSaleInfoService preSaleInfoService;
     @Autowired
     private FundHistoryValueService fundHistoryValueService;
     @Autowired
-    private FundPreSoldRefService fundPreSoldRefService;
+    private FundPreSaleRefService fundPreSaleRefService;
 
 
     @Override
@@ -88,7 +90,7 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
                         });
                         if (resultFund.getPurchaseAmount().compareTo(BigDecimal.ZERO) > 0) {
                             // 平均成本净值
-                            resultFund.setPurchaseValue(resultFund.getPurchaseCost().divide(resultFund.getPurchaseAmount(), BigDecimal.ROUND_HALF_UP));
+                            resultFund.setPurchaseValue(resultFund.getPurchaseCost().divide(resultFund.getPurchaseAmount(), 4, BigDecimal.ROUND_HALF_UP));
                         } else {
                             logger.warn("fund amount is zero:{}", JSON.toJSONString(resultFund));
                         }
@@ -112,11 +114,11 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
                 super.update(fundInfo);
             });
 
-            FundPreSoldInfo preSoldInfo = new FundPreSoldInfo();
-            preSoldInfo.setConverted(EnumYesOrNo.NO.val());
-            preSoldInfo.setFundCode(inStoreFunds.get(0).getFundCode());
-            preSoldInfo.setFundName(inStoreFunds.get(0).getFundName());
-            preSoldInfo.setUserId(UserIdContainer.getUserId());
+            FundPreSaleInfo preSaleInfo = new FundPreSaleInfo();
+            preSaleInfo.setConverted(EnumYesOrNo.NO.val());
+            preSaleInfo.setFundCode(inStoreFunds.get(0).getFundCode());
+            preSaleInfo.setFundName(inStoreFunds.get(0).getFundName());
+            preSaleInfo.setUserId(UserIdContainer.getUserId());
 
             BigDecimal purchaseCost = BigDecimal.ZERO;
             BigDecimal purchaseFee = BigDecimal.ZERO;
@@ -125,7 +127,7 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
             BigDecimal assessmentSoldFee = BigDecimal.ZERO;
 
 
-            FundHistoryValue latestFundValue = fundHistoryValueService.getFundLatestValue(preSoldInfo.getFundCode(), assessmentDate);
+            FundHistoryValue latestFundValue = fundHistoryValueService.getFundLatestValue(preSaleInfo.getFundCode(), assessmentDate);
             boolean hasAssessmentValue = latestFundValue != null;
 
             for (FundInfo fundInfo : inStoreFunds) {
@@ -141,25 +143,27 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
                         .divide(BigDecimal.valueOf(100), BigDecimal.ROUND_HALF_UP)
                         .setScale(2, BigDecimal.ROUND_HALF_UP);
                 assessmentSoldIncome = assessmentSoldIncome.setScale(2, BigDecimal.ROUND_HALF_UP);
-                preSoldInfo.setAssessmentValue(latestFundValue.getAssessmentValue());
+                preSaleInfo.setAssessmentValue(latestFundValue.getAssessmentValue());
             }
 
-            preSoldInfo.setAssessmentSoldFee(assessmentSoldFee);
-            preSoldInfo.setAssessmentSoldIncome(assessmentSoldIncome);
-            preSoldInfo.setSoldAmount(soldAmount);
-            preSoldInfo.setPurchaseCost(purchaseCost);
-            preSoldInfo.setPurchaseFee(purchaseFee);
+            preSaleInfo.setAssessmentSoldFee(assessmentSoldFee);
+            preSaleInfo.setAssessmentSoldIncome(assessmentSoldIncome);
+            preSaleInfo.setSoldAmount(soldAmount);
+            preSaleInfo.setPurchaseCost(purchaseCost);
+            preSaleInfo.setPurchaseFee(purchaseFee);
             LocalDate localDate = LocalDate.parse(assessmentDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            preSoldInfo.setSoldDate(Date.from(localDate.atStartOfDay(TimeConstants.CHINA_ZONE).toInstant()));
-            preSoldInfo.setCostValue(purchaseCost.divide(soldAmount, 4, BigDecimal.ROUND_HALF_UP));
+            // 将估算日期作为卖出日期
+            preSaleInfo.setSoldDate(Date.from(localDate.atStartOfDay(TimeConstants.CHINA_ZONE).toInstant()));
+            // 成本净值为买入总支出除以买入（卖出）份额
+            preSaleInfo.setCostValue(purchaseCost.divide(soldAmount, 4, BigDecimal.ROUND_HALF_UP));
 
-            Long preSoldId = preSoldInfoService.insert(preSoldInfo);
-            if (preSoldId > 0) {
+            Long preSaleId = preSaleInfoService.insert(preSaleInfo);
+            if (preSaleId > 0) {
                 inStoreFunds.forEach(fundInfo -> {
-                    FundPreSoldRef soldRef = new FundPreSoldRef();
+                    FundPreSaleRef soldRef = new FundPreSaleRef();
                     soldRef.setFundId(fundInfo.getId());
-                    soldRef.setFundPreSoldId(preSoldId);
-                    fundPreSoldRefService.insert(soldRef);
+                    soldRef.setFundPreSaleId(preSaleId);
+                    fundPreSaleRefService.insert(soldRef);
                 });
                 return true;
             } else {
@@ -224,5 +228,81 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
         // 更新历史数据
         fundHistoryValueService.updateFundHistoryValues();
         return mapper.batchInsert(forAddFunds) > 0;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, BaseBusinessException.class})
+    public boolean preSalePortion(FundPreSalePortionRequest request) {
+        FundInfo fundInfo = mapper.getById(request.getId(), UserIdContainer.getUserId());
+        if (fundInfo != null) {
+            BigDecimal saleAmount = request.getSaleAmount();
+            if (saleAmount.compareTo(fundInfo.getPurchaseAmount()) <= 0) {
+                BigDecimal restAmount = fundInfo.getPurchaseAmount().subtract(saleAmount);
+
+                Long saleFundId = null;
+                if (restAmount.compareTo(BigDecimal.ZERO) > 0) {
+                    BigDecimal oneHundred = new BigDecimal("100");
+                    BigDecimal salePercent = saleAmount.multiply(oneHundred).divide(fundInfo.getPurchaseAmount(), BigDecimal.ROUND_HALF_UP);
+                    BigDecimal salePurchaseCost = salePercent.multiply(fundInfo.getPurchaseCost()).divide(oneHundred, 2, BigDecimal.ROUND_HALF_UP);
+                    BigDecimal salePurchaseFee = salePercent.multiply(fundInfo.getPurchaseFee()).divide(oneHundred, 2, BigDecimal.ROUND_HALF_UP);
+                    FundInfo saleFund = new FundInfo();
+                    BeanUtils.copyProperties(fundInfo, saleFund);
+                    saleFund.setPurchaseAmount(saleAmount);
+                    saleFund.setPurchaseCost(salePurchaseCost);
+                    saleFund.setPurchaseFee(salePurchaseFee);
+                    saleFund.setId(null);
+                    // 售出的标记为卖出
+                    saleFundId = super.insert(saleFund);
+                    // 更新剩余份额
+                    fundInfo.setPurchaseAmount(restAmount);
+                    super.update(fundInfo);
+                } else {
+                    // 全部卖出
+                    saleFundId = fundInfo.getId();
+                }
+
+                // 标记为卖出
+                if (preMarkFundAsSold(saleFundId, UserIdContainer.getUserId(), request.getSoldFeeRate(), request.getAssessmentDate())) {
+                    return true;
+                } else {
+                    throw new BaseBusinessException("预售出基金信息保存失败");
+                }
+            }
+        }
+        return false;
+    }
+
+
+    private boolean preMarkFundAsSold(Long saleFundId, Long userId, BigDecimal soldFeeRate, String assessmentDate) {
+        FundInfo saleFund = mapper.getById(saleFundId, userId);
+        if (saleFund == null) {
+            throw new IllegalStateException("sale fund should never by null");
+        }
+        FundPreSaleInfo preSaleInfo = new FundPreSaleInfo();
+        preSaleInfo.setFundCode(saleFund.getFundCode());
+        preSaleInfo.setFundName(saleFund.getFundName());
+        preSaleInfo.setConverted(EnumYesOrNo.NO.val());
+        preSaleInfo.setUserId(userId);
+        preSaleInfo.setPurchaseCost(saleFund.getPurchaseCost());
+        preSaleInfo.setPurchaseFee(saleFund.getPurchaseFee());
+        preSaleInfo.setSoldAmount(saleFund.getPurchaseAmount());
+        // 将估算日期作为卖出日期
+        LocalDate localDate = LocalDate.parse(assessmentDate, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        preSaleInfo.setSoldDate(Date.from(localDate.atStartOfDay(TimeConstants.CHINA_ZONE).toInstant()));
+        // 成本净值为买入总支出除以买入（卖出）份额
+        preSaleInfo.setCostValue(saleFund.getPurchaseCost().divide(saleFund.getPurchaseAmount(), 4, BigDecimal.ROUND_HALF_UP));
+
+        FundHistoryValue latestFundValue = fundHistoryValueService.getFundLatestValue(preSaleInfo.getFundCode(), assessmentDate);
+        if (latestFundValue != null) {
+            BigDecimal assessmentSoldIncome = latestFundValue.getAssessmentValue().multiply(saleFund.getPurchaseAmount());
+            BigDecimal assessmentSoldFee = assessmentSoldIncome.multiply(soldFeeRate)
+                    .divide(BigDecimal.valueOf(100), BigDecimal.ROUND_HALF_UP)
+                    .setScale(2, BigDecimal.ROUND_HALF_UP);
+            preSaleInfo.setAssessmentValue(latestFundValue.getAssessmentValue());
+            preSaleInfo.setAssessmentSoldFee(assessmentSoldFee.setScale(2, BigDecimal.ROUND_HALF_UP));
+            preSaleInfo.setAssessmentSoldIncome(assessmentSoldIncome.setScale(2, BigDecimal.ROUND_HALF_UP));
+            preSaleInfo.setAssessmentValue(latestFundValue.getAssessmentValue());
+        }
+        return preSaleInfoService.insert(preSaleInfo) > 0;
     }
 }

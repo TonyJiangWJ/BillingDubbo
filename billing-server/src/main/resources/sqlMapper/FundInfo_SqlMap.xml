@@ -332,11 +332,11 @@
     </update>
 
     <select id="getFundInfoDistinct" resultType="com.tony.billing.entity.FundInfo" useCache="true">
-        select distinct fundCode, fundName from t_fund_info
+        select fundCode, fundName from t_fund_info where isDeleted='0' group by fundCode
     </select>
 
     <select id="getFundInfoDistinctByUser" resultType="com.tony.billing.entity.FundInfo" useCache="true">
-        select distinct fundCode, fundName from t_fund_info where inStore='1' and userId=#{userId,jdbcType=BIGINT} and isDeleted='0'
+        select fundCode, fundName from t_fund_info where inStore='1' and userId=#{userId,jdbcType=BIGINT} and isDeleted='0' group by fundCode
     </select>
 
     <select id="listInStoreFunds" resultMap="FundInfoResultMap">

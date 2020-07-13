@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tony.billing.dao.mapper.FundPreSoldInfoMapper">
+<mapper namespace="com.tony.billing.dao.mapper.FundPreSaleInfoMapper">
 
-    <resultMap id="FundPreSoldInfoResultMap" type="com.tony.billing.entity.FundPreSoldInfo">
+    <resultMap id="FundPreSaleInfoResultMap" type="com.tony.billing.entity.FundPreSaleInfo">
         <result property="id" column="id" jdbcType="BIGINT"/>
         <result property="userId" column="userId" jdbcType="BIGINT"/>
         <result property="fundCode" column="fundCode" jdbcType="VARCHAR"/>
@@ -41,7 +41,7 @@
         createTime,
         modifyTime
     </sql>
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundPreSoldInfo">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundPreSaleInfo">
         INSERT INTO T_FUND_PRE_SOLD_INFO
         <trim prefix="(" suffix=")"  suffixOverrides=",">
             <if test=" id!=null">
@@ -150,7 +150,7 @@
             </if>
         </trim>
     </insert>
-    <update id="update" parameterType="com.tony.billing.entity.FundPreSoldInfo">
+    <update id="update" parameterType="com.tony.billing.entity.FundPreSaleInfo">
         UPDATE T_FUND_PRE_SOLD_INFO
         <trim prefix="SET" suffixOverrides=",">
             <if test=" id!=null">
@@ -264,14 +264,14 @@
             </if>
         </trim>
     </sql>
-    <select id="countByQuery" parameterType="com.tony.billing.query.FundPreSoldInfoQuery"
+    <select id="countByQuery" parameterType="com.tony.billing.query.FundPreSaleInfoQuery"
             resultType="Integer">
         SELECT count(*) FROM T_FUND_PRE_SOLD_INFO
         <include refid="queryWhere"/>
     </select>
 
-    <select id="queryByPagination" parameterType="com.tony.billing.query.FundPreSoldInfoQuery"
-            resultMap="FundPreSoldInfoResultMap">
+    <select id="queryByPagination" parameterType="com.tony.billing.query.FundPreSaleInfoQuery"
+            resultMap="FundPreSaleInfoResultMap">
         SELECT
         <include refid="all"/>
         FROM T_FUND_PRE_SOLD_INFO
@@ -284,7 +284,7 @@
         </if>
     </select>
 -->
-    <select id="list" parameterType="com.tony.billing.entity.FundPreSoldInfo" resultMap="FundPreSoldInfoResultMap">
+    <select id="list" parameterType="com.tony.billing.entity.FundPreSaleInfo" resultMap="FundPreSaleInfoResultMap">
         SELECT
         <include refid="all"/>
         FROM T_FUND_PRE_SOLD_INFO
@@ -344,7 +344,7 @@
         </trim>
     </select>
 
-    <select id="getById" resultMap="FundPreSoldInfoResultMap">
+    <select id="getById" resultMap="FundPreSaleInfoResultMap">
         SELECT
         <include refid="all"/>
         FROM T_FUND_PRE_SOLD_INFO WHERE id=#{id,jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT} AND isDeleted='0'

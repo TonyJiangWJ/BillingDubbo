@@ -16,7 +16,7 @@ import java.util.List;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class FundPreSoldRequest extends BaseRequest {
+public class FundPreSaleRequest extends BaseRequest {
     @NotNull
     private List<Long> fundIds;
     @NotNull
