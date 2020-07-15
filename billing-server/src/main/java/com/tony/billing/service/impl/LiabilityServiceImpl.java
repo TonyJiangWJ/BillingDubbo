@@ -143,7 +143,6 @@ public class LiabilityServiceImpl extends AbstractServiceImpl<Liability, Liabili
                         );
                         liabilityModel.setTotal(sumContainer.getTotal());
                         liabilityModel.setRemain(sumContainer.getRemain());
-                        UserIdContainer.removeUserId();
                         return liabilityModel;
                     }).collect(Collectors.toList());
         }
@@ -173,7 +172,6 @@ public class LiabilityServiceImpl extends AbstractServiceImpl<Liability, Liabili
                                         multiSumContainer.getRemain() + liabilityModel.getRemain()));
                         monthLiabilityModel.setTotal(sumContainer.getTotal());
                         monthLiabilityModel.setRemain(sumContainer.getRemain());
-                        UserIdContainer.removeUserId();
                         return monthLiabilityModel;
                     }).collect(Collectors.toList());
             monthLiabilityModels.sort(Comparator.comparing(MonthLiabilityModel::getMonth));
