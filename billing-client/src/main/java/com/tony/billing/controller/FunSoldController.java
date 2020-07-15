@@ -2,6 +2,7 @@ package com.tony.billing.controller;
 
 import com.tony.billing.entity.FundSoldInfo;
 import com.tony.billing.exceptions.BaseBusinessException;
+import com.tony.billing.request.fund.FundPreSalePortionRequest;
 import com.tony.billing.request.fund.FundPreSaleRequest;
 import com.tony.billing.request.fund.FundSoldRequest;
 import com.tony.billing.response.BaseResponse;
@@ -56,6 +57,20 @@ public class FunSoldController extends BaseController {
         BaseResponse response = ResponseUtil.success();
         try {
             if (!fundInfoService.preMarkFundsAsSold(request.getFundIds(), request.getFundSoldFeeRate(), request.getAssessmentDate())) {
+                response = ResponseUtil.error();
+            }
+        } catch (BaseBusinessException e) {
+            response = ResponseUtil.error();
+            response.setMsg(e.getMessage());
+        }
+        return response;
+    }
+
+    @RequestMapping(value = "/fund/pre/sale/portion", method = RequestMethod.POST)
+    public BaseResponse preSalePortion(@ModelAttribute("request") @Validated FundPreSalePortionRequest request) {
+        BaseResponse response = ResponseUtil.success();
+        try {
+            if (!fundInfoService.preSalePortion(request)) {
                 response = ResponseUtil.error();
             }
         } catch (BaseBusinessException e) {

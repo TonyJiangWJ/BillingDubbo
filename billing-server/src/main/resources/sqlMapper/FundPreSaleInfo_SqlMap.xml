@@ -42,7 +42,7 @@
         modifyTime
     </sql>
     <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundPreSaleInfo">
-        INSERT INTO T_FUND_PRE_SOLD_INFO
+        INSERT INTO T_FUND_PRE_SALE_INFO
         <trim prefix="(" suffix=")"  suffixOverrides=",">
             <if test=" id!=null">
                 id,
@@ -151,7 +151,7 @@
         </trim>
     </insert>
     <update id="update" parameterType="com.tony.billing.entity.FundPreSaleInfo">
-        UPDATE T_FUND_PRE_SOLD_INFO
+        UPDATE T_FUND_PRE_SALE_INFO
         <trim prefix="SET" suffixOverrides=",">
             <if test=" id!=null">
                 id=#{id,jdbcType=BIGINT},
@@ -266,7 +266,7 @@
     </sql>
     <select id="countByQuery" parameterType="com.tony.billing.query.FundPreSaleInfoQuery"
             resultType="Integer">
-        SELECT count(*) FROM T_FUND_PRE_SOLD_INFO
+        SELECT count(*) FROM T_FUND_PRE_SALE_INFO
         <include refid="queryWhere"/>
     </select>
 
@@ -274,7 +274,7 @@
             resultMap="FundPreSaleInfoResultMap">
         SELECT
         <include refid="all"/>
-        FROM T_FUND_PRE_SOLD_INFO
+        FROM T_FUND_PRE_SALE_INFO
         <include refid="queryWhere"/>
         ORDER BY GMT_MODIFY DESC
         <if test="mysqlPageFristItem != null">
@@ -287,7 +287,7 @@
     <select id="list" parameterType="com.tony.billing.entity.FundPreSaleInfo" resultMap="FundPreSaleInfoResultMap">
         SELECT
         <include refid="all"/>
-        FROM T_FUND_PRE_SOLD_INFO
+        FROM T_FUND_PRE_SALE_INFO
         <trim prefix="WHERE" prefixOverrides="and">
             AND isDeleted='0'
             <if test=" id!=null">
@@ -347,10 +347,10 @@
     <select id="getById" resultMap="FundPreSaleInfoResultMap">
         SELECT
         <include refid="all"/>
-        FROM T_FUND_PRE_SOLD_INFO WHERE id=#{id,jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT} AND isDeleted='0'
+        FROM T_FUND_PRE_SALE_INFO WHERE id=#{id,jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT} AND isDeleted='0'
     </select>
 
     <update id="deleteById">
-        update T_FUND_PRE_SOLD_INFO set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT}
+        update T_FUND_PRE_SALE_INFO set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT}
     </update>
 </mapper>

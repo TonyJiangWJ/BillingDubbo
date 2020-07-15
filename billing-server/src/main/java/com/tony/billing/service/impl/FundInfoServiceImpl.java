@@ -251,10 +251,12 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
                     saleFund.setPurchaseCost(salePurchaseCost);
                     saleFund.setPurchaseFee(salePurchaseFee);
                     saleFund.setId(null);
-                    // 售出的标记为卖出
+                    // 售出的记录下来
                     saleFundId = super.insert(saleFund);
                     // 更新剩余份额
                     fundInfo.setPurchaseAmount(restAmount);
+                    fundInfo.setPurchaseCost(fundInfo.getPurchaseCost().subtract(salePurchaseCost));
+                    fundInfo.setPurchaseFee(fundInfo.getPurchaseFee().subtract(salePurchaseFee));
                     super.update(fundInfo);
                 } else {
                     // 全部卖出
@@ -262,7 +264,7 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
                 }
 
                 // 标记为卖出
-                if (preMarkFundAsSold(saleFundId, UserIdContainer.getUserId(), request.getSoldFeeRate(), request.getAssessmentDate())) {
+                if (preMarkFundAsSold(saleFundId, UserIdContainer.getUserId(), request.getSaleFeeRate(), request.getAssessmentDate())) {
                     return true;
                 } else {
                     throw new BaseBusinessException("预售出基金信息保存失败");
@@ -303,6 +305,7 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
             preSaleInfo.setAssessmentSoldIncome(assessmentSoldIncome.setScale(2, BigDecimal.ROUND_HALF_UP));
             preSaleInfo.setAssessmentValue(latestFundValue.getAssessmentValue());
         }
-        return preSaleInfoService.insert(preSaleInfo) > 0;
+        saleFund.setInStore(EnumYesOrNo.NO.val());
+        return mapper.update(saleFund) > 0 && preSaleInfoService.insert(preSaleInfo) > 0;
     }
 }

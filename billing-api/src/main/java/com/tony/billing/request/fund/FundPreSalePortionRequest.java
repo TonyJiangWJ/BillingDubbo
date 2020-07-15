@@ -23,7 +23,7 @@ public class FundPreSalePortionRequest extends BaseRequest {
     @OwnershipCheck(EnumOwnershipCheckTables.FUND_INFO)
     private Long id;
     @NotNull
-    private BigDecimal soldFeeRate;
+    private BigDecimal saleFeeRate;
     @NotNull
     private BigDecimal saleAmount;
     @NotEmpty
