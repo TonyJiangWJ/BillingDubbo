@@ -249,8 +249,8 @@ public class FundHistoryValueServiceImpl extends AbstractServiceImpl<FundHistory
                     changedModel.setAssessmentIncrease("0");
                     changedModel.setAssessmentIncreaseRate("0");
                     // 当日已确认变化量
-//                    changedModel.setConfirmedIncrease("0");
-//                    changedModel.setConfirmedIncreaseRate("0");
+                    changedModel.setConfirmedIncrease("0");
+                    changedModel.setConfirmedIncreaseRate("0");
                 }
                 FundHistoryNetValue netValueOfLastDay = fundHistoryNetValueMapper.getTargetNetValOfDay(DateUtil.formatDay(DateUtil.getLastWorkDay(assessmentDate)), fundInfo.getFundCode());
                 if (netValueOfLastDay != null) {
