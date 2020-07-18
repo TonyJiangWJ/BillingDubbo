@@ -19,4 +19,12 @@ public interface FundHistoryNetValueMapper extends AbstractMapper<FundHistoryNet
      * @return
      */
     int batchInsert(@Param("fundNetValueList") List<FundHistoryNetValue> fundNetValueList);
+
+    /**
+     * 获取指定日期的净值信息
+     *
+     * @param confirmedDate
+     * @return
+     */
+    FundHistoryNetValue getTargetNetValOfDay(@Param("confirmedDate") String confirmedDate, @Param("fundCode") String fundCode);
 }

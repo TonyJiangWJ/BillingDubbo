@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class TokenServletRequestWrapperWithFile extends TokenServletRequestWrapper implements MultipartHttpServletRequest {
 
-    private MultipartHttpServletRequest originalFileRequest;
+    private final MultipartHttpServletRequest originalFileRequest;
 
     public TokenServletRequestWrapperWithFile(MultipartHttpServletRequest request) {
         super(request);

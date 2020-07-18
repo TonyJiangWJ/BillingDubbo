@@ -1,6 +1,7 @@
 package com.tony.billing.filters;
 
 import com.tony.billing.filters.wapper.TokenServletRequestWrapper;
+import com.tony.billing.filters.wapper.TokenServletRequestWrapperWithFile;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ public class XssTokenizeFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain filterChain) throws ServletException, IOException {
         TokenServletRequestWrapper request;
         if (StringUtils.equals(httpServletRequest.getContentType(), MULTIPART_CONTENT)) {
-            request = new TokenServletRequestWrapper(new CommonsMultipartResolver().resolveMultipart(httpServletRequest));
+            request = new TokenServletRequestWrapperWithFile(new CommonsMultipartResolver().resolveMultipart(httpServletRequest));
         } else {
             request = new TokenServletRequestWrapper(httpServletRequest);
         }

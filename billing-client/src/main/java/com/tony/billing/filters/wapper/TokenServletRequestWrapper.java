@@ -15,7 +15,7 @@ import java.util.Map;
  */
 public class TokenServletRequestWrapper extends HttpServletRequestWrapper {
 
-    private Map<String, String[]> params;
+    private final Map<String, String[]> params;
 
     public TokenServletRequestWrapper(HttpServletRequest request) {
         super(request);

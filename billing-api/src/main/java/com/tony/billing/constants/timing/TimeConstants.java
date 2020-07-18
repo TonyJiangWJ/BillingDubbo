@@ -9,4 +9,6 @@ import java.time.ZoneOffset;
 public interface TimeConstants {
     ZoneId CHINA_ZONE = ZoneId.of("GMT+8");
     ZoneOffset CHINA_ZONE_OFFSET = ZoneOffset.of("+8");
+    String FULL_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    String DATE_PATTERN = "yyyy-MM-dd";
 }

@@ -63,6 +63,14 @@ public class FundValueChangedModel implements Serializable {
      */
     private String confirmedIncreaseRate;
     /**
+     * 上一天增长
+     */
+    private String lastDayConfirmedIncrease;
+    /**
+     * 上一天增长率
+     */
+    private String lastDayConfirmedIncreaseRate;
+    /**
      * 估算时间
      */
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
@@ -80,11 +88,27 @@ public class FundValueChangedModel implements Serializable {
      */
     private String assessmentIncreaseRate;
     /**
-     * 当日增值
+     * 当日估算增值
      */
     private String todayIncrease;
     /**
-     * 当日增长率
+     * 当日估算增长率
      */
     private String todayIncreaseRate;
+    /**
+     * 当日确认增值
+     */
+    private String todayConfirmedIncrease;
+    /**
+     * 当日确认增长率
+     */
+    private String todayConfirmedIncreaseRate;
+    /**
+     * 当日确认总增值
+     */
+    private String todayActualIncrease;
+    /**
+     * 当日确认总长率
+     */
+    private String todayActualIncreaseRate;
 }

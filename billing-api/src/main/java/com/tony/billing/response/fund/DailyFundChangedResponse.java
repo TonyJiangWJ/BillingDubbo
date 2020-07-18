@@ -29,16 +29,32 @@ public class DailyFundChangedResponse extends BaseResponse {
      */
     private String confirmedIncrease;
     private String confirmedIncreaseRate;
+
+    /**
+     * 前一日确认增长数据
+     */
+    private String lastDayConfirmedIncrease;
+    private String lastDayConfirmedIncreaseRate;
     /**
      * 估算总增长数据
      */
     private String assessmentIncrease;
     private String assessmentIncreaseRate;
     /**
-     * 当日增长数据
+     * 当日确认总增长数据
+     */
+    private String actualIncrease;
+    private String actualIncreaseRate;
+    /**
+     * 当日估算增长数据
      */
     private String todayIncrease;
     private String todayIncreaseRate;
+    /**
+     * 当日确认整张数据
+     */
+    private String todayConfirmedIncrease;
+    private String todayConfirmedIncreaseRate;
 
     /**
      * 计算总增长信息
@@ -48,6 +64,9 @@ public class DailyFundChangedResponse extends BaseResponse {
         BigDecimal totalConfirmedIncrease = BigDecimal.ZERO;
         BigDecimal totalTodayIncrease = BigDecimal.ZERO;
         BigDecimal totalAssessmentIncrease = BigDecimal.ZERO;
+        BigDecimal totalActualIncrease = BigDecimal.ZERO;
+        BigDecimal totalLastDayIncrease = BigDecimal.ZERO;
+        BigDecimal totalTodayConfirmedIncrease = BigDecimal.ZERO;
         BigDecimal totalFee = BigDecimal.ZERO;
         BigDecimal totalHold = BigDecimal.ZERO;
         if (CollectionUtils.isNotEmpty(summaryFundInfos)) {
@@ -75,6 +94,18 @@ public class DailyFundChangedResponse extends BaseResponse {
                     // 当日总增加
                     totalTodayIncrease = totalTodayIncrease.add(new BigDecimal(changedModel.getTodayIncrease()));
                 }
+
+                // 额外计算确认增长数据
+                if (StringUtils.isNotEmpty(changedModel.getLastDayConfirmedIncrease())) {
+                    // 前一天确认增长
+                    totalLastDayIncrease = totalLastDayIncrease.add(new BigDecimal(changedModel.getLastDayConfirmedIncrease()));
+                }
+                if (StringUtils.isNotEmpty(changedModel.getTodayConfirmedIncrease())) {
+                    totalTodayConfirmedIncrease = totalTodayConfirmedIncrease.add(new BigDecimal(changedModel.getTodayConfirmedIncrease()));
+                }
+                if (StringUtils.isNotEmpty(changedModel.getTodayActualIncrease())) {
+                    totalActualIncrease = totalActualIncrease.add(new BigDecimal(changedModel.getTodayActualIncrease()));
+                }
             }
         }
         this.totalCost = totalCost.toString();
@@ -86,6 +117,19 @@ public class DailyFundChangedResponse extends BaseResponse {
         this.todayIncreaseRate = calRate(totalTodayIncrease, totalCost).toString();
         this.assessmentIncrease = totalAssessmentIncrease.toString();
         this.assessmentIncreaseRate = calRate(totalAssessmentIncrease, totalCost).toString();
+
+        if (totalLastDayIncrease.compareTo(BigDecimal.ZERO) != 0) {
+            this.lastDayConfirmedIncrease = totalLastDayIncrease.toString();
+            this.lastDayConfirmedIncreaseRate = calRate(totalLastDayIncrease, totalCost).toString();
+        }
+        if (totalTodayConfirmedIncrease.compareTo(BigDecimal.ZERO) != 0) {
+            this.todayConfirmedIncrease = totalTodayConfirmedIncrease.toString();
+            this.todayConfirmedIncreaseRate = calRate(totalTodayConfirmedIncrease, totalCost).toString();
+        }
+        if (totalActualIncrease.compareTo(BigDecimal.ZERO) != 0) {
+            this.actualIncrease = totalActualIncrease.toString();
+            this.actualIncreaseRate = calRate(totalActualIncrease, totalCost).toString();
+        }
     }
 
     private BigDecimal calRate(BigDecimal increasedValue, BigDecimal oldVal) {

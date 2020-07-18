@@ -228,4 +228,8 @@
         #{fundNetValue.modifyTime,jdbcType=TIMESTAMP},#{fundNetValue.isDeleted,jdbcType=INTEGER}
         </foreach>
     </insert>
+
+    <select id="getTargetNetValOfDay" resultMap="FundHistoryNetValueResultMap" useCache="true">
+        SELECT <include refid="all"/> FROM t_fund_history_net_value WHERE fundCode=#{fundCode,jdbcType=VARCHAR} AND confirmDate=#{confirmedDate,jdbcType=VARCHAR} limit 0, 1
+    </select>
 </mapper>

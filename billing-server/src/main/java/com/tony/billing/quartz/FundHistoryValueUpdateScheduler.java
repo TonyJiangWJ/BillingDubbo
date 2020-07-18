@@ -85,10 +85,10 @@ public class FundHistoryValueUpdateScheduler {
 
 
     /**
-     * 每周2-6 凌晨1点获取一次基金历史数据
+     * 每周2-6 凌晨1,10点获取一次基金历史数据
      */
-    @Scheduled(cron = "0 0 10 * * 1-6")
-    public void weekend() {
+    @Scheduled(cron = "0 0 1,10 * * 1-6")
+    public void updateHistoryNetValues() {
         fundHistoryNetValueService.updateHistoryNetValues();
     }
 }

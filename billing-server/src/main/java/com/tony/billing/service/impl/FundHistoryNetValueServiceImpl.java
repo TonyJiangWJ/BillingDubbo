@@ -74,11 +74,11 @@ public class FundHistoryNetValueServiceImpl extends AbstractServiceImpl<FundHist
                             int start = 0;
                             int divideSize = 300;
                             do {
-                                int end = resultList.size() > start + divideSize ? start + divideSize : resultList.size() - 1;
+                                int end = Math.min(resultList.size(), start + divideSize);
                                 mapper.batchInsert(resultList.subList(start, end));
-                                start = end + 1;
+                                start = end;
                                 logger.info("start index: {} totalSize:{}", start, resultList.size());
-                            } while (start < resultList.size() - 1);
+                            } while (start < resultList.size());
                         }
                     });
             return fundsInDb.size();

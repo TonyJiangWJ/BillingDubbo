@@ -11,6 +11,7 @@ import com.tony.billing.response.fund.DailyFundHistoryValueResponse;
 public interface FundHistoryValueService {
     /**
      * 获取当前在库基金，并获取最新估值
+     *
      * @return
      */
     int updateFundHistoryValues();
@@ -42,8 +43,9 @@ public interface FundHistoryValueService {
 
     /**
      * 获取最新净值
+     *
      * @param fundInfo
-     * @param force 是否强制更新
+     * @param force    是否强制更新
      */
     void queryLatestFundHistoryInfo(FundInfo fundInfo, Boolean force);
 }

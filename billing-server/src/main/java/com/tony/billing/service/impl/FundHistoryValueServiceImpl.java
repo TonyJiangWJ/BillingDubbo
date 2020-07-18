@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tony.billing.constants.enums.EnumYesOrNo;
+import com.tony.billing.dao.mapper.FundHistoryNetValueMapper;
 import com.tony.billing.dao.mapper.FundHistoryValueMapper;
 import com.tony.billing.dao.mapper.FundInfoMapper;
+import com.tony.billing.entity.FundHistoryNetValue;
 import com.tony.billing.entity.FundHistoryValue;
 import com.tony.billing.entity.FundInfo;
 import com.tony.billing.model.FundValueChangedModel;
@@ -14,6 +16,7 @@ import com.tony.billing.response.fund.DailyFundHistoryValueResponse;
 import com.tony.billing.service.api.FundHistoryValueService;
 import com.tony.billing.service.api.FundInfoService;
 import com.tony.billing.service.base.AbstractServiceImpl;
+import com.tony.billing.util.DateUtil;
 import com.tony.billing.util.ResponseUtil;
 import com.tony.billing.util.UserIdContainer;
 import okhttp3.OkHttpClient;
@@ -47,6 +50,9 @@ public class FundHistoryValueServiceImpl extends AbstractServiceImpl<FundHistory
 
     @Autowired
     private FundInfoMapper fundInfoMapper;
+
+    @Autowired
+    private FundHistoryNetValueMapper fundHistoryNetValueMapper;
 
     @Autowired
     private FundInfoService fundInfoService;
@@ -195,15 +201,17 @@ public class FundHistoryValueServiceImpl extends AbstractServiceImpl<FundHistory
             if (CollectionUtils.isNotEmpty(latestHistoryValues)) {
                 latestHistoryValues.forEach(fundHistoryValue -> latestHistoryValueMap.put(fundHistoryValue.getFundCode(), fundHistoryValue));
             }
-            response.setSummaryFundInfos(getFundChangedInfos(userFunds, latestHistoryValueMap));
-            response.setFundDetailInfos(getFundChangedInfos(userFundDetailList, latestHistoryValueMap));
+            response.setSummaryFundInfos(getFundChangedInfos(userFunds, latestHistoryValueMap, assessmentDate));
+            response.setFundDetailInfos(getFundChangedInfos(userFundDetailList, latestHistoryValueMap, assessmentDate));
             response.setAssessmentDate(assessmentDate);
             response.calculateIncreaseInfo();
         }
         return response;
     }
 
-    private List<FundValueChangedModel> getFundChangedInfos(List<FundInfo> fundInfoList, final Map<String, FundHistoryValue> latestHistoryValueMap) {
+    private List<FundValueChangedModel> getFundChangedInfos(List<FundInfo> fundInfoList,
+                                                            final Map<String, FundHistoryValue> latestHistoryValueMap,
+                                                            String assessmentDate) {
         if (CollectionUtils.isNotEmpty(fundInfoList)) {
             return fundInfoList.parallelStream().map(fundInfo -> {
                 FundValueChangedModel changedModel = new FundValueChangedModel();
@@ -226,7 +234,7 @@ public class FundHistoryValueServiceImpl extends AbstractServiceImpl<FundHistory
                     changedModel.setFundConfirmedValue(fundHistoryValue.getFundValue().toString());
                     // 当日估算净值变化量
                     changedModel.setTodayIncreaseRate(fundHistoryValue.getAssessmentIncreaseRate());
-                    changedModel.setTodayIncrease(getIncreaseValue(fundInfo.getPurchaseValue(), fundInfo.getPurchaseAmount(), fundHistoryValue.getAssessmentIncreaseRate()).toString());
+                    changedModel.setTodayIncrease(getIncreaseValue(fundHistoryValue.getFundValue(), fundInfo.getPurchaseAmount(), fundHistoryValue.getAssessmentIncreaseRate()).toString());
                     // 当日估算总变化量
                     changedModel.setAssessmentIncrease(calIncrease(fundInfo.getPurchaseValue(), fundInfo.getPurchaseAmount(), fundHistoryValue.getAssessmentValue()).toString());
                     changedModel.setAssessmentIncreaseRate(calRate(fundHistoryValue.getAssessmentValue(), fundInfo.getPurchaseValue()).toString());
@@ -241,13 +249,49 @@ public class FundHistoryValueServiceImpl extends AbstractServiceImpl<FundHistory
                     changedModel.setAssessmentIncrease("0");
                     changedModel.setAssessmentIncreaseRate("0");
                     // 当日已确认变化量
-                    changedModel.setConfirmedIncrease("0");
-                    changedModel.setConfirmedIncreaseRate("0");
+//                    changedModel.setConfirmedIncrease("0");
+//                    changedModel.setConfirmedIncreaseRate("0");
+                }
+                FundHistoryNetValue netValueOfLastDay = fundHistoryNetValueMapper.getTargetNetValOfDay(DateUtil.formatDay(DateUtil.getLastWorkDay(assessmentDate)), fundInfo.getFundCode());
+                if (netValueOfLastDay != null) {
+                    changedModel.setLastDayConfirmedIncreaseRate(netValueOfLastDay.getIncreaseRate().toString());
+                    changedModel.setLastDayConfirmedIncrease(
+                            getIncreaseValue(
+                                    getOldNetVal(netValueOfLastDay.getIncreaseRate(), netValueOfLastDay.getFundNetValue()),
+                                    fundInfo.getPurchaseAmount(), netValueOfLastDay.getIncreaseRate().toString()
+                            ).toString());
+                    // 当前一日数据已存在时更新总确认增长
+                    changedModel.setConfirmedIncrease(calIncrease(fundInfo.getPurchaseValue(), fundInfo.getPurchaseAmount(), netValueOfLastDay.getFundNetValue()).toString());
+                    changedModel.setConfirmedIncreaseRate(calRate(netValueOfLastDay.getFundNetValue(), fundInfo.getPurchaseValue()).toString());
+                }
+                FundHistoryNetValue netValueOfCurrentDay = fundHistoryNetValueMapper.getTargetNetValOfDay(assessmentDate, fundInfo.getFundCode());
+                if (netValueOfCurrentDay != null) {
+                    changedModel.setTodayConfirmedIncreaseRate(netValueOfCurrentDay.getIncreaseRate().toString());
+                    changedModel.setTodayConfirmedIncrease(
+                            getIncreaseValue(
+                                    getOldNetVal(netValueOfCurrentDay.getIncreaseRate(), netValueOfCurrentDay.getFundNetValue()),
+                                    fundInfo.getPurchaseAmount(), netValueOfCurrentDay.getIncreaseRate().toString()
+                            ).toString());
+                    changedModel.setTodayActualIncrease(calIncrease(fundInfo.getPurchaseValue(), fundInfo.getPurchaseAmount(), netValueOfCurrentDay.getFundNetValue()).toString());
+                    changedModel.setTodayActualIncreaseRate(calRate(netValueOfCurrentDay.getFundNetValue(), fundInfo.getPurchaseValue()).toString());
                 }
                 return changedModel;
             }).collect(Collectors.toList());
         }
         return null;
+    }
+
+    /**
+     * 根据当前净值和当日增长率获取原净值
+     * netVal = oldVal*(100+rate)/100
+     *
+     * @param increaseRate
+     * @param newVal
+     * @return
+     */
+    private BigDecimal getOldNetVal(BigDecimal increaseRate, BigDecimal newVal) {
+        return newVal.divide(new BigDecimal("100").add(increaseRate), 6, BigDecimal.ROUND_HALF_UP)
+                .multiply(new BigDecimal("100")).setScale(4, BigDecimal.ROUND_HALF_UP);
     }
 
     private BigDecimal getIncreaseValue(BigDecimal fundValue, BigDecimal fundAmount, String increaseRate) {
@@ -289,7 +333,7 @@ public class FundHistoryValueServiceImpl extends AbstractServiceImpl<FundHistory
     public void queryLatestFundHistoryInfo(FundInfo fundInfo, Boolean force) {
         if (!force) {
             FundHistoryValue latestHistoryValue = this.getFundLatestValue(fundInfo.getFundCode(), LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            if (latestHistoryValue!=null) {
+            if (latestHistoryValue != null) {
                 return;
             }
         }

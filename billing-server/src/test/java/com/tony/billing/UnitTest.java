@@ -3,6 +3,7 @@ package com.tony.billing;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.tony.billing.constants.timing.TimeConstants;
+import com.tony.billing.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -54,5 +55,10 @@ public class UnitTest {
                         new BigDecimal(resultArray.getString(1)));
             }
         }
+    }
+
+    @Test
+    public void testMul() {
+        log.info("date: {}", DateUtil.formatDay(LocalDateTime.ofInstant(Instant.ofEpochMilli(1594828800000L), TimeConstants.CHINA_ZONE)));
     }
 }
