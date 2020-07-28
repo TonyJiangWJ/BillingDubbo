@@ -14,6 +14,7 @@ import com.tony.billing.exceptions.BaseBusinessException;
 import com.tony.billing.model.FundAddModel;
 import com.tony.billing.model.FundExistenceCheck;
 import com.tony.billing.request.fund.FundPreSalePortionRequest;
+import com.tony.billing.service.api.FundHistoryNetValueService;
 import com.tony.billing.service.api.FundHistoryValueService;
 import com.tony.billing.service.api.FundInfoService;
 import com.tony.billing.service.api.FundPreSaleInfoService;
@@ -49,12 +50,15 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
     @Autowired
     private FundHistoryValueService fundHistoryValueService;
     @Autowired
+    private FundHistoryNetValueService fundHistoryNetValueService;
+    @Autowired
     private FundPreSaleRefService fundPreSaleRefService;
 
 
     @Override
     public Long insert(FundInfo fundInfo) {
         fundHistoryValueService.queryLatestFundHistoryInfo(fundInfo, false);
+        fundHistoryNetValueService.updateFundHistoryNetValue(fundInfo.getFundCode());
         return super.insert(fundInfo);
     }
 
@@ -227,6 +231,8 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
         });
         // 更新历史数据
         fundHistoryValueService.updateFundHistoryValues();
+        // 更新历史净值数据
+        fundHistoryNetValueService.updateHistoryNetValues();
         return mapper.batchInsert(forAddFunds) > 0;
     }
 

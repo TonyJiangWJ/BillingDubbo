@@ -70,8 +70,8 @@ public class FundHistoryValueUpdateScheduler {
     @Scheduled(cron = "0 45 11 * * 1-5")
     public void setTempStop() {
         log.info("标记基金更新任务停止运行");
-        // 持续一小时，使得定时任务在三点15分开始停止执行
-        redisUtils.set(RUNNING_FLAG, FLAG_STOP, 7200);
+        // 持续一小时十五分钟，使得定时任务在1点可以重新开始
+        redisUtils.set(RUNNING_FLAG, FLAG_STOP, 4500);
     }
 
     /**

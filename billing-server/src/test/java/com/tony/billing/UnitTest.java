@@ -9,6 +9,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
+import javax.crypto.Cipher;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -60,5 +67,467 @@ public class UnitTest {
     @Test
     public void testMul() {
         log.info("date: {}", DateUtil.formatDay(LocalDateTime.ofInstant(Instant.ofEpochMilli(1594828800000L), TimeConstants.CHINA_ZONE)));
+    }
+
+//    @Test
+
+    /**
+     * AES ECB 解密
+     *
+     * @param messageBase64 密文，base64编码
+     * @param key           密匙，和加密时相同
+     * @return 解密后数据
+     */
+    public static String decryptECB(byte[] messageByte, String key) {
+        final String cipherMode = "AES/ECB/PKCS5Padding";
+        final String charsetName = "UTF-8";
+        try {
+
+            //
+            byte[] keyByte = key.getBytes(charsetName);
+            SecretKeySpec keySpec = new SecretKeySpec(keyByte, "AES");
+
+            Cipher cipher = Cipher.getInstance(cipherMode);
+            cipher.init(Cipher.DECRYPT_MODE, keySpec);
+            byte[] content = cipher.doFinal(messageByte);
+            String result = new String(content, charsetName);
+            return result;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    @Test
+    public void testDecrypt() throws Exception {
+        File file = new File("/Users/jiangwenjie/Downloads/主程序.bin");
+        FileInputStream in = new FileInputStream(file);
+        int l = -1;
+        byte[] buffer = new byte[4096];
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        while ((l = in.read(buffer)) > 0) {
+            bout.write(buffer, 0, l);
+        }
+        byte[] encrypts = bout.toByteArray();
+        System.out.println(decryptECB(encrypts, "你挺能赖的啊撒逼"));
+    }
+
+
+    @Test
+    public void replaceCodes() throws Exception {
+        String[] variables = new String[]{
+                "waitFor",
+                "setMode",
+                "normal",
+                "height",
+                "width",
+                "write",
+                "/sdcard/.系统文件请勿删除.txt",
+                "create",
+                "默认配置",
+                "get",
+                "put",
+                "remove",
+                "刷分配置",
+                "账号位置",
+                "singleChoice",
+                "请选择刷分版本",
+                "个人版",
+                "自动换号版",
+                "未选择版本已退出程序",
+                "getAndroidId",
+                "digest",
+                "MD5",
+                "未注册",
+                "\n主板:",
+                "board",
+                "\n制造商:",
+                "brand",
+                "\n型号:",
+                "model",
+                "\n产品名称:",
+                "product",
+                "\n硬件名称:",
+                "hardware",
+                "\nAndroidId: ",
+                ".txt",
+                "/sdcard/.",
+                "https://yhsc.oss-cn-beijing.aliyuncs.com",
+                "用户账号/注册/封号：",
+                "postMultipart",
+                "statusCode",
+                "已自动复制用户名至剪贴板，在输入框内长按粘贴即可查看。",
+                "封号：",
+                "用户账号/注册/",
+                "注册成功！",
+                "注册失败！",
+                "http://yhsc.oss-cn-beijing.aliyuncs.com",
+                "/用户账号/注册/",
+                "statusMessage",
+                "网络连接失败!",
+                "用户名已存在!",
+                "body",
+                "string",
+                "split",
+                "成功登录",
+                "您的用户名：\n",
+                "slice",
+                "您的到期时间：",
+                "build",
+                "继续(",
+                "positive",
+                "show",
+                "setActionButton",
+                "dismiss",
+                "已到期!您的到期时间：",
+                "已到期!您的到期时间：\n",
+                "\n已自动复制用户名至剪贴板，在输入框内长按粘贴即可查看。",
+                "已登录",
+                "exists",
+                "read",
+                "/用户账号/注册/封号：",
+                "检测到此手机存在恶意修改设备信息，如未将设备信息还原至注册时的设备信息将永久封停，详细信息请联系管理员!",
+                "检测到此手机未注册本软件，将自动注册！\nPS:如已注册且弹出此对话框，可能是因为手机系统升级或卸载重装本软件导致，请及时联系管理员！",
+                "未注册!\n正在自动注册...",
+                "splice",
+                "length",
+                "网络错误!同步失败！",
+                "一机一号请勿多开！\n请用原注册手机登录!",
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "charAt",
+                "floor",
+                "random",
+                "log",
+                "text",
+                "SimpleDateFormat",
+                "format",
+                "http://quan.suning.com/getSysTime.do",
+                "json",
+                "sysTime1",
+                "网络错误",
+                "open",
+                "./题库.db",
+                "execSQL",
+                "CREATE TABLE IF NOT EXISTS TK(",
+                "`id` INTEGER PRIMARY KEY AUTOINCREMENT, ",
+                "`题目` TEXT NOT NULL, ",
+                "`答案` TEXT NOT NULL ",
+                "multiChoice",
+                "请选择刷分配置",
+                "评论、分享、收藏、本地",
+                "文章视频",
+                "每日答题",
+                "每周答题",
+                "专项答题",
+                "挑战答题",
+                "离线答题模式",
+                "一键59分",
+                "文章-视频 条数（不含时长）",
+                "已开启离线模式！",
+                "已开启条数模式！",
+                "恭喜您，当前账号积分任务已完成！",
+                "运行异常：",
+                "/sdcard/账号密码.txt",
+                "readlines",
+                "总共读取到",
+                "条账号及密码",
+                "请到SD卡根目录：\n      账号密码.txt\n添加账号文件\n格式为每行一条账号信息：账号----密码\n账号----密码",
+                "未选择,已结束程序！",
+                "rawInput",
+                "请输入从第几个账号开始刷分,读取到的总数量为：",
+                "\n默认为1",
+                "未选择账号已退出程序",
+                "请输入指定时间运行(PS:24小时制6位数字)：\n如晚上8点20分01秒就输入：202001\n早上8点20分01秒就输入：082001\n不输入时间直接点确定为立即执行！",
+                "yyyyMMddHHmmss",
+                "现在是",
+                "开始执行",
+                "输入为空立即执行",
+                "已选择从第",
+                "个账号开始",
+                "----",
+                "******",
+                "test",
+                "开始登录第",
+                "个账号",
+                "您的输入有误，请核对后再次输入！",
+                "账号密码正确！开始执行刷分程序！",
+                "当前账号刷分结束,恭喜你积分已完成!",
+                "跳过当前账号，不执行刷分程序！",
+                "学习强国",
+                "启动失败\n找不到该应用:学习强国。如有不懂请加群问群友。",
+                "启动失败\n找不到该应用:学习强国",
+                "comm_head_xuexi_mine",
+                "findOne",
+                "click",
+                "学习积分",
+                "my_setting",
+                "android.widget.TextView",
+                "退出登录",
+                "账号已退出",
+                "恭喜，你已登录",
+                "btn_next",
+                "et_phone_input",
+                "setText",
+                "et_pwd_login",
+                "已尝试登录指定账号",
+                "android.view.View",
+                "提示条款：",
+                "同意并继续",
+                "common_webview",
+                "bounds",
+                "parent",
+                "child",
+                "right",
+                "bottom",
+                "暂不开启",
+                "检测到：开启地理位置访问权限\n已拒绝开启",
+                "home_bottom_tab_text",
+                "普通成员的密码需6~20位字符；为保证安全性，管理员的密码需8~20位字符，请在大写英文字母，小写英文字母，数字和特殊符号中选择至少三项组合为密码。",
+                "账号或密码错误!\n用户名为：",
+                "号码或密码错误，请重新输入",
+                "输入的手机号码无效，请确认后重试！",
+                "手机号错误!\n用户名为：",
+                "发表观点",
+                "正在寻找",
+                "find",
+                "去看看",
+                "。发表观点今日未得分!正在获取中...",
+                "已完成",
+                "发表观点今日已完成啦！",
+                "出现未知错误!",
+                "加强纪律性，革命无不胜。",
+                "我们中华民族有同自己的敌人血战到底的气概，有在自力更生的基础上光复旧物的决心，有自立于世界民族之林的能力。",
+                "革命总是会有牺牲的，我们是幸存者，只要有一口气，就要为党工作。",
+                "中夜四五叹，常为大国忧。",
+                "一个政党要引导革命到胜利，必须依靠自己政治路线的正确和组织上的巩固。",
+                "天下兴亡，匹夫有责。",
+                "忠诚印寸心，浩然充两间。",
+                "中华民族不但以刻苦耐劳著称于世，同时又是酷爱自由、富于革命传统的民族。",
+                "生活太安逸了，工作就会被生活所累。",
+                "位卑未敢忘忧国。",
+                "开始获取以下内容得分：\n评论、收藏、发表观点、分享",
+                "textContains",
+                "centerX",
+                "centerY",
+                "已找到文章，开始刷获取得分",
+                "欢迎发表你的观点",
+                "未报错",
+                "启用备用兼容性点击",
+                "view_pager",
+                "点击坐标为X:",
+                "学习才能强国",
+                "findOnce",
+                "android.widget.Button",
+                "查看我的收藏",
+                "我知道了",
+                "indexInParent",
+                "分享到学习强国",
+                "选择联系人",
+                "本地频道",
+                "。本地频道今日未得分!正在获取中...",
+                "本地频道今日已完成啦！",
+                "开始获取以下内容得分：\n本地频道分数",
+                "新思想",
+                "textEndsWith",
+                "学习平台",
+                "检测到当前本地学习平台为：",
+                "开始订阅",
+                "订阅今日已完成啦！",
+                "my_subscribe_tv",
+                "我的订阅",
+                "暂无相关内容",
+                "你已经看到我的底线了",
+                "android.widget.FrameLayout",
+                "已返回顶层",
+                "已订阅列表：",
+                "强国号",
+                "人民日报",
+                "未订阅",
+                "clickable",
+                "订阅了",
+                "push",
+                "订阅已完成",
+                "加载失败，点击重试",
+                "加载中",
+                "match",
+                "文章学习时长",
+                "阅读文章",
+                "视听学习",
+                "视听学习时长",
+                "阅读文章今日未得分!正在获取中...",
+                "视听学习今日未得分!正在获取中...",
+                "今日基础得分已完成啦！",
+                "去学习",
+                "文章学习时长今日未得分!正在获取中...",
+                "视听学习时长今日未得分!正在获取中...",
+                "开始学习文章时长及条数大约需学习6次",
+                "听新闻广播",
+                "经典音乐广播",
+                "btn_back",
+                "dialog_cancel",
+                "home_bottom_tab_button_ding",
+                "正在检测温馨提示弹窗，预计3秒！",
+                "温馨提示",
+                "tv_close",
+                "温馨提示已关闭",
+                "正在等待刷新",
+                "textMatches",
+                "et_sendmessage",
+                "识别到的控件位置异常，修改为点击屏幕中心坐标，如已看见此项提示后未正确进入百灵视频，则有可能是系统问题导致的点击失效，或者点击到了标题未能正确进入百灵视频。",
+                "向上滑动切换内容",
+                "\"向上滑动切换内容\"提示已关闭",
+                "向右滑动退出浮层",
+                "\"向右滑动退出浮层\"提示已关闭",
+                "开始观看视频条数：第",
+                "继续播放",
+                "视频条数观看完毕",
+                "开始阅读文章",
+                "android.widget.SeekBar",
+                "内容已下线",
+                "此文章是视频或内容已下线，已自动跳过学习！",
+                "开始学习文章时长及条数",
+                "学习结束",
+                "已学习",
+                "开始每日答题",
+                "去答题",
+                "每日答题今日未得分!正在获取中...",
+                "查看提示",
+                "未识别到内容！",
+                "每日答题今日已完成啦！",
+                "出现未知错误！",
+                "多选题 (10分)",
+                "填空题 (10分)",
+                "单选题 (10分)",
+                "rawQuery",
+                "SELECT * FROM TK WHERE 题目 = ?",
+                "single",
+                "A.|B.|C.|",
+                "填空题",
+                "indexOf",
+                "A.|",
+                "android.widget.RadioButton",
+                "B.|",
+                "C.|",
+                "D.|",
+                "题!\n随机延迟：",
+                "未在答题界面",
+                "未识别到题目",
+                "未选择",
+                "|《史记》",
+                "|《清史》",
+                "分解后答案：",
+                "《左传》",
+                "识别到答案为：《左传》，已选择",
+                "已选择",
+                "《清史》",
+                "识别到答案为：《清史》，已选择",
+                "[\\u4E00-\\u9FFF]+",
+                "题库没有此题",
+                "已启用离线答题模式",
+                "textStartsWith",
+                "正确答案：",
+                "下一题",
+                "/sdcard/题库未出现题目.txt",
+                "writeline",
+                "---",
+                "close",
+                "保存成功",
+                "答案为空!无法保存",
+                "android.webkit.WebView",
+                "top",
+                "正确答案： ",
+                "join",
+                "无法识别到答案！请手动记录!",
+                "退出答题界面！",
+                "进入学习强国界面",
+                "开始每周答题",
+                "每周答题今日未得分!正在获取中...",
+                "加载中...",
+                "网络开小差",
+                "您已经看到了我的底线",
+                "未作答",
+                "已找到未完成题目开始答题！",
+                "每周答题已经做完啦！",
+                "每周答题今日已完成啦！",
+                "出现未知错误",
+                "A.|B.|",
+                "第一题识别到题库没有此项答案，每周答题可能为最新出的题目，题库没有录入此题，将退出答题界面跳过此项得分。请及时到群内@管理员更新题库后下次运行软件将会再次识别。",
+                "/sdcard/未出现题目及答案备份.txt",
+                "每周答题:\r",
+                "/sdcard/题库.txt",
+                "正在保存：",
+                "开始专项答题",
+                "专项答题今日未得分!正在获取中...",
+                "已过期",
+                "重新答题",
+                "继续答题",
+                "开始答题",
+                "专项答题已经做完啦！",
+                "专项答题今日已完成啦！",
+                "多选题(10分)回答错误",
+                "填空题(10分)回答错误",
+                "单选题(10分)回答错误",
+                "第一题识别到题库没有此项答案，专项答题可能为最新出的题目，题库没有录入此题，将退出答题界面跳过此项得分。请及时到群内@管理员更新题库后下次运行软件将会再次识别。",
+                "回答正确",
+                "本次作答分数",
+                "多选题 (10分)回答错误",
+                "填空题 (10分)回答错误",
+                "单选题 (10分)回答错误",
+                "多选题 (10分)回答正确",
+                "填空题 (10分)回答正确",
+                "单选题 (10分)回答正确",
+                "专项答题:\r",
+                "开始挑战答题",
+                "今日已",
+                "挑战答题今日未得分!正在获取中...",
+                "挑战答题今日已完成啦！",
+                "childCount",
+                "答题结束!\n请等待计时结束！",
+                "请稍后到sd卡根目录\"题库未出现题目.txt\"文件中查看",
+                "题库识别中",
+                "出现异常，答题结束!",
+                "/sdcard/挑战答题题库未出现题目.txt",
+                "多选题",
+                "单选题",
+                "选择题",
+                "android.widget.EditText",
+                "([^/s]*?)",
+                "题目类型不支持查看答案.",
+                "input",
+                "查看提示内未发现相同题目,已随机填写答案！",
+                "查看提示内未发现相同题目,已随机填写答案",
+                "剩余时间",
+                "返回上一题",
+                "检测到登录界面，个人版请登录后运行！软件已暂停运行30秒请及时登录。",
+                "start",
+                "点击重试",
+                "检测到了内容已下线，自动返回主页面"
+        };
+        File mixed = new File("/Users/jiangwenjie/Documents/Repositories/Github/Ant-Forest-Webpack/src/main_mixed.js");
+        FileInputStream fileInputStream = new FileInputStream(mixed);
+        BufferedReader br = new BufferedReader(new InputStreamReader(fileInputStream));
+        String readLine = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        Pattern pattern = Pattern.compile("_0x422b\\('0x([\\da-f]+)'\\)");
+        while ((readLine = br.readLine()) != null) {
+            Matcher matcher = pattern.matcher(readLine);
+            while (matcher.find()) {
+                String indexHex = matcher.group(1);
+                int realIdx = Integer.valueOf(indexHex, 16);
+                String realVal = variables[realIdx];
+                readLine = readLine.replaceFirst(pattern.pattern(), "'" + realVal + "'");
+                matcher = pattern.matcher(readLine);
+            }
+            stringBuilder.append(readLine.replaceAll("\\n", "\\n")).append("\n");
+
+        }
+        System.out.println(stringBuilder.toString());
+        fileInputStream.close();
+    }
+
+    @Test
+    public void testHexToInt() {
+        System.out.println(Integer.parseInt("9a", 16));
     }
 }

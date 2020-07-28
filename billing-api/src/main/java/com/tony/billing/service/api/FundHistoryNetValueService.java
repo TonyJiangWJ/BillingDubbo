@@ -14,4 +14,6 @@ public interface FundHistoryNetValueService extends AbstractService<FundHistoryN
      * @return 更新的基金数量
      */
     int updateHistoryNetValues();
+
+    void updateFundHistoryNetValue(String fundCode);
 }

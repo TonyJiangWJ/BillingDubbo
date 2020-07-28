@@ -56,38 +56,32 @@ public class FundHistoryNetValueServiceImpl extends AbstractServiceImpl<FundHist
     public int updateHistoryNetValues() {
         List<FundInfo> fundsInDb = fundInfoMapper.getFundInfoDistinct();
         if (CollectionUtils.isNotEmpty(fundsInDb)) {
-            fundsInDb.parallelStream()
-                    .map(fundInfo -> threadPoolExecutor.submit(() -> updateFundInfo(fundInfo)))
-                    .map(future -> {
-                        List<FundHistoryNetValue> list = null;
-                        try {
-                            list = future.get();
-                        } catch (Exception e) {
-                            // just drop the error
-                            // e.printStackTrace();
-                        }
-                        return list;
-                    }).filter(Objects::nonNull)
-                    .forEach(resultList -> {
-                        logger.info("total length: {}", resultList.size());
-                        if (CollectionUtils.isNotEmpty(resultList)) {
-                            int start = 0;
-                            int divideSize = 300;
-                            do {
-                                int end = Math.min(resultList.size(), start + divideSize);
-                                mapper.batchInsert(resultList.subList(start, end));
-                                start = end;
-                                logger.info("start index: {} totalSize:{}", start, resultList.size());
-                            } while (start < resultList.size());
-                        }
-                    });
+            fundsInDb.stream().map(FundInfo::getFundCode).forEach(this::updateFundHistoryNetValue);
             return fundsInDb.size();
         }
         return 0;
     }
 
-    private List<FundHistoryNetValue> updateFundInfo(FundInfo fundInfo) {
-        String queryUrl = String.format(fundHistoryNetValueQueryUrl, fundInfo.getFundCode(), System.currentTimeMillis());
+    @Override
+    public void updateFundHistoryNetValue(String fundCode) {
+        threadPoolExecutor.execute(() -> {
+            List<FundHistoryNetValue> fundHistoryNetValues = updateFundInfo(fundCode);
+            if (CollectionUtils.isNotEmpty(fundHistoryNetValues)) {
+                logger.info("total length: {}", fundHistoryNetValues.size());
+                int start = 0;
+                int divideSize = 300;
+                do {
+                    int end = Math.min(fundHistoryNetValues.size(), start + divideSize);
+                    mapper.batchInsert(fundHistoryNetValues.subList(start, end));
+                    start = end;
+                    logger.info("start index: {} totalSize:{}", start, fundHistoryNetValues.size());
+                } while (start < fundHistoryNetValues.size());
+            }
+        });
+    }
+
+    private List<FundHistoryNetValue> updateFundInfo(String fundCode) {
+        String queryUrl = String.format(fundHistoryNetValueQueryUrl, fundCode, System.currentTimeMillis());
         OkHttpClient client = new OkHttpClient.Builder().callTimeout(10, TimeUnit.SECONDS).build();
         Request request = new Request.Builder().url(queryUrl).build();
         int tryTime = 3;
@@ -129,7 +123,7 @@ public class FundHistoryNetValueServiceImpl extends AbstractServiceImpl<FundHist
                                 netValue.setCreateTime(new Date());
                                 netValue.setModifyTime(new Date());
                                 netValue.setIsDeleted(EnumDeleted.NOT_DELETED.val());
-                                netValue.setFundCode(fundInfo.getFundCode());
+                                netValue.setFundCode(fundCode);
                                 historyNetValueList.add(netValue);
                             }
                         }
@@ -138,7 +132,7 @@ public class FundHistoryNetValueServiceImpl extends AbstractServiceImpl<FundHist
                     }
                 }
             } catch (Exception e) {
-                logger.error("获取基金:" + fundInfo.getFundCode() + " 估值信息失败", e);
+                logger.error("获取基金:" + fundCode + " 估值信息失败", e);
             }
         }
         return Collections.emptyList();

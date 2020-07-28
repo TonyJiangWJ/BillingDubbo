@@ -263,6 +263,11 @@ public class FundHistoryValueServiceImpl extends AbstractServiceImpl<FundHistory
                     // 当前一日数据已存在时更新总确认增长
                     changedModel.setConfirmedIncrease(calIncrease(fundInfo.getPurchaseValue(), fundInfo.getPurchaseAmount(), netValueOfLastDay.getFundNetValue()).toString());
                     changedModel.setConfirmedIncreaseRate(calRate(netValueOfLastDay.getFundNetValue(), fundInfo.getPurchaseValue()).toString());
+                    // 如果估算值不存在，设置估算总增长为上日确认总增长
+                    if (fundHistoryValue == null) {
+                        changedModel.setAssessmentIncrease(changedModel.getConfirmedIncrease());
+                        changedModel.setAssessmentIncreaseRate(changedModel.getConfirmedIncreaseRate());
+                    }
                 }
                 FundHistoryNetValue netValueOfCurrentDay = fundHistoryNetValueMapper.getTargetNetValOfDay(assessmentDate, fundInfo.getFundCode());
                 if (netValueOfCurrentDay != null) {

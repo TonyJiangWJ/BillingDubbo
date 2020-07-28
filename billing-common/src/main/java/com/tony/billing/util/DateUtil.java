@@ -129,6 +129,7 @@ public class DateUtil {
         System.out.println(formatDateTime(new Date(), DATE_PATTERN));
         System.out.println(formatDay(getLastWorkDay("2020-07-11")));
 
+
 //        System.out.println(formatDay(getDateFromString("2020-07-11", "yyyy-MM-dd")));
     }
 }
