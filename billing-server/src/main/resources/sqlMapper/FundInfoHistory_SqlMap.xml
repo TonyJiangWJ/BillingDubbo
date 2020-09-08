@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.tony.billing.dao.mapper.FundInfoMapper">
+<mapper namespace="com.tony.billing.dao.mapper.FundInfoHistoryMapper">
 
-    <resultMap id="FundInfoResultMap" type="com.tony.billing.entity.FundInfo">
+    <resultMap id="FundInfoHistoryResultMap" type="com.tony.billing.entity.FundInfoHistory">
         <result property="id" column="id" jdbcType="BIGINT"/>
+        <result property="originId" column="originId" jdbcType="BIGINT"/>
+        <result property="changeType" column="changeType" jdbcType="INTEGER"/>
         <result property="userId" column="userId" jdbcType="BIGINT"/>
         <result property="fundCode" column="fundCode" jdbcType="VARCHAR"/>
         <result property="fundName" column="fundName" jdbcType="VARCHAR"/>
@@ -22,6 +24,8 @@
 
     <sql id="all">
         id,
+        originId,
+        changeType,
         userId,
         fundCode,
         fundName,
@@ -37,11 +41,17 @@
         isDeleted,
         inStore
     </sql>
-    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundInfo" flushCache="true">
-        INSERT INTO T_FUND_INFO
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.FundInfoHistory">
+        INSERT INTO t_fund_info_history
         <trim prefix="(" suffix=")"  suffixOverrides=",">
             <if test=" id!=null">
                 id,
+            </if>
+            <if test=" originId!=null">
+                originId,
+            </if>
+            <if test=" changeType!=null">
+                changeType,
             </if>
             <if test=" userId!=null">
                 userId,
@@ -90,6 +100,12 @@
             <if test=" id!=null">
                 #{id,jdbcType=BIGINT},
             </if>
+            <if test=" originId!=null">
+                #{originId,jdbcType=BIGINT},
+            </if>
+            <if test=" changeType!=null">
+                #{changeType,jdbcType=INTEGER},
+            </if>
             <if test=" userId!=null">
                 #{userId,jdbcType=BIGINT},
             </if>
@@ -134,22 +150,17 @@
             </if>
         </trim>
     </insert>
-    <insert id="batchInsert"  parameterType="java.util.List">
-        insert ignore into t_fund_info
-        (userId, fundCode, fundName, purchaseValue, purchaseAmount, purchaseCost, purchaseFee, purchaseDate, confirmDate, createTime, modifyTime, version, isDeleted, inStore)
-        values
-        <foreach collection="forAddFunds" separator="),(" open="(" close=")" item="fundInfo">
-        #{fundInfo.userId,jdbcType=BIGINT}, #{fundInfo.fundCode,jdbcType=VARCHAR}, #{fundInfo.fundName,jdbcType=VARCHAR}, #{fundInfo.purchaseValue,jdbcType=DECIMAL},
-        #{fundInfo.purchaseAmount,jdbcType=DECIMAL}, #{fundInfo.purchaseCost,jdbcType=DECIMAL}, #{fundInfo.purchaseFee,jdbcType=DECIMAL}, #{fundInfo.purchaseDate,jdbcType=TIMESTAMP},
-        #{fundInfo.confirmDate,jdbcType=TIMESTAMP}, #{fundInfo.createTime,jdbcType=TIMESTAMP}, #{fundInfo.modifyTime,jdbcType=TIMESTAMP}, #{fundInfo.version,jdbcType=INTEGER},
-        #{fundInfo.isDeleted,jdbcType=INTEGER}, #{fundInfo.inStore,jdbcType=INTEGER}
-        </foreach>
-    </insert>
-    <update id="update" parameterType="com.tony.billing.entity.FundInfo" flushCache="true">
-        UPDATE T_FUND_INFO
+    <update id="update" parameterType="com.tony.billing.entity.FundInfoHistory">
+        UPDATE t_fund_info_history
         <trim prefix="SET" suffixOverrides=",">
             <if test=" id!=null">
                 id=#{id,jdbcType=BIGINT},
+            </if>
+            <if test=" originId!=null">
+                originId=#{originId,jdbcType=BIGINT},
+            </if>
+            <if test=" changeType!=null">
+                changeType=#{changeType,jdbcType=INTEGER},
             </if>
             <if test=" userId!=null">
                 userId=#{userId,jdbcType=BIGINT},
@@ -203,6 +214,12 @@
             <if test=" id!=null">
                 and id=#{id,jdbcType=BIGINT}
             </if>
+            <if test=" originId!=null">
+                and originId=#{originId,jdbcType=BIGINT}
+            </if>
+            <if test=" changeType!=null">
+                and changeType=#{changeType,jdbcType=INTEGER}
+            </if>
             <if test=" userId!=null">
                 and userId=#{userId,jdbcType=BIGINT}
             </if>
@@ -247,17 +264,17 @@
             </if>
         </trim>
     </sql>
-    <select id="countByQuery" parameterType="com.tony.billing.query.FundInfoQuery"
+    <select id="countByQuery" parameterType="com.tony.billing.query.FundInfoHistoryQuery"
             resultType="Integer">
-        SELECT count(*) FROM T_FUND_INFO
+        SELECT count(*) FROM t_fund_info_history
         <include refid="queryWhere"/>
     </select>
 
-    <select id="queryByPagination" parameterType="com.tony.billing.query.FundInfoQuery"
-            resultMap="FundInfoResultMap">
+    <select id="queryByPagination" parameterType="com.tony.billing.query.FundInfoHistoryQuery"
+            resultMap="FundInfoHistoryResultMap">
         SELECT
         <include refid="all"/>
-        FROM T_FUND_INFO
+        FROM t_fund_info_history
         <include refid="queryWhere"/>
         ORDER BY GMT_MODIFY DESC
         <if test="mysqlPageFristItem != null">
@@ -267,14 +284,20 @@
         </if>
     </select>
 -->
-    <select id="list" parameterType="com.tony.billing.entity.FundInfo" resultMap="FundInfoResultMap" useCache="true">
+    <select id="list" parameterType="com.tony.billing.entity.FundInfoHistory" resultMap="FundInfoHistoryResultMap">
         SELECT
         <include refid="all"/>
-        FROM T_FUND_INFO
+        FROM t_fund_info_history
         <trim prefix="WHERE" prefixOverrides="and">
             AND isDeleted='0'
             <if test=" id!=null">
                 and id=#{id,jdbcType=BIGINT}
+            </if>
+            <if test=" originId!=null">
+                and originId=#{originId,jdbcType=BIGINT}
+            </if>
+            <if test=" changeType!=null">
+                and changeType=#{changeType,jdbcType=INTEGER}
             </if>
             <if test=" userId!=null">
                 and userId=#{userId,jdbcType=BIGINT}
@@ -321,88 +344,13 @@
         </trim>
     </select>
 
-    <select id="getById" parameterType="java.lang.Long" resultMap="FundInfoResultMap" useCache="true">
+    <select id="getById" resultMap="FundInfoHistoryResultMap">
         SELECT
         <include refid="all"/>
-        FROM T_FUND_INFO WHERE id=#{id,jdbcType=BIGINT} AND isDeleted='0'
+        FROM t_fund_info_history WHERE id=#{id,jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT} AND isDeleted='0'
     </select>
 
-    <update id="deleteById" flushCache="true">
-        update T_FUND_INFO set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} and userId=#{userId,jdbcType=BIGINT}
+    <update id="deleteById">
+        update t_fund_info_history set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT}
     </update>
-
-    <select id="getFundInfoDistinct" resultType="com.tony.billing.entity.FundInfo" useCache="true">
-        select fundCode, fundName from t_fund_info where isDeleted='0' group by fundCode
-    </select>
-
-    <select id="getFundInfoDistinctByUser" resultType="com.tony.billing.entity.FundInfo" useCache="true">
-        select fundCode, fundName from t_fund_info where inStore='1' and userId=#{userId,jdbcType=BIGINT} and isDeleted='0' group by fundCode
-    </select>
-
-    <select id="listInStoreFunds" resultMap="FundInfoResultMap">
-        select <include refid="all"/> from t_fund_info where userId=#{userId,jdbcType=BIGINT} and inStore='1' and isDeleted='0'
-        and id in
-        <foreach collection="fundIds" item="id" separator="," open="(" close=")">
-            #{id,jdbcType=BIGINT}
-        </foreach>
-    </select>
-    <select id="listUserExistsFunds" resultMap="FundInfoResultMap">
-        select <include refid="all"/> from t_fund_info where userId=#{userId,jdbcType=BIGINT} and isDeleted='0'
-        and fundCode in
-        <foreach collection="fundCodes" item="fundCode" separator="," open="(" close=")">
-            #{fundCode,jdbcType=VARCHAR}
-        </foreach>
-    </select>
-
-    <select id="listFundsBefore" resultType="com.tony.billing.entity.FundInfo">
-        select <include refid="all"/> from t_fund_info
-        where confirmDate &lt; #{beforeDate,jdbcType=VARCHAR} AND isDeleted='0'
-        <trim prefix="and" prefixOverrides="and">
-            <if test=" condition.id!=null">
-                and id=#{condition.id,jdbcType=BIGINT}
-            </if>
-            <if test=" condition.userId!=null">
-                and userId=#{condition.userId,jdbcType=BIGINT}
-            </if>
-            <if test=" condition.fundCode!=null and condition.fundCode!=''">
-                and fundCode=#{condition.fundCode,jdbcType=VARCHAR}
-            </if>
-            <if test=" condition.fundName!=null and condition.fundName!=''">
-                and fundName=#{condition.fundName,jdbcType=VARCHAR}
-            </if>
-            <if test=" condition.purchaseValue!=null">
-                and purchaseValue=#{condition.purchaseValue,jdbcType=DECIMAL}
-            </if>
-            <if test=" condition.purchaseAmount!=null">
-                and purchaseAmount=#{condition.purchaseAmount,jdbcType=DECIMAL}
-            </if>
-            <if test=" condition.purchaseCost!=null">
-                and purchaseCost=#{condition.purchaseCost,jdbcType=DECIMAL}
-            </if>
-            <if test=" condition.purchaseFee!=null">
-                and purchaseFee=#{condition.purchaseFee,jdbcType=DECIMAL}
-            </if>
-            <if test=" condition.purchaseDate!=null">
-                and purchaseDate=#{condition.purchaseDate,jdbcType=TIMESTAMP}
-            </if>
-            <if test=" condition.confirmDate!=null">
-                and confirmDate=#{condition.confirmDate,jdbcType=TIMESTAMP}
-            </if>
-            <if test=" condition.createTime!=null">
-                and createTime=#{condition.createTime,jdbcType=TIMESTAMP}
-            </if>
-            <if test=" condition.modifyTime!=null">
-                and modifyTime=#{condition.modifyTime,jdbcType=TIMESTAMP}
-            </if>
-            <if test=" condition.version!=null">
-                and version=#{condition.version,jdbcType=INTEGER}
-            </if>
-            <if test=" condition.isDeleted!=null">
-                and isDeleted=#{condition.isDeleted,jdbcType=INTEGER}
-            </if>
-            <if test=" condition.inStore!=null">
-                and inStore=#{condition.inStore,jdbcType=INTEGER}
-            </if>
-        </trim>
-    </select>
 </mapper>

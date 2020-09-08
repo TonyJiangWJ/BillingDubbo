@@ -88,7 +88,7 @@ public class CostRecordController {
             }
             if (StringUtils.isNotEmpty(request.getEndDate())) {
                 String endDate = request.getEndDate();
-                Integer value = Integer.valueOf(endDate.substring(8));
+                int value = Integer.parseInt(endDate.substring(8));
                 endDate = endDate.substring(0, 8) + String.format("%02d", ++value);
                 costRecord.setEndDate(endDate);
             }

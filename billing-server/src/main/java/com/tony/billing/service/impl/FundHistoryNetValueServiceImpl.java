@@ -10,30 +10,36 @@ import com.tony.billing.dao.mapper.FundHistoryNetValueMapper;
 import com.tony.billing.dao.mapper.FundInfoMapper;
 import com.tony.billing.entity.FundHistoryNetValue;
 import com.tony.billing.entity.FundInfo;
+import com.tony.billing.response.fund.FundHistoryNetValueResponse;
 import com.tony.billing.service.api.FundHistoryNetValueService;
 import com.tony.billing.service.base.AbstractServiceImpl;
+import com.tony.billing.util.DateUtil;
+import com.tony.billing.util.ResponseUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.dubbo.config.annotation.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author jiangwj20966 2020/07/13
@@ -138,4 +144,26 @@ public class FundHistoryNetValueServiceImpl extends AbstractServiceImpl<FundHist
         return Collections.emptyList();
     }
 
+    @Override
+    public FundHistoryNetValueResponse getHistoryNetValuesByFundCode(String fundCode, String dateAfter) {
+        if (StringUtils.isEmpty(dateAfter)) {
+            LocalDate localDate = LocalDate.now();
+            // 大约30个工作日
+            localDate = localDate.plusDays(-43);
+            dateAfter = DateUtil.formatDateTime(localDate, "yyyy-MM-dd");
+        }
+        List<FundHistoryNetValue> historyNetValues = mapper.getHistoryNetValueAfter(dateAfter, fundCode);
+        if (CollectionUtils.isNotEmpty(historyNetValues)) {
+            FundHistoryNetValueResponse response = new FundHistoryNetValueResponse();
+            response.setFundCode(fundCode);
+            response.setHistoryNetValues(
+                    historyNetValues.stream()
+                            .map(fundHistory -> new HashMap<String, String>(4) {{
+                                put(fundHistory.getConfirmDate(), fundHistory.getFundNetValue().toString());
+                            }}).collect(Collectors.toList())
+            );
+            return response;
+        }
+        return ResponseUtil.error(new FundHistoryNetValueResponse());
+    }
 }

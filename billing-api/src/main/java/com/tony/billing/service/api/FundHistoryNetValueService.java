@@ -2,6 +2,7 @@ package com.tony.billing.service.api;
 
 
 import com.tony.billing.entity.FundHistoryNetValue;
+import com.tony.billing.response.fund.FundHistoryNetValueResponse;
 import com.tony.billing.service.api.base.AbstractService;
 
 /**
@@ -15,5 +16,18 @@ public interface FundHistoryNetValueService extends AbstractService<FundHistoryN
      */
     int updateHistoryNetValues();
 
+    /**
+     * 更新指定基金的历史净值数据
+     *
+     * @param fundCode
+     */
     void updateFundHistoryNetValue(String fundCode);
+
+    /**
+     * 获取指定基金的历史净值数据 近30天
+     * @param fundCode
+     * @param dateAfter
+     * @return
+     */
+    FundHistoryNetValueResponse getHistoryNetValuesByFundCode(String fundCode, String dateAfter);
 }

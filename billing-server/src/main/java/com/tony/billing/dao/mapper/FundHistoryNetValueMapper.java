@@ -15,6 +15,7 @@ public interface FundHistoryNetValueMapper extends AbstractMapper<FundHistoryNet
 
     /**
      * 批量新增
+     *
      * @param fundNetValueList
      * @return
      */
@@ -27,4 +28,13 @@ public interface FundHistoryNetValueMapper extends AbstractMapper<FundHistoryNet
      * @return
      */
     FundHistoryNetValue getTargetNetValOfDay(@Param("confirmedDate") String confirmedDate, @Param("fundCode") String fundCode);
+
+    /**
+     * 获取目标基金在某日期之后的历史净值数据
+     *
+     * @param afterDate
+     * @param fundCode
+     * @return
+     */
+    List<FundHistoryNetValue> getHistoryNetValueAfter(@Param("afterDate") String afterDate, @Param("fundCode") String fundCode);
 }

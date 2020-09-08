@@ -5,6 +5,7 @@ import com.tony.billing.entity.FundInfo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -46,5 +47,20 @@ public interface FundInfoMapper extends AbstractMapper<FundInfo> {
      */
     List<FundInfo> listUserExistsFunds(@Param("userId") Long userId, @Param("fundCodes") List<String> fundCodes);
 
+    /**
+     * 批量新增
+     *
+     * @param forAddFunds
+     * @return
+     */
     int batchInsert(@Param("forAddFunds") List<FundInfo> forAddFunds);
+
+    /**
+     * 列出在某个时间点之前确认买入（confirmDate）的，且匹配查询条件的基金列表
+     *
+     * @param condition
+     * @param beforeDate
+     * @return
+     */
+    List<FundInfo> listFundsBefore(@Param("condition") FundInfo condition, @Param("beforeDate") Date beforeDate);
 }

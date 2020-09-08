@@ -7,6 +7,7 @@ import com.tony.billing.model.FundExistenceCheck;
 import com.tony.billing.request.fund.FundAddRequest;
 import com.tony.billing.request.fund.FundBatchAddRequest;
 import com.tony.billing.request.fund.FundDeleteRequest;
+import com.tony.billing.request.fund.FundEnhanceRequest;
 import com.tony.billing.request.fund.FundInfoQueryRequest;
 import com.tony.billing.request.fund.FundUpdateRequest;
 import com.tony.billing.request.fund.FundsExistenceCheckRequest;
@@ -26,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -150,6 +152,15 @@ public class FundInfoController extends BaseController {
     @RequestMapping(value = "/fund/batch/add", method = RequestMethod.POST)
     public BaseResponse batchAddFunds(@ModelAttribute("request") @Validated FundBatchAddRequest request) {
         if (fundInfoService.batchAddFunds(request.getFundInfoList())) {
+            return ResponseUtil.success();
+        } else {
+            return ResponseUtil.error();
+        }
+    }
+
+    @PostMapping("/fund/info/enhance")
+    public BaseResponse enhanceFund(@ModelAttribute("request") @Validated FundEnhanceRequest request) {
+        if (fundInfoService.enhanceFund(request)) {
             return ResponseUtil.success();
         } else {
             return ResponseUtil.error();

@@ -3,6 +3,7 @@ package com.tony.billing.service.api;
 import com.tony.billing.entity.FundInfo;
 import com.tony.billing.model.FundAddModel;
 import com.tony.billing.model.FundExistenceCheck;
+import com.tony.billing.request.fund.FundEnhanceRequest;
 import com.tony.billing.request.fund.FundPreSalePortionRequest;
 import com.tony.billing.service.api.base.AbstractService;
 import org.apache.dubbo.config.annotation.Reference;
@@ -54,9 +55,18 @@ public interface FundInfoService extends AbstractService<FundInfo> {
 
     /**
      * 卖出部分
-     *
+     * @param request
      * @return
      */
     @Reference(retries = 0)
     boolean preSalePortion(FundPreSalePortionRequest request);
+
+    /**
+     * 基金增强
+     *
+     * @param request
+     * @return
+     */
+    @Reference(retries = 0)
+    boolean enhanceFund(FundEnhanceRequest request);
 }

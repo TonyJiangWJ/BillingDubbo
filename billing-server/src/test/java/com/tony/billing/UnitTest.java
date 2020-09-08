@@ -20,6 +20,8 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -101,7 +103,7 @@ public class UnitTest {
 
     @Test
     public void testDecrypt() throws Exception {
-        File file = new File("/Users/jiangwenjie/Downloads/主程序.bin");
+        File file = new File("/Users/jiangwenjie/Downloads/main_1.bin");
         FileInputStream in = new FileInputStream(file);
         int l = -1;
         byte[] buffer = new byte[4096];

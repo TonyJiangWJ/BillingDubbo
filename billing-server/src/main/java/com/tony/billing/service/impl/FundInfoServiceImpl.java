@@ -3,16 +3,20 @@ package com.tony.billing.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
 import com.tony.billing.constants.enums.EnumDeleted;
+import com.tony.billing.constants.enums.EnumFundChangeType;
 import com.tony.billing.constants.enums.EnumYesOrNo;
 import com.tony.billing.constants.timing.TimeConstants;
+import com.tony.billing.dao.mapper.FundInfoHistoryMapper;
 import com.tony.billing.dao.mapper.FundInfoMapper;
 import com.tony.billing.entity.FundHistoryValue;
 import com.tony.billing.entity.FundInfo;
+import com.tony.billing.entity.FundInfoHistory;
 import com.tony.billing.entity.FundPreSaleInfo;
 import com.tony.billing.entity.FundPreSaleRef;
 import com.tony.billing.exceptions.BaseBusinessException;
 import com.tony.billing.model.FundAddModel;
 import com.tony.billing.model.FundExistenceCheck;
+import com.tony.billing.request.fund.FundEnhanceRequest;
 import com.tony.billing.request.fund.FundPreSalePortionRequest;
 import com.tony.billing.service.api.FundHistoryNetValueService;
 import com.tony.billing.service.api.FundHistoryValueService;
@@ -36,7 +40,9 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +59,8 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
     private FundHistoryNetValueService fundHistoryNetValueService;
     @Autowired
     private FundPreSaleRefService fundPreSaleRefService;
+    @Autowired
+    private FundInfoHistoryMapper fundInfoHistoryMapper;
 
 
     @Override
@@ -259,6 +267,15 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
                     saleFund.setId(null);
                     // 售出的记录下来
                     saleFundId = super.insert(saleFund);
+                    // 记录部分售出基金的历史信息
+                    FundInfoHistory fundInfoHistory = new FundInfoHistory();
+                    BeanUtils.copyProperties(fundInfo, fundInfoHistory);
+                    fundInfoHistory.setId(null);
+                    fundInfoHistory.setOriginId(fundInfo.getId());
+                    fundInfoHistory.setChangeType(EnumFundChangeType.SALE_PORTION.getType());
+                    fundInfoHistory.setCreateTime(new Date());
+                    fundInfoHistory.setModifyTime(new Date());
+                    fundInfoHistoryMapper.insert(fundInfoHistory);
                     // 更新剩余份额
                     fundInfo.setPurchaseAmount(restAmount);
                     fundInfo.setPurchaseCost(fundInfo.getPurchaseCost().subtract(salePurchaseCost));
@@ -313,5 +330,55 @@ public class FundInfoServiceImpl extends AbstractServiceImpl<FundInfo, FundInfoM
         }
         saleFund.setInStore(EnumYesOrNo.NO.val());
         return mapper.update(saleFund) > 0 && preSaleInfoService.insert(preSaleInfo) > 0;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {BaseBusinessException.class, Exception.class})
+    public boolean enhanceFund(FundEnhanceRequest request) {
+        FundInfo condition = new FundInfo();
+        condition.setInStore(EnumYesOrNo.YES.val());
+        condition.setFundCode(request.getFundCode());
+        condition.setUserId(UserIdContainer.getUserId());
+
+        List<FundInfo> matchedFunds = mapper.listFundsBefore(condition, request.getDateBefore());
+        AtomicBoolean operateSuccess = new AtomicBoolean(false);
+        AtomicBoolean sqlError = new AtomicBoolean(false);
+        if (CollectionUtils.isNotEmpty(matchedFunds)) {
+            Optional<BigDecimal> totalAmountOpt = matchedFunds.stream()
+                    .map(FundInfo::getPurchaseAmount)
+                    .reduce(BigDecimal::add);
+            totalAmountOpt.ifPresent(totalAmount -> {
+                BigDecimal currentAmount = new BigDecimal(request.getCurrentAmount());
+                if (currentAmount.compareTo(totalAmount) > 0) {
+                    BigDecimal enhanceRate = currentAmount.divide(totalAmount, 4, BigDecimal.ROUND_HALF_UP);
+                    logger.info("增强基金：{} 增强前总量：{} 增强后总量：{}  倍率：{}", request.getFundCode(), totalAmount, currentAmount, enhanceRate);
+                    matchedFunds.parallelStream().forEach(fundInfo -> {
+                        FundInfoHistory fundInfoHistory = new FundInfoHistory();
+                        BeanUtils.copyProperties(fundInfo, fundInfoHistory);
+                        fundInfoHistory.setId(null);
+                        fundInfoHistory.setOriginId(fundInfo.getId());
+                        fundInfoHistory.setChangeType(EnumFundChangeType.ENHANCE.getType());
+                        fundInfoHistory.setCreateTime(new Date());
+                        fundInfoHistory.setModifyTime(new Date());
+                        try {
+                            fundInfoHistoryMapper.insert(fundInfoHistory);
+                            fundInfo.setPurchaseAmount(fundInfo.getPurchaseAmount().multiply(enhanceRate).setScale(2, BigDecimal.ROUND_HALF_UP));
+                            fundInfo.setPurchaseValue(fundInfo.getPurchaseValue().divide(enhanceRate, BigDecimal.ROUND_HALF_UP));
+                            mapper.update(fundInfo);
+                        } catch (Exception e) {
+                            logger.error("保存增强后基金数据异常", e);
+                            sqlError.set(true);
+                        }
+                    });
+                    operateSuccess.set(true);
+                } else {
+                    logger.error("增强后持有总量必须大于增强前的持有总量");
+                }
+            });
+            if (sqlError.get()) {
+                throw new BaseBusinessException("保存增强后基金数据，SQL执行失败");
+            }
+        }
+        return operateSuccess.get();
     }
 }
