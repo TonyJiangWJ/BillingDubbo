@@ -38,5 +38,5 @@ jwt:
 pwd:
   salt:
 
-logback:
+log4j2:
   path: /var/log/log-dubbo-client/

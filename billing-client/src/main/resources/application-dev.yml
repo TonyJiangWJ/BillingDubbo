@@ -30,5 +30,5 @@ dubbo:
   consumer:
     filter: dubboContextFilter
 
-logback:
+log4j2:
   path: /Users/jiangwenjie/logs/log-dubbo-client/

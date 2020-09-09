@@ -39,7 +39,7 @@ rsa:
     path: /data/deploy/server/license/
 
 
-logback:
+log4j2:
   path: /var/log/log-dubbo-server/
 
 jwt:

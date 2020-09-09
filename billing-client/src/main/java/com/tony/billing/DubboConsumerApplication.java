@@ -1,5 +1,6 @@
 package com.tony.billing;
 
+import com.tony.billing.listeners.LoggingListener;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
@@ -12,7 +13,9 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 public class DubboConsumerApplication {
 
     public static void main(String[] args) {
-        new SpringApplicationBuilder(DubboConsumerApplication.class).run(args);
+        new SpringApplicationBuilder(DubboConsumerApplication.class)
+                .listeners(new LoggingListener())
+                .run(args);
     }
 
 }

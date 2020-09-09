@@ -38,5 +38,5 @@ rsa:
   key:
     path: doc/
 
-logback:
+log4j2:
   path: /Users/jiangwenjie/logs/log-dubbo-server/

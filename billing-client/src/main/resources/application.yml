@@ -23,3 +23,6 @@ dubbo:
 validation:
   fail:
     fast: false
+
+logging:
+  config: classpath:${log4j2.config.path}

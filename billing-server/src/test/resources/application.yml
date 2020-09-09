@@ -2,7 +2,7 @@ spring:
   application:
     name: dubbo-billing-server-provider
   profiles:
-    active: '@activatedProperties@'
+    active: test
   datasource:
     druid:
       initial-size: 10
@@ -78,5 +78,5 @@ rsa:
   key:
     path: /Users/jiangwenjie/Documents/Repositories/Github/BillingDubbo/billing-server/src/test/resources/license
 
-logback:
+log4j2:
   path: /Users/jiangwenjie/logs/log-dubbo-server-test/

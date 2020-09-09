@@ -17,15 +17,13 @@
 
 package com.tony.billing.bootstrap;
 
+import com.tony.billing.listeners.EmbeddedZookeeperListener;
+import com.tony.billing.listeners.LoggingListener;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.util.StringUtils;
 
 /**
  * Dubbo Registry ZooKeeper Provider Bootstrap
@@ -42,18 +40,8 @@ public class DubboRegistryZooKeeperProviderApplication {
     public static void main(String[] args) {
         new SpringApplicationBuilder(DubboRegistryZooKeeperProviderApplication.class)
                 .listeners(
-                        (ApplicationListener<ApplicationEnvironmentPreparedEvent>) event -> {
-                            Environment environment = event.getEnvironment();
-                            boolean useEmbeddedZookeeper = Boolean.parseBoolean(environment.getProperty("embedded.zookeeper.enable"));
-                            if (useEmbeddedZookeeper) {
-                                String zookeeperPort = environment.getProperty("embedded.zookeeper.port");
-                                if (StringUtils.isEmpty(zookeeperPort)) {
-                                    zookeeperPort = "2181";
-                                }
-                                int port = Integer.parseInt(zookeeperPort);
-                                new EmbeddedZooKeeper(port, false).start();
-                            }
-                        }
+                        new LoggingListener(),
+                        new EmbeddedZookeeperListener()
                 ).run(args);
     }
 }

@@ -45,3 +45,6 @@ system:
   host:
     reset:
       password: http://localhost:8080/#/reset/pwd
+
+logging:
+  config: classpath:${log4j2.config.path}

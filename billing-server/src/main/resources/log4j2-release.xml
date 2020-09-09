@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<configuration status="WARN">
+
+    <Properties>
+        <Property name="logPattern">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %p %c - %msg%n</Property>
+        <Property name="LOG_PATH">${sys:log4j2.path}</Property>
+    </Properties>
+    <!--定义日志文件的存储地址 勿在配置中使用相对路径-->
+    <springProperty scope="context" name="LOG_PATH" source="log4j2.path"/>
+    <appenders>
+        <File name="FILE-APP" fileName="${LOG_PATH}/app.log" append="false">
+            <PatternLayout pattern="${logPattern}"/>
+        </File>
+        <RollingFile name="FILE-INFO" fileName="${LOG_PATH}/info.log"
+                     filePattern="${LOG_PATH}/info.%d{yyyy-MM-dd}.%i.log">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${logPattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="24" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="20MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
+            <DefaultRolloverStrategy max="15"/>
+        </RollingFile>
+        <RollingFile name="FILE-SQL" fileName="${LOG_PATH}/sql.log"
+                     filePattern="${LOG_PATH}/sql.%d{yyyy-MM-dd}.%i.log">
+            <ThresholdFilter level="debug" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${logPattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="24" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="20MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
+            <DefaultRolloverStrategy max="15"/>
+        </RollingFile>
+        <RollingFile name="FILE-ERROR" fileName="${LOG_PATH}/error.log"
+                     filePattern="${LOG_PATH}/error.%d{yyyy-MM-dd}.%i.log">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${logPattern}"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy interval="24" modulate="true"/>
+                <SizeBasedTriggeringPolicy size="20MB"/>
+            </Policies>
+            <!-- DefaultRolloverStrategy属性如不设置，则默认为最多同一文件夹下7个文件，这里设置了20 -->
+            <DefaultRolloverStrategy max="15"/>
+        </RollingFile>
+    </appenders>
+
+    <loggers>
+        <AsyncLogger name="com.tony.billing.dao.mapper" level="DEBUG" additivity="false">
+            <AppenderRef ref="FILE-SQL"/>
+            <AppenderRef ref="FILE-APP"/>
+        </AsyncLogger>
+        <AsyncLogger name="druid.sql" level="DEBUG" additivity="false">
+            <AppenderRef ref="FILE-SQL"/>
+            <AppenderRef ref="FILE-APP"/>
+        </AsyncLogger>
+
+        <AsyncRoot level="info">
+            <AppenderRef ref="FILE-APP"/>
+            <AppenderRef ref="FILE-INFO"/>
+            <AppenderRef ref="FILE-ERROR"/>
+        </AsyncRoot>
+    </loggers>
+</configuration>
