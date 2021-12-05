@@ -4,8 +4,6 @@ import com.tony.billing.filters.wapper.TokenServletRequestWrapper;
 import com.tony.billing.filters.wapper.TokenServletRequestWrapperWithFile;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
@@ -18,7 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * 队请求数据进行XSS过滤，并修改request类型为TokenServletRequestWrapper，用于在AuthorityInterceptor中设置用户tokenId
+ * 对请求数据进行XSS过滤，并修改request类型为TokenServletRequestWrapper，用于在AuthorityInterceptor中设置用户tokenId
  * @author by TonyJiang on 2017/7/2.
  */
 @Slf4j

@@ -332,11 +332,11 @@
     </update>
 
     <select id="getFundInfoDistinct" resultType="com.tony.billing.entity.FundInfo" useCache="true">
-        select fundCode, fundName from t_fund_info where isDeleted='0' group by fundCode
+        select fundCode, max(fundName) as fundName from t_fund_info where isDeleted='0' group by fundCode
     </select>
 
     <select id="getFundInfoDistinctByUser" resultType="com.tony.billing.entity.FundInfo" useCache="true">
-        select fundCode, fundName from t_fund_info where inStore='1' and userId=#{userId,jdbcType=BIGINT} and isDeleted='0' group by fundCode
+        select fundCode, max(fundName) as fundName from t_fund_info where inStore='1' and userId=#{userId,jdbcType=BIGINT} and isDeleted='0' group by fundCode
     </select>
 
     <select id="listInStoreFunds" resultMap="FundInfoResultMap">
@@ -404,5 +404,12 @@
                 and inStore=#{condition.inStore,jdbcType=INTEGER}
             </if>
         </trim>
+    </select>
+
+    <select id="listPurchaseDatesInRange" resultType="java.lang.String">
+        select purchaseDate from t_fund_info where fundCode=#{fundCode,jdbcType=VARCHAR}
+        and purchaseDate &gt;=#{dateAfter, jdbcType=VARCHAR}
+        and purchaseDate &lt;#{dateBefore, jdbcType=VARCHAR}
+        order by purchaseDate
     </select>
 </mapper>

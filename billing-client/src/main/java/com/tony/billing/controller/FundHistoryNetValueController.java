@@ -1,6 +1,6 @@
 package com.tony.billing.controller;
 
-import com.tony.billing.request.fund.FundInfoQueryRequest;
+import com.tony.billing.request.fund.FundHistoryNetValueRequest;
 import com.tony.billing.response.fund.FundHistoryNetValueResponse;
 import com.tony.billing.service.api.FundHistoryNetValueService;
 import org.apache.dubbo.config.annotation.Reference;
@@ -23,7 +23,7 @@ public class FundHistoryNetValueController extends BaseController {
     private FundHistoryNetValueService fundHistoryNetValueService;
 
     @PostMapping("/fund/history/net/values")
-    public FundHistoryNetValueResponse getFundHistoryNetValues(@ModelAttribute("request") @Validated FundInfoQueryRequest request) {
-        return fundHistoryNetValueService.getHistoryNetValuesByFundCode(request.getFundCode(), request.getPurchaseDate());
+    public FundHistoryNetValueResponse getFundHistoryNetValues(@ModelAttribute("request") @Validated FundHistoryNetValueRequest request) {
+        return fundHistoryNetValueService.getHistoryNetValuesByFundCode(request.getFundCode(), request.getTargetStartDate(), request.getTargetEndDate());
     }
 }

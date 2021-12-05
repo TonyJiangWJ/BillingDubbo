@@ -3,18 +3,19 @@
 
 <mapper namespace="com.tony.billing.dao.mapper.AdminMapper">
     <sql id="all">
-        id id,
-        tokenId tokenId,
-        tokenVerify tokenVerify,
-        code code,
-        userName userName,
-        email email,
-        password password,
-        lastLogin lastLogin,
-        createTime createTime,
-        modifyTime modifyTime,
-        version version,
-        isDeleted isDeleted
+        id,
+        tokenId,
+        tokenVerify,
+        code,
+        userName,
+        email,
+        password,
+        lastLogin,
+        createTime,
+        modifyTime,
+        version,
+        isDeleted,
+        passwordVersion
     </sql>
     <update id="doLogin" parameterType="com.tony.billing.entity.Admin">
         UPDATE t_admin
@@ -44,7 +45,7 @@
         SELECT
         <include refid="all"/>
         FROM t_admin
-        WHERE isDeleted='0' AND userName=#{userName,jdbcType=VARCHAR}
+        WHERE isDeleted='0' AND userName=#{userName,jdbcType=VARCHAR} limit 0,1
     </select>
 
     <insert id="register" useGeneratedKeys="true" keyProperty="id" parameterType="com.tony.billing.entity.Admin">
@@ -57,7 +58,8 @@
             createTime,
             modifyTime,
             version,
-            isDeleted
+            isDeleted,
+            passwordVersion
         )VALUES(
             #{id,jdbcType=BIGINT},
             #{userName,jdbcType=VARCHAR},
@@ -66,7 +68,8 @@
             #{createTime,jdbcType=TIMESTAMP},
             #{modifyTime,jdbcType=TIMESTAMP},
             #{version,jdbcType=INTEGER},
-            #{isDeleted,jdbcType=INTEGER}
+            #{isDeleted,jdbcType=INTEGER},
+            #{passwordVersion,jdbcType=INTEGER}
         )
     </insert>
 
@@ -75,7 +78,7 @@
     </update>
 
     <update id="modifyPwd" parameterType="com.tony.billing.entity.Admin">
-        UPDATE t_admin SET password = #{password,jdbcType=VARCHAR} WHERE id=#{id, jdbcType=BIGINT} AND isDeleted='0'
+        UPDATE t_admin SET password = #{password,jdbcType=VARCHAR}, passwordVersion="1" WHERE id=#{id, jdbcType=BIGINT} AND isDeleted='0'
     </update>
 
     <select id="getAdminById" parameterType="Long" resultType="com.tony.billing.entity.Admin">
@@ -83,4 +86,8 @@
         <include refid="all"/>
         FROM t_admin where id=#{id,jdbcType=BIGINT} and isDeleted='0'
     </select>
+
+    <update id="update" parameterType="com.tony.billing.entity.Admin">
+        update t_admin set password=#{password,jdbcType=VARCHAR},passwordVersion=#{passwordVersion,jdbcType=INTEGER},version=version+1 where id=#{id,jdbcType=BIGINT} and version=#{version,jdbcType=INTEGER}
+    </update>
 </mapper>

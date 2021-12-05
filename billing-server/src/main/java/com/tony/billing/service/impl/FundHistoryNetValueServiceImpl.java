@@ -3,11 +3,13 @@ package com.tony.billing.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.tony.billing.constants.enums.EnumDeleted;
 import com.tony.billing.constants.timing.TimeConstants;
 import com.tony.billing.dao.mapper.FundHistoryNetValueMapper;
 import com.tony.billing.dao.mapper.FundInfoMapper;
+import com.tony.billing.dao.mapper.FundPreSaleInfoMapper;
 import com.tony.billing.entity.FundHistoryNetValue;
 import com.tony.billing.entity.FundInfo;
 import com.tony.billing.response.fund.FundHistoryNetValueResponse;
@@ -49,6 +51,8 @@ public class FundHistoryNetValueServiceImpl extends AbstractServiceImpl<FundHist
 
     @Autowired
     private FundInfoMapper fundInfoMapper;
+    @Autowired
+    private FundPreSaleInfoMapper fundPreSaleInfoMapper;
 
     @Value("${fund.history.net.value.query.url:http://fund.eastmoney.com/pingzhongdata/%s.js?v=%s}")
     private String fundHistoryNetValueQueryUrl;
@@ -112,7 +116,10 @@ public class FundHistoryNetValueServiceImpl extends AbstractServiceImpl<FundHist
                             JSONObject netWorthObj = historyNetWorthArray.getJSONObject(i);
                             JSONArray acWorthArray = historyAcWorthArray.getJSONArray(i);
                             if (netWorthObj != null) {
-                                LocalDateTime dateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(netWorthObj.getLong("x")), TimeConstants.CHINA_ZONE);
+                                LocalDateTime dateTime = LocalDateTime.ofInstant(
+                                        Instant.ofEpochMilli(netWorthObj.getLong("x")),
+                                        TimeConstants.CHINA_ZONE
+                                );
                                 if (dateTime.getYear() < LocalDateTime.now().getYear() - 1) {
                                     // 丢弃前年的数据
                                     continue;
@@ -145,14 +152,18 @@ public class FundHistoryNetValueServiceImpl extends AbstractServiceImpl<FundHist
     }
 
     @Override
-    public FundHistoryNetValueResponse getHistoryNetValuesByFundCode(String fundCode, String dateAfter) {
+    public FundHistoryNetValueResponse getHistoryNetValuesByFundCode(String fundCode, String dateAfter, String dateBefore) {
+        Preconditions.checkState(StringUtils.isNotEmpty(fundCode), "基金编码不能为空");
         if (StringUtils.isEmpty(dateAfter)) {
             LocalDate localDate = LocalDate.now();
             // 大约30个工作日
             localDate = localDate.plusDays(-43);
             dateAfter = DateUtil.formatDateTime(localDate, "yyyy-MM-dd");
         }
-        List<FundHistoryNetValue> historyNetValues = mapper.getHistoryNetValueAfter(dateAfter, fundCode);
+        if (StringUtils.isEmpty(dateBefore)) {
+            dateBefore = DateUtil.formatDateTime(LocalDate.now(), "yyyy-MM-dd");
+        }
+        List<FundHistoryNetValue> historyNetValues = mapper.getHistoryNetValueInRange(dateAfter, dateBefore, fundCode);
         if (CollectionUtils.isNotEmpty(historyNetValues)) {
             FundHistoryNetValueResponse response = new FundHistoryNetValueResponse();
             response.setFundCode(fundCode);
@@ -162,6 +173,8 @@ public class FundHistoryNetValueServiceImpl extends AbstractServiceImpl<FundHist
                                 put(fundHistory.getConfirmDate(), fundHistory.getFundNetValue().toString());
                             }}).collect(Collectors.toList())
             );
+            response.setPurchaseDates(fundInfoMapper.listPurchaseDatesInRange(dateAfter, dateBefore, fundCode));
+            response.setSoldDates(fundPreSaleInfoMapper.listPurchaseDatesInRange(dateAfter, dateBefore, fundCode));
             return response;
         }
         return ResponseUtil.error(new FundHistoryNetValueResponse());

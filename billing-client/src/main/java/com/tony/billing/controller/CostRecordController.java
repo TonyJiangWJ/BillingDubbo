@@ -6,7 +6,6 @@ import com.tony.billing.dto.CostRecordDTO;
 import com.tony.billing.dto.CostRecordDetailDTO;
 import com.tony.billing.dto.TagInfoDTO;
 import com.tony.billing.entity.CostRecord;
-import com.tony.billing.entity.PagerGrid;
 import com.tony.billing.entity.TagInfo;
 import com.tony.billing.entity.query.CostRecordQuery;
 import com.tony.billing.request.BaseRequest;
@@ -49,6 +48,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,6 +69,8 @@ public class CostRecordController {
     @Resource
     private AlipayBillCsvUtil alipayBillCsvUtil;
 
+    private final String[] canOrderBy = {"createTime", "money"};
+
     /**
      * 获取分页数据
      *
@@ -79,51 +81,45 @@ public class CostRecordController {
     public CostRecordPageResponse getPage(@ModelAttribute("request") CostRecordPageRequest request) {
         CostRecordPageResponse response = new CostRecordPageResponse();
         try {
-            CostRecordQuery costRecord = new CostRecordQuery();
+            CostRecordQuery costRecordQuery = new CostRecordQuery();
             if (request.getIsDeleted() != null) {
-                costRecord.setIsDeleted(request.getIsDeleted());
+                costRecordQuery.setIsDeleted(request.getIsDeleted());
             }
             if (StringUtils.isNotEmpty(request.getInOutType())) {
-                costRecord.setInOutType(request.getInOutType());
+                costRecordQuery.setInOutType(request.getInOutType());
             }
             if (StringUtils.isNotEmpty(request.getEndDate())) {
                 String endDate = request.getEndDate();
                 int value = Integer.parseInt(endDate.substring(8));
                 endDate = endDate.substring(0, 8) + String.format("%02d", ++value);
-                costRecord.setEndDate(endDate);
+                costRecordQuery.setEndDate(endDate);
             }
             if (request.getIsHidden() != null) {
-                costRecord.setIsHidden(request.getIsHidden());
+                costRecordQuery.setIsHidden(request.getIsHidden());
             }
             if (StringUtils.isNotEmpty(request.getContent())) {
-                costRecord.setContent(request.getContent());
+                costRecordQuery.setContent(request.getContent());
             }
-            costRecord.setStartDate(request.getStartDate());
-            costRecord.setUserId(request.getUserId());
-            PagerGrid<CostRecord> pagerGrid = new PagerGrid<>(costRecord);
-            if (request.getPageSize() != null && !request.getPageSize().equals(0)) {
-                pagerGrid.setOffset(request.getPageSize());
-            }
-            pagerGrid.setPage(request.getPageNo() == null ? 0 : request.getPageNo());
-            if (StringUtils.isNotEmpty(request.getSort())) {
-                pagerGrid.setSort(request.getSort());
+            costRecordQuery.setStartDate(request.getStartDate());
+            costRecordQuery.setUserId(request.getUserId());
+            costRecordQuery.setPageSize(request.getPageSize());
+            costRecordQuery.setPageNo(request.getPageNo());
+            if (StringUtils.equalsIgnoreCase("asc", request.getSort())) {
+                costRecordQuery.setSort("asc");
             } else {
-                pagerGrid.setSort("desc");
+                costRecordQuery.setSort("desc");
             }
-            if (StringUtils.isNotEmpty(request.getOrderBy())) {
-                pagerGrid.setOrderBy(request.getOrderBy());
-            } else {
-                pagerGrid.setOrderBy("costCreateTime");
-            }
+            // 过滤白名单
+            setupOrderBy(request.getOrderBy(), costRecordQuery);
 
-            pagerGrid = costRecordService.page(pagerGrid);
+            costRecordQuery = costRecordService.page(costRecordQuery);
             boolean showTags = Boolean.TRUE.equals(request.getShowTags());
-            response.setCostRecordList(formatModelList(pagerGrid.getResult(), showTags));
-            response.setCurrentAmount(calculateCurrentAmount(pagerGrid.getResult()));
-            response.setPageNo(pagerGrid.getPage());
-            response.setPageSize(pagerGrid.getOffset());
-            response.setTotalPage(pagerGrid.getTotalPage());
-            response.setTotalItem(pagerGrid.getCount());
+            response.setCostRecordList(formatModelList(costRecordQuery.getItems(), showTags));
+            response.setCurrentAmount(calculateCurrentAmount(costRecordQuery.getItems()));
+            response.setPageNo(costRecordQuery.getPageNo());
+            response.setPageSize(costRecordQuery.getPageSize());
+            response.setTotalPage(costRecordQuery.getTotalPage());
+            response.setTotalItem(costRecordQuery.getTotalItem());
             ResponseUtil.success(response);
 
         } catch (Exception e) {
@@ -134,8 +130,19 @@ public class CostRecordController {
         return response;
     }
 
+    private void setupOrderBy(String orderBy, CostRecordQuery costRecordQuery) {
+        if (Arrays.asList(canOrderBy).contains(orderBy)) {
+            costRecordQuery.setOrderBy(orderBy);
+        } else {
+            costRecordQuery.setOrderBy("costCreateTime");
+        }
+    }
+
     private String calculateCurrentAmount(List<CostRecord> result) {
-        long total = result.stream().map(CostRecord::getMoney).reduce((a, b) -> a + b).orElse(0L);
+        if (CollectionUtils.isEmpty(result)) {
+            return "0";
+        }
+        long total = result.stream().map(CostRecord::getMoney).reduce(Long::sum).orElse(0L);
         return MoneyUtil.fen2Yuan(total);
     }
 

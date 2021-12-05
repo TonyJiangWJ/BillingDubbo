@@ -18,4 +18,6 @@ public class FundHistoryNetValueResponse extends BaseResponse {
     private String fundCode;
     private String fundName;
     private List<Map<String, String>> historyNetValues;
+    private List<String> purchaseDates;
+    private List<String> soldDates;
 }

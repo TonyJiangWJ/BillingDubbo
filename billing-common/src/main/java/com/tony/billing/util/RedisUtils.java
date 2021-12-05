@@ -2,6 +2,7 @@ package com.tony.billing.util;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.base.Preconditions;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,19 +41,14 @@ public class RedisUtils {
      * @return
      */
     public boolean set(final String key, final Object val) {
-        boolean result = false;
+        Boolean result = false;
         try {
-            result = stringRedisTemplate.execute((RedisCallback<Boolean>) connection -> {
-                RedisSerializer<String> serializer = stringRedisTemplate.getStringSerializer();
-                byte[] keys = serializer.serialize(key);
-                byte[] name = serializer.serialize(JSON.toJSONString(val));
-                return connection.setNX(keys, name);
-            });
+            result = stringRedisTemplate.opsForValue().setIfAbsent(key, JSON.toJSONString(val));
         } catch (Exception e) {
             logger.error("设置cache错误", e);
         }
 
-        return result;
+        return result != null && result;
     }
 
     /**
@@ -65,13 +61,7 @@ public class RedisUtils {
     public void set(final String key, final Object val, final long time) {
         Preconditions.checkNotNull(key, "key can not be null");
         try {
-            stringRedisTemplate.execute((RedisCallback<Boolean>) connection -> {
-                RedisSerializer<String> serializer = stringRedisTemplate.getStringSerializer();
-                byte[] keys = serializer.serialize(key);
-                byte[] name = serializer.serialize(JSON.toJSONString(val));
-                connection.setEx(keys, time, name);
-                return true;
-            });
+            stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(val), time);
         } catch (Exception e) {
             logger.error("设置定时cache错误", e);
         }
@@ -89,12 +79,10 @@ public class RedisUtils {
     public <E> Optional<E> get(final String key, Class<E> clazz) {
         Optional<E> result = Optional.empty();
         try {
-            result = stringRedisTemplate.execute((RedisCallback<Optional<E>>) connection -> {
-                RedisSerializer<String> serializer = stringRedisTemplate.getStringSerializer();
-                byte[] keys = serializer.serialize(key);
-                byte[] value = connection.get(keys);
-                return getByValue(value, serializer, clazz);
-            });
+            String stringValue = stringRedisTemplate.opsForValue().get(key);
+            if (StringUtils.isNotEmpty(stringValue)) {
+                return Optional.of(JSON.parseObject(stringValue, clazz));
+            }
         } catch (Exception e) {
             logger.error("获取缓存信息失败", e);
         }
@@ -123,11 +111,7 @@ public class RedisUtils {
      * @param key 键
      */
     public boolean del(final String key) {
-        return stringRedisTemplate.execute((RedisCallback<Boolean>) connection -> {
-            RedisSerializer<String> serializer = stringRedisTemplate.getStringSerializer();
-            byte[] keys = serializer.serialize(key);
-            return connection.get(keys) == null || connection.del(keys) > 0;
-        });
+        return stringRedisTemplate.delete(key);
     }
 
     /**
@@ -139,13 +123,8 @@ public class RedisUtils {
      * @return
      */
     public boolean hSet(final String hKey, final String fieldKey, Object value) {
-        return stringRedisTemplate.execute((RedisCallback<Boolean>) connection -> {
-            RedisSerializer<String> serializer = stringRedisTemplate.getStringSerializer();
-            byte[] hKeys = serializer.serialize(hKey);
-            byte[] fieldKeys = serializer.serialize(fieldKey);
-            byte[] values = serializer.serialize(JSON.toJSONString(value));
-            return connection.hSet(hKeys, fieldKeys, values);
-        });
+        stringRedisTemplate.opsForHash().put(hKey, fieldKey, JSON.toJSONString(value));
+        return true;
     }
 
     /**
@@ -158,10 +137,8 @@ public class RedisUtils {
      * @return
      */
     public boolean hSetEx(final String hKey, final String fieldKey, Object value, long time) {
-        return stringRedisTemplate.execute((RedisCallback<Boolean>) connection -> {
-            set(hKey + fieldKey, 1, time);
-            return hSet(hKey, fieldKey, value);
-        });
+        this.set(hKey + fieldKey, 1, time);
+        return this.hSet(hKey, fieldKey, value);
     }
 
     /**
@@ -175,13 +152,10 @@ public class RedisUtils {
     public <E> Optional<E> hGet(final String hKey, final String fieldKey, Class<E> clazz) {
         Optional<E> result = Optional.empty();
         try {
-            result = stringRedisTemplate.execute((RedisCallback<Optional<E>>) connection -> {
-                RedisSerializer<String> serializer = stringRedisTemplate.getStringSerializer();
-                byte[] hKeys = serializer.serialize(hKey);
-                byte[] fieldKeys = serializer.serialize(fieldKey);
-                byte[] value = connection.hGet(hKeys, fieldKeys);
-                return getByValue(value, serializer, clazz);
-            });
+            String stringValue = (String)stringRedisTemplate.opsForHash().get(hKey, fieldKey);
+            if (StringUtils.isNotEmpty(stringValue)) {
+                return Optional.of(JSON.parseObject(stringValue, clazz));
+            }
         } catch (Exception e) {
             logger.error("获取缓存信息失败", e);
         }
@@ -213,23 +187,7 @@ public class RedisUtils {
      * @param fieldKey 字段key
      */
     public boolean hDel(final String hKey, final String fieldKey) {
-        return stringRedisTemplate.execute((RedisCallback<Boolean>) connection -> {
-            RedisSerializer<String> serializer = stringRedisTemplate.getStringSerializer();
-            byte[] hKeys = serializer.serialize(hKey);
-            byte[] fieldKeys = serializer.serialize(hKey);
-            return connection.hGet(hKeys, fieldKeys) == null || connection.hDel(hKeys, fieldKeys) > 0;
-        });
-    }
-
-    private <E> Optional<E> getByValue(byte[] value, RedisSerializer<String> serializer, Class<E> clazz) {
-        if (value == null) {
-            return Optional.empty();
-        }
-        String jsonString = serializer.deserialize(value);
-        if (clazz != null) {
-            return Optional.of(JSON.parseObject(jsonString, clazz));
-        }
-        return Optional.empty();
+        return stringRedisTemplate.opsForHash().get(hKey, fieldKey) == null || stringRedisTemplate.opsForHash().delete(hKey, fieldKey) > 0;
     }
 
     public long getTransientTime() {

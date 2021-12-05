@@ -1,7 +1,6 @@
 package com.tony.billing.service.api;
 
 import com.tony.billing.entity.CostRecord;
-import com.tony.billing.entity.PagerGrid;
 import com.tony.billing.entity.query.CostRecordQuery;
 import org.apache.dubbo.config.annotation.Reference;
 
@@ -14,7 +13,7 @@ import java.util.Map;
 public interface CostRecordService {
     List<CostRecord> find(CostRecord record);
 
-    PagerGrid<CostRecord> page(PagerGrid<CostRecord> pagerGrid);
+    CostRecordQuery page(CostRecordQuery query);
 
     CostRecord findByTradeNo(String tradeNo, Long userId);
 

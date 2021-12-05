@@ -24,6 +24,7 @@ public class CORSFilter extends OncePerRequestFilter {
         logger.debug("收到请求{}", JSON.toJSONString(httpServletRequest.getParameterMap()));
         httpServletResponse.setHeader("Access-Control-Allow-Origin", httpServletRequest.getHeader("Origin"));
         httpServletResponse.setHeader("Access-Control-Allow-Credentials", "true");
+        httpServletResponse.setHeader("Access-Control-Allow-Methods","POST, GET, OPTIONS, DELETE");
         filterChain.doFilter(httpServletRequest, httpServletResponse);
     }
 }

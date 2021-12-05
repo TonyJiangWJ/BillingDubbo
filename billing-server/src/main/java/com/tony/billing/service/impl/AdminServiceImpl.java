@@ -58,7 +58,14 @@ public class AdminServiceImpl extends AbstractServiceImpl<Admin, AdminMapper> im
 
     @Override
     public Admin login(Admin admin) {
-        admin.setPassword(sha256(rsaUtil.decrypt(admin.getPassword())));
+        Admin dbAdmin = mapper.queryByUserName(admin.getUserName());
+        boolean isOldPassword = dbAdmin.getPasswordVersion() == null || dbAdmin.getPasswordVersion().equals(0);
+        String password = rsaUtil.decrypt(admin.getPassword());
+        if (isOldPassword) {
+            admin.setPassword(sha256(password));
+        } else {
+            admin.setPassword(sha256(password, admin.getUserName()));
+        }
         if (admin.getPassword() == null) {
             logger.error("password error");
             return null;
@@ -71,6 +78,12 @@ public class AdminServiceImpl extends AbstractServiceImpl<Admin, AdminMapper> im
             checkUser.setLastLogin(new Date());
             if (mapper.doLogin(checkUser) > 0) {
                 redisUtils.set(checkUser.getTokenId(), deleteSecret(checkUser), VERIFY_TIME / 1000);
+                if (isOldPassword) {
+                    // 更新密码
+                    checkUser.setPasswordVersion(1);
+                    checkUser.setPassword(sha256(password, checkUser.getUserName()));
+                    mapper.update(checkUser);
+                }
                 return checkUser;
             }
         }
@@ -84,7 +97,8 @@ public class AdminServiceImpl extends AbstractServiceImpl<Admin, AdminMapper> im
             admin.setCreateTime(new Date());
             admin.setModifyTime(admin.getCreateTime());
             admin.setVersion(1);
-            admin.setPassword(sha256(rsaUtil.decrypt(admin.getPassword())));
+            admin.setPassword(sha256(rsaUtil.decrypt(admin.getPassword()), admin.getUserName()));
+            admin.setPasswordVersion(1);
             if (admin.getPassword() == null) {
                 logger.error("password error");
                 return -1L;
@@ -107,9 +121,18 @@ public class AdminServiceImpl extends AbstractServiceImpl<Admin, AdminMapper> im
     @Override
     public boolean modifyPwd(ModifyAdmin admin) {
         Preconditions.checkNotNull(admin.getId(), "用户id不能为空");
+        Admin dbAdmin = mapper.getAdminById(admin.getId());
+        if (dbAdmin == null) {
+            return false;
+        }
+        boolean isOldPassword = dbAdmin.getPasswordVersion() == null || dbAdmin.getPasswordVersion().equals(0);
         // 现将密码进行加解密处理
-        admin.setNewPassword(sha256(rsaUtil.decrypt(admin.getNewPassword())));
-        admin.setPassword(sha256(rsaUtil.decrypt(admin.getPassword())));
+        admin.setNewPassword(sha256(rsaUtil.decrypt(admin.getNewPassword()), dbAdmin.getUserName()));
+        if (isOldPassword) {
+            admin.setPassword(sha256(rsaUtil.decrypt(admin.getPassword())));
+        } else {
+            admin.setPassword(sha256(rsaUtil.decrypt(admin.getPassword()), dbAdmin.getUserName()));
+        }
         if (admin.getNewPassword() == null) {
             return false;
         }
@@ -151,13 +174,11 @@ public class AdminServiceImpl extends AbstractServiceImpl<Admin, AdminMapper> im
     @Override
     public boolean resetPwd(ModifyAdmin admin) {
         Preconditions.checkNotNull(admin.getNewPassword(), "新密码不能为空");
-        // 密码预处理
-        admin.setNewPassword(sha256(rsaUtil.decrypt(admin.getNewPassword())));
         String token = admin.getTokenId();
         Optional<Admin> optional = redisUtils.get(token, Admin.class);
         if (optional.isPresent()) {
             Admin cachedUser = optional.get();
-            cachedUser.setPassword(admin.getNewPassword());
+            cachedUser.setPassword(sha256(rsaUtil.decrypt(admin.getNewPassword()), admin.getUserName()));
             if (mapper.modifyPwd(cachedUser) > 0) {
                 // 密码修改完毕之后将缓存删除
                 redisUtils.del(token);
@@ -182,6 +203,13 @@ public class AdminServiceImpl extends AbstractServiceImpl<Admin, AdminMapper> im
     private String sha256(String pwd) {
         if (pwd != null) {
             return ShaSignHelper.sign(pwd, pwdSalt);
+        } else {
+            return null;
+        }
+    }
+    private String sha256(String pwd, String userNameSalt) {
+        if (pwd != null) {
+            return ShaSignHelper.sign(pwd, pwdSalt + userNameSalt);
         } else {
             return null;
         }

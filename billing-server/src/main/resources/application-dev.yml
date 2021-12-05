@@ -3,7 +3,7 @@ spring:
   datasource:
     druid:
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://127.0.0.1:3306/my_daily_cost?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+      url: jdbc:mysql://127.0.0.1:3306/my_daily_cost_dev?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&zeroDateTimeBehavior=convertToNull
       username: root
       password:
   mail:
@@ -33,7 +33,7 @@ dubbo:
 embedded:
   zookeeper:
     port: 2181
-    enable: false
+    enable: true
 rsa:
   key:
     path: doc/

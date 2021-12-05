@@ -1,7 +1,8 @@
 package com.tony.billing.dao.mapper;
 
-import com.tony.billing.dao.mapper.base.AbstractMapper;
+import com.tony.billing.dao.mapper.base.AbstractPageMapper;
 import com.tony.billing.entity.CostRecord;
+import com.tony.billing.entity.query.CostRecordQuery;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
@@ -12,13 +13,9 @@ import java.util.Map;
  * @author by TonyJiang on 2017/7/12.
  */
 @Repository
-public interface CostRecordMapper extends AbstractMapper<CostRecord> {
+public interface CostRecordMapper extends AbstractPageMapper<CostRecord, CostRecordQuery> {
 
     Integer batchInsert(@Param("insertList") List<CostRecord> insertList);
-
-    List<CostRecord> page(Map<String, Object> params);
-
-    Integer count(Map<String, Object> params);
 
     CostRecord findByTradeNo(@Param("tradeNo")String tradeNo, @Param("userId") Long userId);
 

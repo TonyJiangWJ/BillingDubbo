@@ -207,13 +207,10 @@
         </trim>
         WHERE id=#{id, jdbcType=BIGINT} AND isDeleted='0'
     </update>
-<!--
+
     <sql id="queryWhere">
         <trim prefix="WHERE" prefixOverrides="and">
             AND isDeleted='0'
-            <if test=" id!=null">
-                and id=#{id,jdbcType=BIGINT}
-            </if>
             <if test=" userId!=null">
                 and userId=#{userId,jdbcType=BIGINT}
             </if>
@@ -221,69 +218,32 @@
                 and fundCode=#{fundCode,jdbcType=VARCHAR}
             </if>
             <if test=" fundName!=null and fundName!=''">
-                and fundName=#{fundName,jdbcType=VARCHAR}
-            </if>
-            <if test=" purchaseCost!=null">
-                and purchaseCost=#{purchaseCost,jdbcType=DECIMAL}
-            </if>
-            <if test=" purchaseFee!=null">
-                and purchaseFee=#{purchaseFee,jdbcType=DECIMAL}
-            </if>
-            <if test=" assessmentSoldIncome!=null">
-                and assessmentSoldIncome=#{assessmentSoldIncome,jdbcType=DECIMAL}
-            </if>
-            <if test=" assessmentSoldFee!=null">
-                and assessmentSoldFee=#{assessmentSoldFee,jdbcType=DECIMAL}
-            </if>
-            <if test=" assessmentValue!=null">
-                and assessmentValue=#{assessmentValue,jdbcType=DECIMAL}
-            </if>
-            <if test=" costValue!=null">
-                and costValue=#{costValue,jdbcType=DECIMAL}
-            </if>
-            <if test=" soldAmount!=null">
-                and soldAmount=#{soldAmount,jdbcType=DECIMAL}
-            </if>
-            <if test=" soldDate!=null">
-                and soldDate=#{soldDate,jdbcType=TIMESTAMP}
-            </if>
-            <if test=" converted!=null">
-                and converted=#{converted,jdbcType=INTEGER}
-            </if>
-            <if test=" version!=null">
-                and version=#{version,jdbcType=INTEGER}
-            </if>
-            <if test=" isDeleted!=null">
-                and isDeleted=#{isDeleted,jdbcType=INTEGER}
-            </if>
-            <if test=" createTime!=null">
-                and createTime=#{createTime,jdbcType=TIMESTAMP}
-            </if>
-            <if test=" modifyTime!=null">
-                and modifyTime=#{modifyTime,jdbcType=TIMESTAMP}
+                and fundName like concat('%', #{fundName,jdbcType=VARCHAR}, '%')
             </if>
         </trim>
     </sql>
-    <select id="countByQuery" parameterType="com.tony.billing.query.FundPreSaleInfoQuery"
+    <select id="count" parameterType="com.tony.billing.entity.query.FundPreSaleInfoQuery"
             resultType="Integer">
         SELECT count(*) FROM T_FUND_PRE_SALE_INFO
         <include refid="queryWhere"/>
     </select>
 
-    <select id="queryByPagination" parameterType="com.tony.billing.query.FundPreSaleInfoQuery"
+    <select id="page" parameterType="com.tony.billing.entity.query.FundPreSaleInfoQuery"
             resultMap="FundPreSaleInfoResultMap">
         SELECT
         <include refid="all"/>
         FROM T_FUND_PRE_SALE_INFO
         <include refid="queryWhere"/>
-        ORDER BY GMT_MODIFY DESC
-        <if test="mysqlPageFristItem != null">
-            <if test="pageSize != null and pageSize.toString() != ''">
-                limit #{mysqlPageFristItem},#{pageSize}
-            </if>
+        ORDER BY
+        <if test="orderBy != null">
+            ${orderBy} ${sort}
         </if>
+        <if test="orderBy == null or orderBy == '' ">
+            id ${sort}
+        </if>
+        LIMIT #{index,javaType=INTEGER} , #{pageSize,javaType=INTEGER}
     </select>
--->
+
     <select id="list" parameterType="com.tony.billing.entity.FundPreSaleInfo" resultMap="FundPreSaleInfoResultMap">
         SELECT
         <include refid="all"/>
@@ -353,4 +313,11 @@
     <update id="deleteById">
         update T_FUND_PRE_SALE_INFO set isDeleted='1',modifyTime=sysdate() where id=#{id, jdbcType=BIGINT} AND userId=#{userId,jdbcType=BIGINT}
     </update>
+
+    <select id="listPurchaseDatesInRange" resultType="java.lang.String">
+        select soldDate from T_FUND_PRE_SALE_INFO where fundCode=#{fundCode,jdbcType=VARCHAR}
+        and soldDate &gt;=#{dateAfter, jdbcType=VARCHAR}
+        and soldDate &lt;#{dateBefore, jdbcType=VARCHAR}
+        order by soldDate
+    </select>
 </mapper>

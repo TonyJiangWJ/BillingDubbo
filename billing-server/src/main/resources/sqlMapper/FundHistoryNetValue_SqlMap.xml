@@ -233,8 +233,10 @@
         SELECT <include refid="all"/> FROM t_fund_history_net_value WHERE fundCode=#{fundCode,jdbcType=VARCHAR} AND confirmDate=#{confirmedDate,jdbcType=VARCHAR} limit 0, 1
     </select>
 
-    <select id="getHistoryNetValueAfter" resultMap="FundHistoryNetValueResultMap">
-        select <include refid="all"/> from t_fund_history_net_value where fundCode=#{fundCode,jdbcType=VARCHAR} and confirmDate &gt;=#{afterDate, jdbcType=VARCHAR}
+    <select id="getHistoryNetValueInRange" resultMap="FundHistoryNetValueResultMap">
+        select <include refid="all"/> from t_fund_history_net_value where fundCode=#{fundCode,jdbcType=VARCHAR}
+        and confirmDate &gt;=#{afterDate, jdbcType=VARCHAR}
+        and confirmDate &lt;#{beforeDate, jdbcType=VARCHAR}
         order by confirmDate asc
     </select>
 </mapper>

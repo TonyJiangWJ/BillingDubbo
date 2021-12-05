@@ -35,6 +35,7 @@ CREATE TABLE `t_admin` (
   `modifyTime` datetime DEFAULT NULL,
   `version` int(11) DEFAULT NULL,
   `isDeleted` tinyint(4) NOT NULL DEFAULT '0',
+  `passwordVersion` int default 0 null comment '密码加密版本',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=20 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;

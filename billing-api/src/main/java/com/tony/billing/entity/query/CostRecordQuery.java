@@ -11,9 +11,28 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class CostRecordQuery extends CostRecord {
+public class CostRecordQuery extends BaseQuery<CostRecord> {
     private String startDate;
     private String endDate;
     private String content;
-
+    private Integer isDeleted;
+    private String tradeNo;
+    private String orderNo;
+    private String costCreateTime;
+    private String paidTime;
+    private String costModifyTime;
+    private String location;
+    private String orderType;
+    private String target;
+    private String goodsName;
+    private Long money;
+    private String inOutType;
+    private String orderStatus;
+    private Long serviceCost;
+    private Long refundMoney;
+    private String memo;
+    private String tradeStatus;
+    private Integer isHidden;
+    private Long userId;
+    private Long id;
 }

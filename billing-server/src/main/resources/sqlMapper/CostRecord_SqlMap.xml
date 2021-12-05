@@ -510,7 +510,7 @@
         </if>
     </sql>
 
-    <select id="count" parameterType="java.util.Map" resultType="Integer">
+    <select id="count" parameterType="com.tony.billing.entity.query.CostRecordQuery" resultType="Integer">
         SELECT COUNT(1) FROM (
         SELECT
         <include refid="all"/>
@@ -520,7 +520,7 @@
 
     </select>
 
-    <select id="page" parameterType="java.util.Map" resultType="com.tony.billing.entity.CostRecord">
+    <select id="page" parameterType="com.tony.billing.entity.query.CostRecordQuery" resultType="com.tony.billing.entity.CostRecord">
         SELECT
         <include refid="all"/>
         FROM t_cost_info
@@ -532,7 +532,7 @@
         <if test="orderBy == null or orderBy == '' ">
             id ${sort}
         </if>
-        LIMIT #{index} , #{offset}
+        LIMIT #{index,javaType=INTEGER} , #{pageSize,javaType=INTEGER}
     </select>
 
     <select id="findByTradeNo" resultType="com.tony.billing.entity.CostRecord">

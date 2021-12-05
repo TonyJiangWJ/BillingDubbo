@@ -63,4 +63,16 @@ public interface FundInfoMapper extends AbstractMapper<FundInfo> {
      * @return
      */
     List<FundInfo> listFundsBefore(@Param("condition") FundInfo condition, @Param("beforeDate") Date beforeDate);
+
+    /**
+     * 查询某个时间段内，指定基金买入日期的列表
+     *
+     * @param dateAfter  开始时间
+     * @param dateBefore 结束时间
+     * @param fundCode   基金编码
+     * @return
+     */
+    List<String> listPurchaseDatesInRange(@Param("dateAfter") String dateAfter,
+                                          @Param("dateBefore") String dateBefore,
+                                          @Param("fundCode") String fundCode);
 }

@@ -10,6 +10,7 @@ public enum EnumMailTemplateName {
      *
      */
     VERIFY_CODE_MAIL("mail.html", "验证码"),
+    TEST_MAIL("testMail.html", "测试用"),
     RESET_PWD_MAIL("resetMail.html", "重置密码");
 
     private String templateName;

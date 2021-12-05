@@ -10,7 +10,6 @@ import com.tony.billing.request.admin.ResetPasswordRequest;
 import com.tony.billing.response.BaseResponse;
 import com.tony.billing.service.api.AdminService;
 import com.tony.billing.util.AuthUtil;
-import com.tony.billing.util.CodeGeneratorUtil;
 import com.tony.billing.util.ResponseUtil;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,7 +71,6 @@ public class AdminController extends BaseController {
             Admin admin = new Admin();
             admin.setUserName(registerRequest.getUserName());
             admin.setPassword(registerRequest.getPassword());
-            admin.setCode(CodeGeneratorUtil.getCode(20));
             Long flag = 0L;
             if ((flag = adminService.register(admin)) > 0) {
                 ResponseUtil.success(response);

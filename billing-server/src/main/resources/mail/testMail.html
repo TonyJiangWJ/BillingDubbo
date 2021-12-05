@@ -1,0 +1,57 @@
+<html>
+<head>
+    <style>
+        table {
+            table-layout: fixed;
+            border-collapse: collapse;
+            width: 60%;
+        }
+
+        thead th {
+            background-color: #6FA1D2;
+            color: #ffffff;
+        }
+
+        thead th:nth-child(2) {
+            width: 45%;
+        }
+        th, td {
+            text-align: center;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        td {
+            border-color: #5c87b2;
+            border-style: solid;
+            border-width: thin;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+<p>Hi all,</p>
+<p>
+    There are some flaky bugs assigned to you. Test coverage may be lost until the bug resolved. Could you please investigate the bugs? Let us make our tests more stable!
+    <br />If there is anything blocking you when you are investigating, please contact with <a href='mailto:soxse@microsoft.com'>us</a> without any hesitate. We will support you as soon as possible.
+</p>
+More detail:
+<ol>
+    <li>EFun team have enabled tooling to give engineers visibility into failed test cases and their impact. Bug hit count is surfaced in the “<strong><a href='https://microsoft.sharepoint-df.com/teams/ODSPEngineering/SitePages/ODSP-EFun-Update---March-2021.aspx?from=SendByEmail&amp;e=fxVxeYVzOUyP1-rg7flcVQ&amp;at=9#SPO Pull Request Reliability – Detailed March Update'>Effort</a></strong>” field and a comment with  details about affected tests and owners is added for each occurrence. </li>
+    <li>We recommend you to resolve the bug which have high effort or long active days first.</li>
+
+</ol>
+
+<table border='1' cellspacing='0' cellpadding='2' align="center">
+    <thead>
+    <tr><th>  <strong>ID</strong>  </th><th>  <strong>Title</strong>  </th><th>  <strong>Assigned  To</strong>  </th><th>  <strong>State</strong>  </th><th>  <strong>Created  Date</strong>  </th><th>  <strong>Effort</strong>  </th></tr>
+    </thead>
+    <tbody>
+    <tr><td>  <a href='{workItem.Url}'>{workItem.Id} </a>  </td><td width=45% overflow="hidden">  Assert.IsTrue failed. Cancel before completion does not block, render task Microsoft.Office.Server.Search.Internal.UI.PulseUT.QueryResultControlUT.ThreadingBlocks_CancelBeforeFlushing() in d:\dbs\el\spop\src\search\managed\unittests\lib\oss\Pages\User\  </td><td>  {workItem.assignTo.DisplayName}  </td><td>  {workItem.State}  </td><td>  {workItem.createdDate.ToString("yyyy/MM/dd")}  </td><td>  1 </td></tr>
+    <tr><td>  <a href='{workItem.Url}'>{workItem.Id} </a>  </td><td width=45% overflow="hidden">  {workItem.title}  </td><td>  {workItem.assignTo.DisplayName}  </td><td>  {workItem.State}  </td><td>  {workItem.createdDate.ToString("yyyy/MM/dd")}  </td><td>  1 </td></tr>
+    <tr><td>  <a href='{workItem.Url}'>{workItem.Id} </a>  </td><td width=45% overflow="hidden">  {workItem.title}  </td><td>  {workItem.assignTo.DisplayName}  </td><td>  {workItem.State}  </td><td>  {workItem.createdDate.ToString("yyyy/MM/dd")}  </td><td> 1 </td></tr>
+    </tbody>
+</table>
+</body>
+</html>

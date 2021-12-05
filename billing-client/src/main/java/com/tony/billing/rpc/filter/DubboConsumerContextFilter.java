@@ -25,7 +25,7 @@ public class DubboConsumerContextFilter implements Filter {
         if (UserIdContainer.isSet()) {
             Map<String, String> attachments = new HashMap<>(16);
             attachments.put(CommonConstants.USER_ID, String.valueOf(UserIdContainer.getUserId()));
-            log.debug("设置PRC参数user_id:{}", UserIdContainer.getUserId());
+            log.debug("设置RPC参数user_id:{}", UserIdContainer.getUserId());
             RpcContext.getContext().setAttachments(attachments);
         }
         return invoker.invoke(invocation);

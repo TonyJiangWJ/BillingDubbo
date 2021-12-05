@@ -8,9 +8,6 @@
     <!--定义日志文件的存储地址 勿在配置中使用相对路径-->
     <springProperty scope="context" name="LOG_PATH" source="log4j2.path"/>
     <appenders>
-        <File name="FILE-APP" fileName="${LOG_PATH}/app.log" append="false">
-            <PatternLayout pattern="${logPattern}"/>
-        </File>
         <RollingFile name="FILE-INFO" fileName="${LOG_PATH}/info.log"
                      filePattern="${LOG_PATH}/info.%d{yyyy-MM-dd}.%i.log">
             <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
@@ -49,15 +46,12 @@
     <loggers>
         <AsyncLogger name="com.tony.billing.dao.mapper" level="DEBUG" additivity="false">
             <AppenderRef ref="FILE-SQL"/>
-            <AppenderRef ref="FILE-APP"/>
         </AsyncLogger>
         <AsyncLogger name="druid.sql" level="DEBUG" additivity="false">
             <AppenderRef ref="FILE-SQL"/>
-            <AppenderRef ref="FILE-APP"/>
         </AsyncLogger>
 
         <AsyncRoot level="info">
-            <AppenderRef ref="FILE-APP"/>
             <AppenderRef ref="FILE-INFO"/>
             <AppenderRef ref="FILE-ERROR"/>
         </AsyncRoot>

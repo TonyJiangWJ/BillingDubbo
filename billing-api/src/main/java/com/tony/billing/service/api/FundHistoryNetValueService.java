@@ -24,10 +24,11 @@ public interface FundHistoryNetValueService extends AbstractService<FundHistoryN
     void updateFundHistoryNetValue(String fundCode);
 
     /**
-     * 获取指定基金的历史净值数据 近30天
+     * 获取指定基金的历史净值数据 默认近30个工作日
      * @param fundCode
      * @param dateAfter
+     * @param dateBefore
      * @return
      */
-    FundHistoryNetValueResponse getHistoryNetValuesByFundCode(String fundCode, String dateAfter);
+    FundHistoryNetValueResponse getHistoryNetValuesByFundCode(String fundCode, String dateAfter, String dateBefore);
 }

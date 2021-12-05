@@ -104,7 +104,7 @@ public class FundHistoryValueServiceImpl extends AbstractServiceImpl<FundHistory
                     insertIfNotExist(fundHistoryValue);
                     succeed = true;
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 logger.error("获取基金:" + fundInfo.getFundCode() + " 估值信息失败", e);
             }
         }
@@ -295,7 +295,7 @@ public class FundHistoryValueServiceImpl extends AbstractServiceImpl<FundHistory
      * @return
      */
     private BigDecimal getOldNetVal(BigDecimal increaseRate, BigDecimal newVal) {
-        return newVal.divide(new BigDecimal("100").add(increaseRate), 6, BigDecimal.ROUND_HALF_UP)
+        return newVal.divide(new BigDecimal("100").add(increaseRate), BigDecimal.ROUND_HALF_UP)
                 .multiply(new BigDecimal("100")).setScale(4, BigDecimal.ROUND_HALF_UP);
     }
 

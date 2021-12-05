@@ -20,5 +20,9 @@ public class Admin extends BaseVersionedEntity {
     private String userName;
     private String email;
     private String password;
+    /**
+     * 密码版本
+     */
+    private Integer passwordVersion;
     private Date lastLogin;
 }

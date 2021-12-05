@@ -1,12 +1,16 @@
 package com.tony.billing.controller;
 
 import com.tony.billing.entity.FundSoldInfo;
+import com.tony.billing.entity.query.FundPreSaleInfoQuery;
 import com.tony.billing.exceptions.BaseBusinessException;
+import com.tony.billing.request.fund.FundPreSalePageRequest;
 import com.tony.billing.request.fund.FundPreSalePortionRequest;
 import com.tony.billing.request.fund.FundPreSaleRequest;
 import com.tony.billing.request.fund.FundSoldRequest;
 import com.tony.billing.response.BaseResponse;
+import com.tony.billing.response.fund.FundPreSalePageResponse;
 import com.tony.billing.service.api.FundInfoService;
+import com.tony.billing.service.api.FundPreSaleInfoService;
 import com.tony.billing.service.api.FundSoldInfoService;
 import com.tony.billing.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -23,11 +27,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RestController
 @RequestMapping("/bootDemo")
-public class FunSoldController extends BaseController {
+public class FundSoldController extends BaseController {
     @Reference
     private FundSoldInfoService fundSoldInfoService;
     @Reference
     private FundInfoService fundInfoService;
+    @Reference
+    private FundPreSaleInfoService fundPreSaleInfoService;
 
     @RequestMapping(value = "/fund/sold/put", method = RequestMethod.POST)
     public BaseResponse addSoldInfo(@ModelAttribute("request") @Validated FundSoldRequest request) {
@@ -78,5 +84,28 @@ public class FunSoldController extends BaseController {
             response.setMsg(e.getMessage());
         }
         return response;
+    }
+
+    /**
+     * 列表，预出售列表
+     *  -- 查看详情 -- 列出关联基金
+     *  -- 删除撤销 -- 同步恢复关联的基金数据
+     *  -- 标记为已出售，将数据转换为已出售 -- 同步转换关联的基金数据
+     * 已出售列表
+     *  -- 查看详情
+     */
+    @RequestMapping(value = "/fund/pre/sale/page")
+    public FundPreSalePageResponse queryPreSaleInfo(@ModelAttribute("query") @Validated FundPreSalePageRequest request) {
+        FundPreSaleInfoQuery query = new FundPreSaleInfoQuery();
+        query.setFundCode(request.getFundCode());
+        query.setFundName(request.getFundName());
+        query.setUserId(request.getUserId());
+        query.setPageNo(request.getPageNo());
+        query.setPageSize(request.getPageSize());
+        query = fundPreSaleInfoService.page(query);
+        if (query != null) {
+            return new FundPreSalePageResponse(query);
+        }
+        return ResponseUtil.dataNotExisting(new FundPreSalePageResponse());
     }
 }

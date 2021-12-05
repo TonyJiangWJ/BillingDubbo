@@ -25,13 +25,13 @@ spring:
           enabled: true
       filters: slf4j
       driver-class-name: com.mysql.cj.jdbc.Driver
-      url: jdbc:mysql://127.0.0.1:3306/my_daily_cost?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&zeroDateTimeBehavior=convertToNull
+      url: jdbc:mysql://127.0.0.1:3306/my_daily_cost_dev?serverTimezone=CTT&characterEncoding=utf8&useUnicode=true&useSSL=false&zeroDateTimeBehavior=convertToNull
       username: root
       password:
   mail:
-    host: smtp.yeah.net
-    username: tony_sama@yeah.net
-    password:
+    host: smtp.qq.com
+    username: 781027548@qq.com
+    password: wpzhormjmrdobbea
   redis:
     database: 1
     host: 127.0.0.1
@@ -73,7 +73,7 @@ system:
 embedded:
   zookeeper:
     port: 2181
-    enable: false
+    enable: true
 rsa:
   key:
     path: /Users/jiangwenjie/Documents/Repositories/Github/BillingDubbo/billing-server/src/test/resources/license
