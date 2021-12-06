@@ -13,6 +13,7 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author tonyjiang
@@ -61,7 +62,7 @@ public class RedisUtils {
     public void set(final String key, final Object val, final long time) {
         Preconditions.checkNotNull(key, "key can not be null");
         try {
-            stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(val), time);
+            stringRedisTemplate.opsForValue().set(key, JSON.toJSONString(val), time, TimeUnit.SECONDS);
         } catch (Exception e) {
             logger.error("设置定时cache错误", e);
         }
